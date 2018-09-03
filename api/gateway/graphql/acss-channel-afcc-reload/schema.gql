@@ -1,0 +1,15 @@
+"Hello world sample, please remove"
+type HelloWorldAcssChannelAfccReload{
+  "text"
+  sn: String!  
+}
+
+type Query {
+  "Hello world sample, please remove"
+  getHelloWorldFromAcssChannelAfccReload: HelloWorldAcssChannelAfccReload
+}
+
+type Subscription {
+  "Hello world sample, please remove"
+  AcssChannelAfccReloadHelloWorldSubscription: HelloWorldAcssChannelAfccReload  
+}

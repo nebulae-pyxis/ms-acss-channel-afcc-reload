@@ -1,0 +1,8 @@
+[
+    {
+        "name": "acss-channel-afcc-reload",
+        "type": "graphql",        
+        "src": "api/gateway/graphql/acss-channel-afcc-reload",
+        "preBuildCommands": []
+    }
+]

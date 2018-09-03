@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: acar-mongo
+spec:
+  ports:
+  - port: 27017
+    name: acar-mongo
+  selector:
+    app: acar-mongo
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: acar-mongo-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 0.5Gi
+---
+apiVersion: apps/v1beta2 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: acar-mongo
+spec:
+  selector:
+    matchLabels:
+      app: acar-mongo
+  strategy:
+    type: Recreate      
+  template:
+    metadata:
+      labels:
+        app: acar-mongo
+    spec:
+      containers:
+      - image: mongo:3.7-jessie
+        name: acar-mongo        
+        ports:
+        - containerPort: 27017
+          name: acar-mongo
+        volumeMounts:
+        - name: acar-mongo-persistent-storage
+          mountPath: /data/db
+      volumes:
+      - name: acar-mongo-persistent-storage
+        persistentVolumeClaim:
+          claimName: acar-mongo-pv-claim

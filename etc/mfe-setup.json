@@ -1,0 +1,37 @@
+[
+    {
+        "name": "acss-channel-afcc-reload",
+        "src": "frontend/emi/acss-channel-afcc-reload",
+        "groups": [
+            {
+              "id": "CHANNEL_PROCESSORS",
+              "icon": "location_searching",
+              "translate": {
+                "en": "Canales procesadores",
+                "es": "Channel processors"
+              },
+              "priority": 1000
+            }
+          ],
+        "contents": [
+            {
+                "groupId": "CHANNEL_PROCESSORS",
+                "id": "acss-channel-afcc-reload",
+                "icon": "dashboard",
+                "translate": {
+                    "en": "ACSS channel AFCC reload",
+                    "es": "Canal ACSS para recargas AFCC"
+                },
+                "navURL": "/acss-channel-afcc-reload",
+                "path": "acss-channel-afcc-reload",
+                "loadChildren": "./main/content/acss-channel-afcc-reload/acss-channel-afcc-reload.module#AcssChannelAfccReload",
+                "priority": 1000,
+                "roles" : ["developer"],
+                "default" : false
+            }            
+        ],
+        "preBuildCommands": [],
+        "environmentVars": {
+        }
+    }
+]
