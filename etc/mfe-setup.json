@@ -24,7 +24,7 @@
                 },
                 "navURL": "/acss-channel-afcc-reload",
                 "path": "acss-channel-afcc-reload",
-                "loadChildren": "./main/content/acss-channel-afcc-reload/acss-channel-afcc-reload.module#AcssChannelAfccReload",
+                "loadChildren": "./main/content/acss-channel-afcc-reload/acss-channel-afcc-reload.module#AcssChannelAfccReloadModule",
                 "priority": 1000,
                 "roles" : ["developer"],
                 "default" : false

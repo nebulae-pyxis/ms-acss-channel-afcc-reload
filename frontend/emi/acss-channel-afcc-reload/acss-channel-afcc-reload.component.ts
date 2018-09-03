@@ -19,8 +19,7 @@ export class AcssChannelAfccReloadComponent implements OnInit, OnDestroy {
 
   constructor(private AcssChannelAfccReloadService: AcssChannelAfccReloadService  ) {    
 
-  }
-    
+  }    
 
   ngOnInit() {
     this.helloWorldLabelQuery$ = this.AcssChannelAfccReloadService.getHelloWorld$();
