@@ -4,12 +4,118 @@ type HelloWorldAcssChannelAfccReload{
   sn: String!  
 }
 
+"Actor types"
+enum AcssChannelAfccReloadActorType{
+  FARECOLLECTOR
+  RELOADNETWORK
+  PARTIES
+}
+
+"Reprents an AFCC reload event"
+type AcssChannelAfccReloadEvent {
+  "Event Id"
+  id: ID
+  "Business unit id"
+  buId: String
+  "Business unit name"
+  buName: String
+  "Reload amount"
+  amount: Int
+  "Payment method before reload"
+  afccBefore: String
+  "Payment method after reload"
+  afccAfter: String
+  "MISSING"
+  afccuId: String
+  "Payment method Id"
+  afccCardId: String
+  "Payment method balance before reload"
+  afccBalanceBefore: Int
+  "Payment method balance after reload"
+  afccBalanceAfter: Int
+  "Maquine where reload was made"
+  sourceMachine: String
+  "Machine IP where the transaction was made"
+  sourceIp: String
+}
+
+"Represent transaction that are created by the microservice after process an AFCC reload event"
+type AcssChannelAfccReloadTransaction{
+  "Transaction timestamp"
+  timestamp: BigInt
+  "Consignee business unit id"
+  fromBuId: String
+  "Beneficiary business unit id"
+  toBuId: String
+  "Money amount"
+  amount: Int
+  "Channel processor id"
+  channelID: String
+  "Channel softwate version"
+  channelSv: String
+  "Channel configuration version"
+  channelConf: BigInt
+  "Transaction Type"
+  type: String
+  "Source event id"
+  evtID: String
+  "source event type"
+  evtType: String
+  "source event responsible user"
+  evtUser: String
+
+}
+
+
+type AcssChannelAfccReloadActor{
+  "Actor's business unit Id"
+  buId: String
+  "Actor name"
+  name: String
+  "percentage belonging"
+  percentaje: Float
+}
+
+"Object that represent the rules to create transactions from AFCC event"
+type AcssChannelAfccReloadConfigurationObject{
+  "configuration id"
+  id: BigInt 
+  "List of Farecollector actors in this configuration"
+  fareCollectors: [AcssChannelAfccReloadActor]
+  "List of reloadNetwork Actors in this configuration"
+  reloadNetwork: [AcssChannelAfccReloadActor]
+  "List of parties actors in this configuration"
+  parties: [AcssChannelAfccReloadActor]
+  "Last edition for this configuation"
+  lastEdition: BigInt
+  "user who Created this configuration"
+  editor: String
+}
+
+type AcssChannelAfccReloadCommandResponse{
+  "Response code"
+  code: Int
+  "Response message"
+  message: String
+}
+
 type Query {
   "Hello world sample, please remove"
   getHelloWorldFromAcssChannelAfccReload: HelloWorldAcssChannelAfccReload
+  AcssChannelAfccReloadGetConfiguration(id: BigInt!): AcssChannelAfccReloadConfigurationObject
+  AcssChannelAfccReloadGetAfccReloads(page: Int!, count: Int!, sortColumn: String, sortOrder: String): [AcssChannelAfccReloadEvent]
+  AcssChannelAfccReloadGetAfccReload(id: ID!): AcssChannelAfccReloadEvent
+  # AcssChannelAfccReloadGetAfccReloadDetails: AcssChannelAfccReloadEventDetail
+  AcssChannelAfccReloadGetTransactionsFromAfccEvt(evtId: ID!): [AcssChannelAfccReloadTransaction]
+  AcssChannelAfccReloadGetTransactions(page: Int!, count: Int!, sortColumn: String, sortOrder: String): [AcssChannelAfccReloadTransaction]
+
 }
 
 type Subscription {
   "Hello world sample, please remove"
-  AcssChannelAfccReloadHelloWorldSubscription: HelloWorldAcssChannelAfccReload  
+  AcssChannelAfccReloadHelloWorldSubscription: HelloWorldAcssChannelAfccReload
 }
+
+type Mutation {
+  AcssChannelAfccReloadCreateConfiguration(conf: AcssChannelAfccReloadConfigurationObject!): AcssChannelAfccReloadCommandResponse
+} 
