@@ -3,11 +3,11 @@
 let mongoDB = undefined;
 //const mongoDB = require('./MongoDB')();
 const Rx = require('rxjs');
-const CollectionName = "acssChannel"; //please change
+const CollectionName = "transactions"; //please change
 const { CustomError } = require('../tools/customError');
 
 
-class AfccReloadChannelDA {
+class TransactionsDA {
 
   static start$(mongoDbInstance) {
     return Rx.Observable.create((observer) => {
@@ -22,18 +22,6 @@ class AfccReloadChannelDA {
     });
   }
   
-  /**
-   * get hello world data
-   * @param {string} type
-   */
-  static getHelloWorld$(evt) {
-    return Rx.Observable.of(`{sn: Hello World ${Date.now()}}`)
-    .map(val => {
-      const result = {};
-      result['sn'] = val;
-      return result;
-    });
-  }
 }
 
-module.exports =  AfccReloadChannelDA 
+module.exports =  TransactionsDA 

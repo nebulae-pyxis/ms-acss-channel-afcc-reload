@@ -3,11 +3,11 @@
 let mongoDB = undefined;
 //const mongoDB = require('./MongoDB')();
 const Rx = require('rxjs');
-const CollectionName = "acssChannel"; //please change
+const CollectionName = "afccReloadEvents"; //please change
 const { CustomError } = require('../tools/customError');
 
 
-class AfccReloadChannelDA {
+class AfccReloadsDA {
 
   static start$(mongoDbInstance) {
     return Rx.Observable.create((observer) => {
@@ -21,19 +21,22 @@ class AfccReloadChannelDA {
       observer.complete();
     });
   }
-  
-  /**
-   * get hello world data
-   * @param {string} type
-   */
-  static getHelloWorld$(evt) {
-    return Rx.Observable.of(`{sn: Hello World ${Date.now()}}`)
-    .map(val => {
-      const result = {};
-      result['sn'] = val;
-      return result;
-    });
+
+
+  static insertOneEvent$(document){
+    const collection = mongoDB.db.collection(CollectionName);
+    return Rx.Observable.defer(() => collection.insertOne(document));
   }
+
+  static searchEvent$(id){
+    console.log("searchEvent$ ==> ", id);
+    const collection = mongoDB.db.collection(CollectionName);
+    return Rx.Observable.defer(() => collection.insertOne({ id: id  }))
+    .toArray()
+  }
+
+
+  
 }
 
-module.exports =  AfccReloadChannelDA 
+module.exports =  AfccReloadsDA 

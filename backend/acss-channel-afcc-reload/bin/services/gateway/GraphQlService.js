@@ -20,8 +20,22 @@ class GraphQlService {
    * Starts GraphQL actions listener
    */
   start$() {
+
+    //default on error handler
+    const onErrorHandler = error => {
+      console.error("Error handling  GraphQl incoming event", error);
+      process.exit(1);
+    };
+
+    //default onComplete handler
+    const onCompleteHandler = () => {
+      () => console.log("GraphQlService incoming event subscription completed");
+    };
+
+
     return Rx.Observable.from(this.getSubscriptionDescriptors())
-      .map(params => this.subscribeEventHandler(params));
+    .map(aggregateEvent => {return { ...aggregateEvent, onErrorHandler, onCompleteHandler }})
+    .map(params => this.subscribeEventHandler(params));
   }
 
   /**
@@ -38,11 +52,29 @@ class GraphQlService {
     const subscription = broker
       .getMessageListener$([aggregateType], [messageType])
       //decode and verify the jwt token
-      .map(message => {
-        return {
-          authToken: jsonwebtoken.verify(message.data.jwt, jwtPublicKey),
-          message
-        };
+      // .map(message => {
+      //   return {
+      //     authToken: jsonwebtoken.verify(message.data.jwt, jwtPublicKey),
+      //     message
+      //   };
+      // })
+      .mergeMap(message => {        
+        return Rx.Observable.of(
+          {
+            authToken: jsonwebtoken.verify(message.data.jwt, jwtPublicKey),
+            message
+          }
+        )
+        .catch(err => {
+          return Rx.Observable.of(
+            {
+              response,
+              correlationId: message.id,
+              replyTo: message.attributes.replyTo 
+            }
+          )
+          .mergeMap(msg => this.sendResponseBack$(msg))
+        })
       })
       //ROUTE MESSAGE TO RESOLVER
       .mergeMap(({ authToken, message }) =>
@@ -57,17 +89,21 @@ class GraphQlService {
           })
       )
       //send response back if neccesary
-      .mergeMap(({ response, correlationId, replyTo }) => {
-        if (replyTo) {
-          return broker.send$(
-            replyTo,
-            "gateway.graphql.Query.response",
-            response,
-            { correlationId }
-          );
-        } else {
-          return Rx.Observable.of(undefined);
-        }
+      // .mergeMap(({ response, correlationId, replyTo }) => {
+      //   if (replyTo) {
+      //     return broker.send$(
+      //       replyTo,
+      //       "gateway.graphql.Query.response",
+      //       response,
+      //       { correlationId }
+      //     );
+      //   } else {
+      //     return Rx.Observable.of(undefined);
+      //   }
+      // })
+      .mergeMap(msg => this.sendResponseBack$(msg))
+      .catch(error => {
+        return Rx.Observable.of(null) // Custom error missing
       })
       .subscribe(
         msg => {
@@ -89,6 +125,23 @@ class GraphQlService {
     };
   }
 
+  // send response back if neccesary
+  sendResponseBack$(msg) {
+    return Rx.Observable.of(msg)
+      .mergeMap(({ response, correlationId, replyTo }) => {
+        if (replyTo) {
+          return broker.send$(
+            replyTo,
+            "gateway.graphql.Query.response",
+            response,
+            { correlationId }
+          );
+        } else {
+          return Rx.Observable.of(undefined);
+        }
+      })
+  }
+
   stop$() {
     Rx.Observable.from(this.subscriptions).map(subscription => {
       subscription.subscription.unsubscribe();
@@ -105,27 +158,37 @@ class GraphQlService {
    * returns an array of broker subscriptions for listening to GraphQL requests
    */
   getSubscriptionDescriptors() {
-    //default on error handler
-    const onErrorHandler = error => {
-      console.error("Error handling  GraphQl incoming event", error);
-      process.exit(1);
-    };
-
-    //default onComplete handler
-    const onCompleteHandler = () => {
-      () => console.log("GraphQlService incoming event subscription completed");
-    };
     console.log("GraphQl Service starting ...");
-
     return [
-
       //Sample incoming request, please remove
       {
         aggregateType: "HelloWorld",
-        messageType: "gateway.graphql.query.getHelloWorldFromAcssChannelAfccReload",
-        onErrorHandler,
-        onCompleteHandler
-      },      
+        messageType: "gateway.graphql.query.getHelloWorldFromAcssChannelAfccReload"
+      },   
+      {
+        aggregateType: "AfccChannel",
+        messageType: "gateway.graphql.query.getConfiguration"
+      },
+      {
+        aggregateType: "AfccChannel",
+        messageType: "gateway.graphql.query.getAfccReload"
+      },
+      {
+        aggregateType: "AfccChannel",
+        messageType: "gateway.graphql.query.getAfccReloads"
+      },
+      {
+        aggregateType: "AfccChannel",
+        messageType: "gateway.graphql.query.getTransactions"
+      },
+      {
+        aggregateType: "AfccChannel",
+        messageType: "gateway.graphql.query.getTransactionsFromAfccEvt"
+      },
+      {
+        aggregateType: "AfccChannel",
+        messageType: "gateway.graphql.query.createConfiguration"
+      },   
     ];
   }
 
@@ -138,7 +201,31 @@ class GraphQlService {
       "gateway.graphql.query.getHelloWorldFromAcssChannelAfccReload": {
         fn: afccReloadChannel.getHelloWorld$,
         obj: afccReloadChannel
-      },      
+      },
+      "gateway.graphql.query.getConfiguration": {
+        fn: afccReloadChannel.getConfiguration$,
+        obj: afccReloadChannel
+      },
+      "gateway.graphql.query.getAfccReload": {
+        fn: afccReloadChannel.getAfccReload$,
+        obj: afccReloadChannel
+      },
+      "gateway.graphql.query.getAfccReloads": {
+        fn: afccReloadChannel.getAfccReloads$,
+        obj: afccReloadChannel
+      },
+      "gateway.graphql.query.getTransactions": {
+        fn: afccReloadChannel.getTransactions$,
+        obj: afccReloadChannel
+      },
+      "gateway.graphql.query.getTransactionsFromAfccEvt": {
+        fn: afccReloadChannel.getTransactionsFromAfccEvt$,
+        obj: afccReloadChannel
+      },
+      "gateway.graphql.query.createConfiguration": {
+        fn: afccReloadChannel.createConfiguration$,
+        obj: afccReloadChannel
+      }   
     };
   }
 
