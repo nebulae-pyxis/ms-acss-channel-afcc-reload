@@ -76,6 +76,15 @@ type AcssChannelAfccReloadActor{
   percentaje: Float
 }
 
+input AcssChannelAfccReloadActorInput{
+  "Actor's business unit Id"
+  buId: String
+  "Actor name"
+  name: String
+  "percentage belonging"
+  percentaje: Float
+}
+
 "Object that represent the rules to create transactions from AFCC event"
 type AcssChannelAfccReloadConfigurationObject{
   "configuration id"
@@ -86,6 +95,22 @@ type AcssChannelAfccReloadConfigurationObject{
   reloadNetwork: [AcssChannelAfccReloadActor]
   "List of parties actors in this configuration"
   parties: [AcssChannelAfccReloadActor]
+  "Last edition for this configuation"
+  lastEdition: BigInt
+  "user who Created this configuration"
+  editor: String
+}
+
+"Object that represent the rules to create transactions from AFCC event"
+input AcssChannelAfccReloadConfigurationInput{
+  "configuration id"
+  id: BigInt 
+  "List of Farecollector actors in this configuration"
+  fareCollectors: [AcssChannelAfccReloadActorInput]
+  "List of reloadNetwork Actors in this configuration"
+  reloadNetwork: [AcssChannelAfccReloadActorInput]
+  "List of parties actors in this configuration"
+  parties: [AcssChannelAfccReloadActorInput]
   "Last edition for this configuation"
   lastEdition: BigInt
   "user who Created this configuration"
@@ -117,5 +142,5 @@ type Subscription {
 }
 
 type Mutation {
-  AcssChannelAfccReloadCreateConfiguration(conf: AcssChannelAfccReloadConfigurationObject!): AcssChannelAfccReloadCommandResponse
+  AcssChannelAfccReloadCreateConfiguration(input: AcssChannelAfccReloadConfigurationInput!): AcssChannelAfccReloadCommandResponse
 } 

@@ -36,80 +36,80 @@ module.exports = {
                 .mergeMap(response => getResponseFromBackEnd$(response))
                 .toPromise();
         },
-        AcssChannelAfccReloadGetConfiguration(root, args, context){
-            return broker
-            .forwardAndGetReply$(
-                "AfccChannel",
-                "gateway.graphql.query.GetConfiguration",
-                { root, args, jwt: context.encodedToken },
-                2000
-            )
-            .mergeMap(response => getResponseFromBackEnd$(response))
-            .toPromise();
-        },
-        AcssChannelAfccReloadGetAfccReload(root, args, context){
-            return broker
-            .forwardAndGetReply$(
-                "AfccChannel",
-                "gateway.graphql.query.getAfccReload",
-                { root, args, jwt: context.encodedToken },
-                2000
-            )
-            .mergeMap(response => getResponseFromBackEnd$(response))
-            .toPromise();
+        // AcssChannelAfccReloadGetConfiguration(root, args, context){
+        //     return broker
+        //     .forwardAndGetReply$(
+        //         "AfccChannel",
+        //         "gateway.graphql.query.GetConfiguration",
+        //         { root, args, jwt: context.encodedToken },
+        //         2000
+        //     )
+        //     .mergeMap(response => getResponseFromBackEnd$(response))
+        //     .toPromise();
+        // },
+        // AcssChannelAfccReloadGetAfccReload(root, args, context){
+        //     return broker
+        //     .forwardAndGetReply$(
+        //         "AfccChannel",
+        //         "gateway.graphql.query.getAfccReload",
+        //         { root, args, jwt: context.encodedToken },
+        //         2000
+        //     )
+        //     .mergeMap(response => getResponseFromBackEnd$(response))
+        //     .toPromise();
 
-        },
-        AcssChannelAfccReloadGetAfccReloads(root, args, context){
-            return broker
-            .forwardAndGetReply$(
-                "AfccChannel",
-                "gateway.graphql.query.getAfccReloads",
-                { root, args, jwt: context.encodedToken },
-                2000
-            )
-            .mergeMap(response => getResponseFromBackEnd$(response))
-            .toPromise();
-        },
-        AcssChannelAfccReloadGetTransactions(root, args, context){
-            return broker
-            .forwardAndGetReply$(
-                "AfccChannel",
-                "gateway.graphql.query.getTransactions",
-                { root, args, jwt: context.encodedToken },
-                2000
-            )
-            .mergeMap(response => getResponseFromBackEnd$(response))
-            .toPromise();
-        },
-        AcssChannelAfccReloadGetTransactionsFromAfccEvt(root, args, context){
-            return broker
-            .forwardAndGetReply$(
-                "AfccChannel",
-                "gateway.graphql.query.getTransactionsFromAfccEvt",
-                { root, args, jwt: context.encodedToken },
-                2000
-            )
-            .mergeMap(response => getResponseFromBackEnd$(response))
-            .toPromise();
-        }
+        // },
+        // AcssChannelAfccReloadGetAfccReloads(root, args, context){
+        //     return broker
+        //     .forwardAndGetReply$(
+        //         "AfccChannel",
+        //         "gateway.graphql.query.getAfccReloads",
+        //         { root, args, jwt: context.encodedToken },
+        //         2000
+        //     )
+        //     .mergeMap(response => getResponseFromBackEnd$(response))
+        //     .toPromise();
+        // },
+        // AcssChannelAfccReloadGetTransactions(root, args, context){
+        //     return broker
+        //     .forwardAndGetReply$(
+        //         "AfccChannel",
+        //         "gateway.graphql.query.getTransactions",
+        //         { root, args, jwt: context.encodedToken },
+        //         2000
+        //     )
+        //     .mergeMap(response => getResponseFromBackEnd$(response))
+        //     .toPromise();
+        // },
+        // AcssChannelAfccReloadGetTransactionsFromAfccEvt(root, args, context){
+        //     return broker
+        //     .forwardAndGetReply$(
+        //         "AfccChannel",
+        //         "gateway.graphql.query.getTransactionsFromAfccEvt",
+        //         { root, args, jwt: context.encodedToken },
+        //         2000
+        //     )
+        //     .mergeMap(response => getResponseFromBackEnd$(response))
+        //     .toPromise();
+        // }
 
     },
 
     //// MUTATIONS ///////
-    Mutation: {
-        AcssChannelAfccReloadCreateConfiguration(root, args, context){
-            return broker
-            .forwardAndGetReply$(
-                "AfccChannel",
-                "gateway.graphql.query.createConfiguration",
-                { root, args, jwt: context.encodedToken },
-                2000
-            )
-            .mergeMap(response => getResponseFromBackEnd$(response))
-            .toPromise();
-        }
+    // Mutation: {
+    //     AcssChannelAfccReloadCreateConfiguration(root, args, context){
+    //         return broker
+    //         .forwardAndGetReply$(
+    //             "AfccChannel",
+    //             "gateway.graphql.query.createConfiguration",
+    //             { root, args, jwt: context.encodedToken },
+    //             2000
+    //         )
+    //         .mergeMap(response => getResponseFromBackEnd$(response))
+    //         .toPromise();
+    //     }
 
-    },
+    // },
     //// SUBSCRIPTIONS ///////
     Subscription: {
         AcssChannelAfccReloadHelloWorldSubscription: {
