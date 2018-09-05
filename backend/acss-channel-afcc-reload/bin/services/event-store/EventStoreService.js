@@ -1,7 +1,7 @@
 "use strict";
 const Rx = require("rxjs");
 const eventSourcing = require("../../tools/EventSourcing")();
-const afccReloadChannel = require("../../domain/AfccReloadChannel")();
+const afccReloadChannelEventConsumer = require("../../domain/AfccReloadChannelEventConsumer")();
 
 /**
  * Singleton instance
@@ -118,8 +118,8 @@ class EventStoreService {
 
       //Sample for handling event-sourcing events, please remove
       HelloWorldEvent: {
-        fn: afccReloadChannel.handleHelloWorld$,
-        obj: afccReloadChannel
+        fn: afccReloadChannelEventConsumer.handleHelloWorld$,
+        obj: afccReloadChannelEventConsumer
       },
 
     };

@@ -6,6 +6,7 @@ const MATERIALIZED_VIEW_TOPIC = "materialized-view-updates";
 const AfccReloadsDA = require("../data/AfccReloadsDA");
 const AfccReloadChannelDA = require('../data/AfccReloadChannelDA');
 const TransactionsDA = require('../data/TransactionsDA');
+const CURRENT_RULE = 1;
 
 /**
  * Singleton instance
@@ -14,6 +15,20 @@ let instance;
 
 class UserEventConsumer {
   constructor() {}
+
+  handleHelloWorld$(){
+
+  }
+
+  handleAfccReloaded$(evt){
+
+    return AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE)
+    .mergeMap(conf => this.applyBusinessRules(conf, evt) )
+
+  }
+
+  
+
 }
 
 module.exports = () => {
