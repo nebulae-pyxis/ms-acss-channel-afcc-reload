@@ -55,41 +55,71 @@ class AfccReloadChannel{
   // }
 
 
-  getConfiguration$({ args, jwt, fieldASTs }, authToken) {
+  getConfiguration$({ args, jwt }, authToken) {
     console.log(args);
     return AfccReloadChannelDA.searchConfiguration$(args.id)
-      .mergeMap(rawResponse => this.buildSuccessResponse$(rawResponse))
-      .catch(err => { this.handleError$(err) });
+    .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
-  getAfccReload$({ args, jwt, fieldASTs }, authToken){
+  getAfccReload$({ args, jwt }, authToken){
     console.log("getAfccReload$", args);
     return AfccReloadsDA.searchEvent$(args.id)
-    .mergeMap(rawResponse => this.buildSuccessResponse$(rawResponse))
-    .catch(err => { this.handleError$(err) });
+    .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
-  getAfccReloads$({ args, jwt, fieldASTs }, authToken){
-    
+  getAfccReloads$({ args, jwt }, authToken){
+    console.log("getAfccReloads$", args);
+    return AfccReloadsDA.searchReloads$(args)
+    .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
-  getTransactions$({ args, jwt, fieldASTs }, authToken){
-
+  getReloadsCount$({ args, jwt }, authToken){
+    return AfccReloadsDA.getReloadsCount$()
+    .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
-  getTransactionsFromAfccEvt$({ args, jwt, fieldASTs }, authToken){
-
+  getTransactions$({ args, jwt }, authToken){
+    return TransactionDA.searchTransactions$(args)
+    .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
-  createConfiguration$({ args, jwt, fieldASTs }, authToken){
+  /**
+   * 
+   * @param {Object} param0 Object that contains query Arguments, jwt and fiel
+   * @param {String} authToken 
+   */
+  getTransactionsFromAfccEvt$({ args, jwt }, authToken){
+    console.log("getTransactionsFromAfccEvt", args);
+    return TransactionDA.searchTransactionFromAfccEvt$('123')
+    .mergeMap(payload => this.buildAndSendResponse$(payload));
+  }
+
+  createConfiguration$({ args, jwt }, authToken){
     console.log("createConfiguration$", args);
     return AfccReloadChannelDA.insertConfiguration$(conf)
-    .mergeMap(rawResponse => this.buildSuccessResponse$(rawResponse))
-    .catch(err => { this.handleError$(err) });    
+    .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
 
   //#region  mappers for API responses
+  buildAndSendResponse$(payload){
+    return Rx.Observable.of(payload)
+    .mergeMap(rawPayload => this.buildSuccessResponse$(rawPayload))
+    .catch(err => { this.errorHandler$(err) });  
+  }
+
+  buildSuccessResponse$(rawRespponse) {
+    return Rx.Observable.of(rawRespponse)
+      .map(resp => {
+        return {
+          data: resp,
+          result: {
+            code: 200
+          }
+        }
+      });
+  }
+
   errorHandler$(err) {
     return Rx.Observable.of(err)
       .map(err => {
@@ -103,18 +133,6 @@ class AfccReloadChannel{
             error: {...err.getContent()}
           }
         return exception;
-      });
-  }
-  
-  buildSuccessResponse$(rawRespponse) {
-    return Rx.Observable.of(rawRespponse)
-      .map(resp => {
-        return {
-          data: resp,
-          result: {
-            code: 200
-          }
-        }
       });
   }
 

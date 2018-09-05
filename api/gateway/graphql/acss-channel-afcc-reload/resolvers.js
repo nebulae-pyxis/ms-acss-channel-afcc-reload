@@ -79,6 +79,17 @@ module.exports = {
             )
             .mergeMap(response => getResponseFromBackEnd$(response))
             .toPromise();
+        },
+        AcssChannelAfccReloadGetReloadsCount(root, args, context){
+            return broker
+            .forwardAndGetReply$(
+                "AfccChannel",
+                "gateway.graphql.query.getReloadsCount",
+                { root, args, jwt: context.encodedToken },
+                2000
+            )
+            .mergeMap(response => getResponseFromBackEnd$(response))
+            .toPromise();
         }
 
     },

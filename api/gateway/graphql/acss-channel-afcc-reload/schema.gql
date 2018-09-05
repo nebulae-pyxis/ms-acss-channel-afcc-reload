@@ -11,32 +11,67 @@ enum AcssChannelAfccReloadActorType{
   PARTIES
 }
 
+type AcssChannelAfccReloadEventBusinessUnit{
+  "Business unit id"
+  id: String
+  "Business unit name"
+  name: String
+}
+
+"AFCC data object"
+type AcssChannelAfccReloadEventAfcc{
+  "Payment method before reload"
+  before: String
+  "Payment method after reload"
+  after: String
+  "MISSING"
+  UId: String
+  "Payment method Id"
+  cardId: String
+  "Payment method balance before reload"
+  balanceBefore: Int
+  "Payment method balance after reload"
+  balanceAfter: Int
+}
+
+type AcssChannelAfccReloadSource{
+  "Maquine where reload was made"
+  machine: String
+  "Machine IP where the transaction was made"
+  ip: String
+}
+
 "Reprents an AFCC reload event"
 type AcssChannelAfccReloadEvent {
   "Event Id"
   id: ID
-  "Business unit id"
-  buId: String
-  "Business unit name"
-  buName: String
   "Reload amount"
   amount: Int
-  "Payment method before reload"
-  afccBefore: String
-  "Payment method after reload"
-  afccAfter: String
-  "MISSING"
-  afccuId: String
-  "Payment method Id"
-  afccCardId: String
-  "Payment method balance before reload"
-  afccBalanceBefore: Int
-  "Payment method balance after reload"
-  afccBalanceAfter: Int
-  "Maquine where reload was made"
-  sourceMachine: String
-  "Machine IP where the transaction was made"
-  sourceIp: String
+  "Business unit id"
+  bu: AcssChannelAfccReloadEventBusinessUnit
+  "AFCC data object"
+  afcc: AcssChannelAfccReloadEventAfcc
+  "Event source"
+  source: AcssChannelAfccReloadSource
+
+}
+
+type AcssChannelAfccReloadChannel{
+  "Channel processor id"
+  id: String
+  "Channel softwate version"
+  sv: String
+  "Channel configuration version"
+  conf: BigInt
+}
+
+type AcssChannelAfccReloadEvt{
+  "Source event id"
+  id: String
+  "source event type"
+  type: String
+  "source event responsible user"
+  user: String
 }
 
 "Represent transaction that are created by the microservice after process an AFCC reload event"
@@ -49,21 +84,12 @@ type AcssChannelAfccReloadTransaction{
   toBuId: String
   "Money amount"
   amount: Int
-  "Channel processor id"
-  channelID: String
-  "Channel softwate version"
-  channelSv: String
-  "Channel configuration version"
-  channelConf: BigInt
+  "Transaction's channel processor"
+  channel: AcssChannelAfccReloadChannel
   "Transaction Type"
   type: String
-  "Source event id"
-  evtID: String
-  "source event type"
-  evtType: String
-  "source event responsible user"
-  evtUser: String
-
+  "Source event"
+  evt: AcssChannelAfccReloadEvt
 }
 
 
@@ -126,11 +152,12 @@ type AcssChannelAfccReloadCommandResponse{
 
 type Query {
   AcssChannelAfccReloadGetConfiguration(id: BigInt!): AcssChannelAfccReloadConfigurationObject
-  AcssChannelAfccReloadGetAfccReloads(page: Int!, count: Int!, sortColumn: String, sortOrder: String): [AcssChannelAfccReloadEvent]
+  AcssChannelAfccReloadGetAfccReloads(page: Int!, count: Int!, lowerLimit: BigInt, sortColumn: String, sortOrder: String): [AcssChannelAfccReloadEvent]
   AcssChannelAfccReloadGetAfccReload(id: ID!): AcssChannelAfccReloadEvent
   # AcssChannelAfccReloadGetAfccReloadDetails: AcssChannelAfccReloadEventDetail
   AcssChannelAfccReloadGetTransactionsFromAfccEvt(evtId: ID!): [AcssChannelAfccReloadTransaction]
   AcssChannelAfccReloadGetTransactions(page: Int!, count: Int!, sortColumn: String, sortOrder: String): [AcssChannelAfccReloadTransaction]
+  AcssChannelAfccReloadGetReloadsCount: Int!
 
 }
 

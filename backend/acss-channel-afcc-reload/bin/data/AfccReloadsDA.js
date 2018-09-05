@@ -29,11 +29,55 @@ class AfccReloadsDA {
   }
 
   static searchEvent$(id){
-    console.log("searchEvent$", id);
     const collection = mongoDB.db.collection(CollectionName);
     return Rx.Observable.defer(() => collection.findOne({ id: id  }))
   }
 
+  static getReloadsCount$(){
+    const collection = mongoDB.db.collection(CollectionName);
+    return Rx.Observable.defer(() => collection.count() );
+  }
+
+    /**
+   * gets all the business registered on the system.
+   *
+   * @param {int} page Indicates the page number which will be returned
+   * @param {int} count Indicates the amount of rows that will be returned
+   * @param {filter} filter filter to apply to the query.
+   * @param {sortColumn} sortColumn Indicates what column will be used to sort the data
+   * @param {order} order Indicates if the info will be asc or desc
+   */
+
+   
+  static searchReloads$({page, count, lowerLimit, filter, sortColumn, order}) {
+    let filterObject = {'timestamp' : {$gt: lowerLimit } };
+    const orderObject = {};
+    if (filter && filter != "") {
+     const filterWithRegex = {
+        $or: [
+          { 'bu.name': { $regex: `${filter}.*`, $options: "i" } },
+          { 'source.machine': { $regex: `${filter}.*`, $options: "i" } }
+        ]
+      };
+      filterObject = Object.assign(filterObject, filterWithRegex);
+
+    }
+    console.log(filterObject);
+    
+    if (sortColumn && order) {
+      let column = sortColumn;      
+      orderObject[column] = order == 'asc' ? 1 : -1;
+    }
+    const collection = mongoDB.db.collection(CollectionName);
+    return Rx.Observable.defer(()=>
+      collection
+        .find(filterObject)
+        .sort(orderObject)
+        .skip(count * page)
+        .limit(count)
+        .toArray()
+    );
+  }
 
   
 }

@@ -164,6 +164,10 @@ class GraphQlService {
         aggregateType: "AfccChannel",
         messageType: "gateway.graphql.query.createConfiguration"
       },   
+      {
+        aggregateType: "AfccChannel",
+        messageType: "gateway.graphql.query.getReloadsCount"
+      },  
     ];
   }
 
@@ -195,7 +199,11 @@ class GraphQlService {
       "gateway.graphql.query.createConfiguration": {
         fn: afccReloadChannel.createConfiguration$,
         obj: afccReloadChannel
-      }   
+      },
+      "gateway.graphql.query.getReloadsCount": {
+        fn: afccReloadChannel.getReloadsCount$,
+        obj: afccReloadChannel
+      }
     };
   }
 

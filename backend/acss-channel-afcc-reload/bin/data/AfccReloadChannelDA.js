@@ -43,7 +43,6 @@ class AfccReloadChannelDA {
   }
 
   static searchConfiguration$(id){
-    console.log("searchConfiguration$");
     const collection = mongoDB.db.collection(CollectionName);
     return Rx.Observable.defer(() => collection.findOne( { id: id }) )
   }
