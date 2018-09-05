@@ -125,8 +125,6 @@ type AcssChannelAfccReloadCommandResponse{
 }
 
 type Query {
-  "Hello world sample, please remove"
-  getHelloWorldFromAcssChannelAfccReload: HelloWorldAcssChannelAfccReload
   AcssChannelAfccReloadGetConfiguration(id: BigInt!): AcssChannelAfccReloadConfigurationObject
   AcssChannelAfccReloadGetAfccReloads(page: Int!, count: Int!, sortColumn: String, sortOrder: String): [AcssChannelAfccReloadEvent]
   AcssChannelAfccReloadGetAfccReload(id: ID!): AcssChannelAfccReloadEvent

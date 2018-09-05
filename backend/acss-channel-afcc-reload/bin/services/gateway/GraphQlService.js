@@ -51,13 +51,6 @@ class GraphQlService {
     const handler = this.functionMap[messageType];
     const subscription = broker
       .getMessageListener$([aggregateType], [messageType])
-      //decode and verify the jwt token
-      // .map(message => {
-      //   return {
-      //     authToken: jsonwebtoken.verify(message.data.jwt, jwtPublicKey),
-      //     message
-      //   };
-      // })
       .mergeMap(message => {        
         return Rx.Observable.of(
           {
@@ -88,19 +81,6 @@ class GraphQlService {
             };
           })
       )
-      //send response back if neccesary
-      // .mergeMap(({ response, correlationId, replyTo }) => {
-      //   if (replyTo) {
-      //     return broker.send$(
-      //       replyTo,
-      //       "gateway.graphql.Query.response",
-      //       response,
-      //       { correlationId }
-      //     );
-      //   } else {
-      //     return Rx.Observable.of(undefined);
-      //   }
-      // })
       .mergeMap(msg => this.sendResponseBack$(msg))
       .catch(error => {
         return Rx.Observable.of(null) // Custom error missing
@@ -159,12 +139,7 @@ class GraphQlService {
    */
   getSubscriptionDescriptors() {
     console.log("GraphQl Service starting ...");
-    return [
-      //Sample incoming request, please remove
-      {
-        aggregateType: "HelloWorld",
-        messageType: "gateway.graphql.query.getHelloWorldFromAcssChannelAfccReload"
-      },   
+    return [ 
       {
         aggregateType: "AfccChannel",
         messageType: "gateway.graphql.query.getConfiguration"
@@ -197,11 +172,6 @@ class GraphQlService {
    */
   generateFunctionMap() {    
     return {
-      //Sample incoming request, please remove
-      "gateway.graphql.query.getHelloWorldFromAcssChannelAfccReload": {
-        fn: afccReloadChannel.getHelloWorld$,
-        obj: afccReloadChannel
-      },
       "gateway.graphql.query.getConfiguration": {
         fn: afccReloadChannel.getConfiguration$,
         obj: afccReloadChannel

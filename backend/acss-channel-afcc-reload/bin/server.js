@@ -8,6 +8,8 @@ const eventSourcing = require('./tools/EventSourcing')();
 const eventStoreService = require('./services/event-store/EventStoreService')();
 const mongoDB = require('./data/MongoDB').singleton();
 const AfccReloadChannelDA = require('./data/AfccReloadChannelDA');
+const AfccReloadsDA = require('./data/AfccReloadsDA');
+const TransactionsDA = require('./data/TransactionsDA');
 const graphQlService = require('./services/gateway/GraphQlService')();
 const Rx = require('rxjs');
 
@@ -16,7 +18,11 @@ const start = () => {
         eventSourcing.eventStore.start$(),
         eventStoreService.start$(),
         mongoDB.start$(),
-        AfccReloadChannelDA.start$(),
+        Rx.Observable.forkJoin(
+            AfccReloadChannelDA.start$(),
+            AfccReloadsDA.start$(),
+            TransactionsDA.start$()
+        ),
         graphQlService.start$()
     ).subscribe(
         (evt) => {

@@ -2,7 +2,7 @@
 
 const Rx = require("rxjs");
 const AfccReloadChannelDA = require("../data/AfccReloadChannelDA");
-const TransactionDA = require("../data/transactionsDA");
+const TransactionDA = require("../data/TransactionsDA");
 const AfccReloadsDA = require("../data/AfccReloadsDA")
 const broker = require("../tools/broker/BrokerFactory")();
 const MATERIALIZED_VIEW_TOPIC = "materialized-view-updates";
@@ -55,61 +55,22 @@ class AfccReloadChannel{
   // }
 
 
-  getConfiguration$({ args, jwt, fieldASTs }, authToken){
+  getConfiguration$({ args, jwt, fieldASTs }, authToken) {
+    console.log(args);
+    return AfccReloadChannelDA.searchConfiguration$(args.id)
+      .mergeMap(rawResponse => this.buildSuccessResponse$(rawResponse))
+      .catch(err => { this.handleError$(err) });
   }
 
-
   getAfccReload$({ args, jwt, fieldASTs }, authToken){
-    console.log(args);
-    // AfccReloadsDA.searchEvent$(args.id)
-    // .subscribe(
-    //   r => console.log(r),
-    //   e => console.log(e),
-    //   () => console.log('completed')
-    // );
-    return Rx.Observable.of({})
-    .do(r => console.log(r))
-    .map(() => {
-
-      // "user who Created this configuration"
-      // editor: String
-
-      return {
-        id: 1536089265650,
-        fareCollectors: [
-          {
-            
-            buId: "Actor's business unit Id",            
-            name: "Actor name",
-            percentaje: 58.6
-          }
-        ],
-        reloadNetwork: [
-          {
-            
-            buId: "Actor's business unit Id",            
-            name: "Actor name",
-            percentaje: 58.6
-          }
-        ],
-        parties: [
-          {
-            
-            buId: "Actor's business unit Id",            
-            name: "Actor name",
-            percentaje: 58.6
-          }
-        ],
-        lastEdition: 1536089265650,
-        editor: "Felipe Santa"
-      }
-    })
+    console.log("getAfccReload$", args);
+    return AfccReloadsDA.searchEvent$(args.id)
     .mergeMap(rawResponse => this.buildSuccessResponse$(rawResponse))
-    .catch(err => this.handleError$(err) );
+    .catch(err => { this.handleError$(err) });
   }
 
   getAfccReloads$({ args, jwt, fieldASTs }, authToken){
-
+    
   }
 
   getTransactions$({ args, jwt, fieldASTs }, authToken){
@@ -121,14 +82,11 @@ class AfccReloadChannel{
   }
 
   createConfiguration$({ args, jwt, fieldASTs }, authToken){
-
+    console.log("createConfiguration$", args);
+    return AfccReloadChannelDA.insertConfiguration$(conf)
+    .mergeMap(rawResponse => this.buildSuccessResponse$(rawResponse))
+    .catch(err => { this.handleError$(err) });    
   }
-
-
-
-
-
-
 
 
   //#region  mappers for API responses
@@ -147,7 +105,6 @@ class AfccReloadChannel{
         return exception;
       });
   }
-
   
   buildSuccessResponse$(rawRespponse) {
     return Rx.Observable.of(rawRespponse)

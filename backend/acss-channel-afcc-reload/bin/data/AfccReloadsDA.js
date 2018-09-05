@@ -1,9 +1,9 @@
 'use strict'
 
 let mongoDB = undefined;
-//const mongoDB = require('./MongoDB')();
+// const mongoDB = require('./MongoDB').singleton();
 const Rx = require('rxjs');
-const CollectionName = "afccReloadEvents"; //please change
+const CollectionName = "afccReloadEvents";
 const { CustomError } = require('../tools/customError');
 
 
@@ -29,10 +29,9 @@ class AfccReloadsDA {
   }
 
   static searchEvent$(id){
-    console.log("searchEvent$ ==> ", id);
+    console.log("searchEvent$", id);
     const collection = mongoDB.db.collection(CollectionName);
-    return Rx.Observable.defer(() => collection.insertOne({ id: id  }))
-    .toArray()
+    return Rx.Observable.defer(() => collection.findOne({ id: id  }))
   }
 
 

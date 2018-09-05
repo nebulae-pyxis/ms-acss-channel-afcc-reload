@@ -21,26 +21,14 @@ function getResponseFromBackEnd$(response) {
 
 
 module.exports = {
-
     //// QUERY ///////
-
     Query: {
-        getHelloWorldFromAcssChannelAfccReload(root, args, context) {
-            return broker
-                .forwardAndGetReply$(
-                    "HelloWorld",
-                    "gateway.graphql.query.getHelloWorldFromAcssChannelAfccReload",
-                    { root, args, jwt: context.encodedToken },
-                    2000
-                )
-                .mergeMap(response => getResponseFromBackEnd$(response))
-                .toPromise();
-        },
         AcssChannelAfccReloadGetConfiguration(root, args, context){
+            console.log("AcssChannelAfccReloadGetConfiguration", args);
             return broker
             .forwardAndGetReply$(
                 "AfccChannel",
-                "gateway.graphql.query.GetConfiguration",
+                "gateway.graphql.query.getConfiguration",
                 { root, args, jwt: context.encodedToken },
                 2000
             )
