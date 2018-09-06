@@ -6,6 +6,13 @@ const INTERNAL_SERVER_ERROR_CODE = 00001;
  * class to emcapsulute diferent errors.
  */
 class CustomError extends Error {
+  /**
+   * 
+   * @param {string} name Error name 
+   * @param {string} method Method where error was generated
+   * @param {string} code Error code
+   * @param {string} message Error message
+   */
     constructor(name, method, code = INTERNAL_SERVER_ERROR_CODE , message = '') {
       super(message); 
       this.code = code;
