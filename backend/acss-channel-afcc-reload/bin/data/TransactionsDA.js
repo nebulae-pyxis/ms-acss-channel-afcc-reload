@@ -62,6 +62,11 @@ class TransactionsDA {
         .toArray()
     );
   }
+
+  static insertTransactions$(documents){
+    const collection = mongoDB.db.collection(CollectionName);
+    return Rx.Observable.defer(() => collection.insertMany(documents));    
+  }
 }
 
 module.exports =  TransactionsDA 
