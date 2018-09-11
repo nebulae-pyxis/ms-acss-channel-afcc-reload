@@ -1,0 +1,70 @@
+<!-- <div class="page-layout blank p-24" fusePerfectScrollbar>
+  <div fxLayout="row" fxFlex="100"><span>{{ 'SETTINGS.TITLE' | translate }}</span></div>
+  <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
+    <p>1</p>
+    <p>2</p>
+  </div>
+</div> -->
+
+
+<div id="acss-actors-settings" class="page-layout simple fullwidth">
+
+  <!-- CONTENT -->
+  <div class="content p-24 w-100-p">
+
+    <!-- WIDGET GROUP -->
+    <div [formGroup]="settingsForm" class="widget-group" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start"
+      *fuseIfOnDom [@animateStagger]="{value:'50'}">
+
+      <span fxFlex="100" style="font-size: 16px" fxLayoutAlign="center center">{{'SETTINGS.TITLE' | translate }}</span>
+
+      <!-- FARECOLLECTOR -->
+      <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
+        <span fxLayoutAlign="center center"> {{'SETTINGS.FARE_COLLECTOR_TITTLE' | translate}} </span>
+        <button mat-icon-button>
+          <mat-icon>info</mat-icon>
+        </button>
+      </div>
+      <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
+        <div fxFlex="100" fxLayoutAlign="center center" formArrayName="farecollectors" *ngFor="let item of settingsForm.get('farecollectors').controls; let i = index;">
+          <div [formGroupName]="i">
+            <input formControlName="name" placeholder="Item name">
+            <input formControlName="description" placeholder="Item description">
+            <input formControlName="price" placeholder="Item price">
+          </div>
+        </div>
+      </div>
+
+      <!-- Chosen name: {{ orderForm.controls.items.controls[i].controls.name.value }} -->
+      <!-- FARECOLLECTOR -->
+      <!-- RELOADERS -->
+      <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
+        <span fxLayoutAlign="center center"> {{'SETTINGS.RELOADERS_TITTLE' | translate}} </span>
+        <button mat-icon-button>
+          <mat-icon>info</mat-icon>
+        </button>
+      </div>
+      <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
+        <div fxFlex="100" fxLayoutAlign="center center" formArrayName="reloaders" *ngFor="let item of settingsForm.get('reloaders').controls; let i = index;">
+          <div [formGroupName]="i">
+            <input formControlName="name" placeholder="Item name">
+            <input formControlName="description" placeholder="Item description">
+            <input formControlName="price" placeholder="Item price">
+          </div>
+        </div>
+        <button mat-icon-button>
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+      <!-- RELOADERS -->
+
+
+
+
+
+    </div>
+    <!-- / WIDGET GROUP -->
+  </div>
+  <!-- / CONTENT -->
+
+</div>

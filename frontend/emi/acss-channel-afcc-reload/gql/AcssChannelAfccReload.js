@@ -3,12 +3,29 @@ import gql from "graphql-tag";
 // We use the gql tag to parse our query string into a query document
 
 //Hello world sample, please remove
-export const getHelloWorld = gql`
-  query getHelloWorldFromAcssChannelAfccReload{
-    getHelloWorldFromAcssChannelAfccReload{
-      sn      
+export const getChannelSettings = gql`query getChannelSettings($id: BigInt!){
+  AcssChannelAfccReloadGetConfiguration(id: $id){
+    id,
+    editor,
+    lastEdition,
+    editor,
+    fareCollectors{
+      buId,
+      name
+      percentage
+    }
+    reloadNetworks{
+      buId
+      name
+      percentage
+    }
+    parties{
+      buId
+      name
+      percentage
     }
   }
+}
 `;
 
 

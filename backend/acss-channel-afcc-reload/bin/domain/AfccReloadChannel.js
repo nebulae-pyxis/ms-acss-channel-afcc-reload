@@ -58,7 +58,8 @@ class AfccReloadChannel{
   getConfiguration$({ args, jwt }, authToken) {
     console.log(args);
     return AfccReloadChannelDA.searchConfiguration$(args.id)
-    .mergeMap(payload => this.buildAndSendResponse$(payload));
+    .mergeMap(payload => this.buildAndSendResponse$(payload))
+    .do(r => console.log(JSON.stringify(r)));
   }
 
   getAfccReload$({ args, jwt }, authToken){
@@ -141,6 +142,9 @@ class AfccReloadChannel{
 
 }
 
+/**
+ * @returns { AfccReloadChannel } unique instance
+ */
 module.exports = () => {
   if (!instance) {
     instance = new AfccReloadChannel();

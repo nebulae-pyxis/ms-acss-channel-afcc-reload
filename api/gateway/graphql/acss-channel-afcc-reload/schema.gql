@@ -99,7 +99,7 @@ type AcssChannelAfccReloadActor{
   "Actor name"
   name: String
   "percentage belonging"
-  percentaje: Float
+  percentage: Float
 }
 
 input AcssChannelAfccReloadActorInput{
@@ -108,7 +108,7 @@ input AcssChannelAfccReloadActorInput{
   "Actor name"
   name: String
   "percentage belonging"
-  percentaje: Float
+  percentage: Float
 }
 
 "Object that represent the rules to create transactions from AFCC event"
@@ -118,7 +118,7 @@ type AcssChannelAfccReloadConfigurationObject{
   "List of Farecollector actors in this configuration"
   fareCollectors: [AcssChannelAfccReloadActor]
   "List of reloadNetwork Actors in this configuration"
-  reloadNetwork: [AcssChannelAfccReloadActor]
+  reloadNetworks: [AcssChannelAfccReloadActor]
   "List of parties actors in this configuration"
   parties: [AcssChannelAfccReloadActor]
   "Last edition for this configuation"

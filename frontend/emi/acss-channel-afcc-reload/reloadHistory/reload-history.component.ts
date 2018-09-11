@@ -1,17 +1,17 @@
-import { AcssChannelAfccReloadService } from './acss-channel-afcc-reload.service';
+import { AcssChannelAfccReloadService } from '../acss-channel-afcc-reload.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { fuseAnimations } from '../../../core/animations';
+import { fuseAnimations } from '../../../../core/animations';
 import { Subscription } from 'rxjs/Subscription';
 import * as Rx from 'rxjs/Rx';
 
 @Component({
   // tslint:disable-next-line:component-selector
-  selector: 'acss-channel-afcc-reload',
-  templateUrl: './acss-channel-afcc-reload.component.html',
-  styleUrls: ['./acss-channel-afcc-reload.component.scss'],
+  selector: 'afcc-reload-history',
+  templateUrl: './reload-history.component.html',
+  styleUrls: ['./reload-history.component.scss'],
   animations: fuseAnimations
 })
-export class AcssChannelAfccReloadComponent implements OnInit, OnDestroy {
+export class ReloadHistoryComponent implements OnInit, OnDestroy {
 
   helloWorld: String = 'Hello World static';
   helloWorldLabelQuery$: Rx.Observable<any>;

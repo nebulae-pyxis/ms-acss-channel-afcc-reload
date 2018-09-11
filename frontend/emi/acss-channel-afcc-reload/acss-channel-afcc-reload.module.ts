@@ -6,11 +6,22 @@ import { FuseWidgetModule } from '../../../core/components/widget/widget.module'
 
 import { AcssChannelAfccReloadService } from './acss-channel-afcc-reload.service';
 import { AcssChannelAfccReloadComponent } from './acss-channel-afcc-reload.component';
+import { ChannelSettingsComponent } from './channel-settings/channel-settings.component';
+import { ReloadHistoryComponent } from './reloadHistory/reload-history.component';
+
 
 const routes: Routes = [
   {
     path: '',
-    component: AcssChannelAfccReloadComponent,
+    redirectTo: 'settings'
+  },
+  {
+    path: 'settings',
+    component: ChannelSettingsComponent
+  },
+  {
+    path: 'history',
+    component: ReloadHistoryComponent
   }
 ];
 
@@ -21,7 +32,9 @@ const routes: Routes = [
     FuseWidgetModule
   ],
   declarations: [
-    AcssChannelAfccReloadComponent    
+    AcssChannelAfccReloadComponent,
+    ChannelSettingsComponent,
+    ReloadHistoryComponent
   ],
   providers: [ AcssChannelAfccReloadService, DatePipe]
 })

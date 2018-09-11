@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import * as Rx from 'rxjs';
 import { GatewayService } from '../../../api/gateway.service';
 import {
-  getHelloWorld,
+  getChannelSettings,
   AcssChannelAfccReloadHelloWorldSubscription
 } from './gql/AcssChannelAfccReload';
 
@@ -18,14 +18,17 @@ export class AcssChannelAfccReloadService {
   /**
    * Hello World sample, please remove
    */
-  getHelloWorld$() {
+  getChannelSettings$(id: number) {
     return this.gateway.apollo
       .watchQuery<any>({
-        query: getHelloWorld,
-        fetchPolicy: "network-only"
+        query: getChannelSettings,
+        fetchPolicy: 'network-only',
+        variables: {
+          id: id
+        }
       })
       .valueChanges.map(
-        resp => resp.data.getHelloWorldFromAcssChannelAfccReload.sn
+        resp => resp.data.AcssChannelAfccReloadGetConfiguration
       );
   }
 
