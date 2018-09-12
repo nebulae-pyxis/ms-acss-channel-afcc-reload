@@ -93,7 +93,6 @@ module.exports = {
         }
 
     },
-
     //// MUTATIONS ///////
     Mutation: {
         AcssChannelAfccReloadCreateConfiguration(root, args, context){

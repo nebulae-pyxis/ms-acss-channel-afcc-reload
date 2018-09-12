@@ -1,31 +1,26 @@
 import { AcssChannelAfccReloadService } from './acss-channel-afcc-reload.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '../../../core/animations';
-import { Subscription } from 'rxjs/Subscription';
-import * as Rx from 'rxjs/Rx';
+import { locale as english } from './i18n/en';
+import { locale as spanish } from './i18n/es';
+import { FuseTranslationLoaderService } from '../../../core/services/translation-loader.service';
 
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'acss-channel-afcc-reload',
   templateUrl: './acss-channel-afcc-reload.component.html',
   styleUrls: ['./acss-channel-afcc-reload.component.scss'],
+  encapsulation: ViewEncapsulation.None,
   animations: fuseAnimations
 })
 export class AcssChannelAfccReloadComponent implements OnInit, OnDestroy {
 
-  helloWorld: String = 'Hello World static';
-  helloWorldLabelQuery$: Rx.Observable<any>;
-  helloWorldLabelSubscription$: Rx.Observable<any>;
-
-  constructor(private acssChannelAfccReloadService: AcssChannelAfccReloadService  ) {
-
+  constructor( private translationLoader: FuseTranslationLoaderService ) {
+    this.translationLoader.loadTranslations(english, spanish);
   }
 
   ngOnInit() {
-    this.helloWorldLabelQuery$ = this.acssChannelAfccReloadService.getChannelSettings$(1);
-    this.helloWorldLabelSubscription$ = this.acssChannelAfccReloadService.getHelloWorldSubscription$();
   }
-
 
   ngOnDestroy() {
   }

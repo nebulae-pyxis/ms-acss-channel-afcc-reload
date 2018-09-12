@@ -81,5 +81,7 @@ class AfccReloadsDA {
 
   
 }
-
+/**
+ * @returns { AfccReloadsDA }
+ */
 module.exports =  AfccReloadsDA 

@@ -1,5 +1,30 @@
-<div class="page-layout blank p-24" fusePerfectScrollbar>
-  <h2> {{helloWorld}} </h2>
-  <!-- <h2>{{ helloWorldLabelQuery$ | async}}</h2> -->
-  <!-- <h2>{{ helloWorldLabelSubscription$ | async}}</h2> -->
+
+<div id="dashboard-project" class="page-layout simple right-sidenav" fxLayout="row">
+  <mat-sidenav-container>
+
+      <!-- CENTER -->
+      <div class="center" fusePerfectScrollbar>
+
+          <!-- CONTENT -->
+          <div class="content">
+
+              <mat-tab-group dynamicHeight>
+
+                  <mat-tab label="{{ 'SETTINGS_LBL' | translate }}">
+                      <acss-channel-settings></acss-channel-settings>
+                  </mat-tab>
+
+                  <mat-tab label=" {{'HISTORY_LBL' | translate}}">
+                      <afcc-reload-history></afcc-reload-history>
+                  </mat-tab>
+              </mat-tab-group>
+
+          </div>
+          <!-- / CONTENT -->
+
+      </div>
+      <!-- / CENTER -->
+
+  </mat-sidenav-container>
+
 </div>

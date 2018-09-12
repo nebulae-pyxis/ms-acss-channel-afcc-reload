@@ -1,7 +1,7 @@
 export const locale = {
   lang: 'es',
   data: {
-    SETTINGS_LBL: 'Configuraciones',
+    TITLE: 'Historial de recargas',
     HISTORY_LBL: 'Historial'
   }
 };

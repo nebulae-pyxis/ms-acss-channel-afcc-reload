@@ -58,7 +58,9 @@ class MongoDB {
     }
 
 }
-
+/**
+ * @returns { MongoDB } MongoDB instance
+ */
 module.exports = {
     MongoDB,
     singleton() {

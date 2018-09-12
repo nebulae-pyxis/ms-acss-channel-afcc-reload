@@ -29,8 +29,12 @@ class UserEventConsumer {
   }
 
   handleAfccReloaded$(evt) {
-    return AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE).mergeMap(
-      conf =>
+    console.log(evt);
+    return Rx.Observable.forkJoin(
+      AfccReloadsDA.insertOneEvent$(evt.data),
+      AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE)
+    )
+    .mergeMap(([evtSaved, conf]) =>
         Rx.Observable.concat(
           this.verifyBusinessRules$(conf),
           this.applyBusinessRules$(conf, evt)

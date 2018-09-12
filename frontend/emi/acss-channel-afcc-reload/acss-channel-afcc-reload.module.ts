@@ -13,15 +13,7 @@ import { ReloadHistoryComponent } from './reloadHistory/reload-history.component
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'settings'
-  },
-  {
-    path: 'settings',
-    component: ChannelSettingsComponent
-  },
-  {
-    path: 'history',
-    component: ReloadHistoryComponent
+    component: AcssChannelAfccReloadComponent
   }
 ];
 

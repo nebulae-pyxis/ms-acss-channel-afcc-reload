@@ -68,5 +68,7 @@ class TransactionsDA {
     return Rx.Observable.defer(() => collection.insertMany(documents));    
   }
 }
-
+/**
+ * @returns { TransactionsDA } TransactionsDA instance
+ */
 module.exports =  TransactionsDA 

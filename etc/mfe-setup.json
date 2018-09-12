@@ -13,14 +13,27 @@
               "priority": 1000
             }
           ],
-        "contents": [
+        "subgroups": [
             {
                 "groupId": "CHANNEL_PROCESSORS",
-                "id": "acss-channel-afcc-reload",
+                "id": "acss-channel-afcc-reload-subgroup",
                 "icon": "dashboard",
                 "translate": {
                     "en": "ACSS channel AFCC reload",
                     "es": "Canal ACSS para recargas AFCC"
+                },
+                "priority": 2000
+            }
+        ],
+        "contents": [
+            {
+                "groupId": "CHANNEL_PROCESSORS",
+                "subgroupId": "acss-channel-afcc-reload-subgroup",
+                "id": "acss-channel-afcc-reload",
+                "icon": "dashboard",
+                "translate": {
+                    "en": "ACSS channel",
+                    "es": "Canal ACSS"
                 },
                 "navURL": "/acss-channel-afcc-reload",
                 "path": "acss-channel-afcc-reload",
@@ -28,7 +41,7 @@
                 "priority": 1000,
                 "roles" : ["developer"],
                 "default" : false
-            }            
+            }    
         ],
         "preBuildCommands": [],
         "environmentVars": {
