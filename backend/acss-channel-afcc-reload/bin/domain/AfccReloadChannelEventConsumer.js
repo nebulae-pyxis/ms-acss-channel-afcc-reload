@@ -9,6 +9,7 @@ const TransactionsDA = require("../data/TransactionsDA");
 const { CustomError } = require("../tools/customError");
 const CHANNEL_ID = "ACSS_CHANNEL_AFCC_RELOAD";
 const CURRENT_RULE = 1;
+const DEFAULT_TRANSACTION_TYPE = "AFCC_RELOADED";
 
 /**
  * Singleton instance
@@ -135,21 +136,21 @@ class UserEventConsumer {
 
   createTransactionForFareCollector$(conf, evt) {
     return Rx.Observable.of({
-      fromBu: "unidadque paga", // missing to define
+      fromBu: evt.bu.id,
       toBu: conf.fareCollectors[0].buId,
       amount: (evt.amount / 100) * conf.fareCollectors[0].percentage,
       channel: {
         id: CHANNEL_ID,
-        v: "sofware version", // missing to define
+        v: process.env.npm_package_version,
         c: conf.lastEdition
       },
       timestamp: Date.now(),
-      type: "transactionType", // missing to define
+      type: DEFAULT_TRANSACTION_TYPE,
       evt: {
         // missing to define
-        id: evt.id, // missing to define
+        id: evt.id,     // missing to define
         type: evt.type, // missing to define
-        user: evt.user // missing to define
+        user: evt.user  // missing to define
       }
     });
   }
@@ -159,17 +160,17 @@ class UserEventConsumer {
       rn => rn.buId == evt.bu.id
     );
     return Rx.Observable.of({
-      fromBu: "unidadque paga", // missing to define
+      fromBu: evt.bu.id,
       toBu: evt.bu.id,
       amount:
         (evt.amount / 100) * conf.reloadNetworks[reloadNetworkIndex].percentage,
       channel: {
         id: CHANNEL_ID,
-        v: "sofware version", // missing to define
+        v: process.env.npm_package_version,
         c: conf.lastEdition
       },
       timestamp: Date.now(),
-      type: "transactionType", // missing to define
+      type: DEFAULT_TRANSACTION_TYPE,
       evt: {
         // missing to define
         id: evt.id, // missing to define
@@ -191,16 +192,16 @@ class UserEventConsumer {
     return Rx.Observable.from(conf.parties)
       .map(p => {
         return {
-          fromBu: "unidadque paga", // missing to define
+          fromBu: evt.bu.id,
           toBu: p.buId,
           amount: (surplusAmount / 100) * p.percentage,
           channel: {
             id: CHANNEL_ID,
-            v: "sofware version", // missing to define
+            v: process.env.npm_package_version,
             c: conf.lastEdition
           },
           timestamp: Date.now(),
-          type: "transactionType", // missing to define
+          type: DEFAULT_TRANSACTION_TYPE,
           evt: {
             // missing to define
             id: evt.id, // missing to define
