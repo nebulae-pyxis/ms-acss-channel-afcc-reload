@@ -3,7 +3,9 @@
 const Rx = require("rxjs");
 const AfccReloadChannelDA = require("../data/AfccReloadChannelDA");
 const TransactionDA = require("../data/TransactionsDA");
-const AfccReloadsDA = require("../data/AfccReloadsDA")
+const AfccReloadsDA = require("../data/AfccReloadsDA");
+const eventSourcing = require("../tools/EventSourcing")();
+const Event = require("@nebulae/event-store").Event;
 const broker = require("../tools/broker/BrokerFactory")();
 const MATERIALIZED_VIEW_TOPIC = "materialized-view-updates";
 const {
@@ -95,10 +97,29 @@ class AfccReloadChannel{
     .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
-  createConfiguration$({ args, jwt }, authToken){
-    console.log("createConfiguration$", args);
-    return AfccReloadChannelDA.insertConfiguration$(conf)
-    .mergeMap(payload => this.buildAndSendResponse$(payload));
+  createConfiguration$({ args, jwt }, authToken) {
+    console.log("createConfiguration$", args); 
+
+    return Rx.Observable.of({})
+      .mergeMap(() =>
+        eventSourcing.eventStore
+          .emitEvent$(
+            new Event({
+              eventType: "ACSSConfigurationCreated",
+              eventTypeVersion: 1,
+              aggregateType: "AfccChannel",
+              aggregateId: Date.now(),
+              data: args.input,
+              user: authToken.preferred_username
+            })
+          )
+      )
+      .mapTo({
+        code: 200,
+        message: "persistBasicInfoTag$"
+      })
+      .do(r => console.log("RESPUESTA ==>", r))
+      .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
 

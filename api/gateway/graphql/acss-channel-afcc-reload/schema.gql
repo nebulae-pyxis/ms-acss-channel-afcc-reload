@@ -134,13 +134,11 @@ input AcssChannelAfccReloadConfigurationInput{
   "List of Farecollector actors in this configuration"
   fareCollectors: [AcssChannelAfccReloadActorInput]
   "List of reloadNetwork Actors in this configuration"
-  reloadNetwork: [AcssChannelAfccReloadActorInput]
+  reloadNetworks: [AcssChannelAfccReloadActorInput]
   "List of parties actors in this configuration"
   parties: [AcssChannelAfccReloadActorInput]
   "Last edition for this configuation"
   lastEdition: BigInt
-  "user who Created this configuration"
-  editor: String
 }
 
 type AcssChannelAfccReloadCommandResponse{

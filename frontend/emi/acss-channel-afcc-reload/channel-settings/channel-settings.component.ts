@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs/Observable';
-import { AcssChannelAfccReloadService } from '../acss-channel-afcc-reload.service';
+import { AcssChannelAfccReloadService, AcssChannelSettings } from '../acss-channel-afcc-reload.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { fuseAnimations } from '../../../../core/animations';
 import { Subscription } from 'rxjs/Subscription';
@@ -9,7 +9,7 @@ import { FuseTranslationLoaderService } from '../../../../core/services/translat
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
 import { FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
-import { mergeMap, map, switchMap, filter, tap } from 'rxjs/operators';
+import { mergeMap, map } from 'rxjs/operators';
 
 
 @Component({
@@ -19,6 +19,7 @@ import { mergeMap, map, switchMap, filter, tap } from 'rxjs/operators';
   styleUrls: ['./channel-settings.component.scss'],
   animations: fuseAnimations
 })
+
 export class ChannelSettingsComponent implements OnInit, OnDestroy {
 
   allSubscription = [];
@@ -90,8 +91,23 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
   }
 
 
-  saveConfiguration(){
-    console.log('STATUS ==> ', this.settingsForm.errors );
+  saveConfiguration() {
+    const formValue = this.settingsForm.getRawValue();
+    Rx.Observable.of({
+      id: 1,
+      fareCollectors: [...formValue.fareCollectors.map(e => ({ buId: e.businessUnitId, percentage: e.percentage }))],
+      reloadNetworks: [...formValue.reloaders.map(e => ({ buId: e.businessUnitId, percentage: e.percentage }))],
+      parties: [...formValue.parties.map(e => ({ buId: e.businessUnitId, percentage: e.percentage }))],
+      lastEdition: Date.now()
+    })
+      .pipe(
+        mergeMap((settings: AcssChannelSettings) => this.acssChannelAfccReloadService.saveChannelSettings(settings))
+      )
+      .subscribe(
+        ok => { console.log(ok); },
+        error => { console.log('', error); },
+        () => { console.log('Stream finished!!'); }
+      );
   }
 
   deleteControl(formType: string, index: number){
@@ -103,20 +119,26 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     return Rx.Observable.forkJoin(
       Rx.Observable.from(conf.fareCollectors)
       .pipe(
-        map((farecollector: { buId: string, name: string, percentage: number }) => {
-          (this.settingsForm.get('fareCollectors') as FormArray).push(this.createItem('fareCollectors', farecollector.buId, farecollector.name, farecollector.percentage ));
+        map((actor: { buId: string, name: string, percentage: number }) => {
+          (this.settingsForm.get('fareCollectors') as FormArray).push(
+            this.createItem('fareCollectors', actor.buId, actor.name ? actor.name : '' , actor.percentage )
+            );
         })
       ),
       Rx.Observable.from(conf.reloadNetworks)
       .pipe(
-        map((farecollector: { buId: string, name: string, percentage: number }) => {
-          (this.settingsForm.get('reloaders') as FormArray).push(this.createItem('reloaders', farecollector.buId, farecollector.name, farecollector.percentage ));
+        map((actor: { buId: string, name: string, percentage: number }) => {
+          (this.settingsForm.get('reloaders') as FormArray).push(
+            this.createItem('reloaders', actor.buId, actor.name ? actor.name : '', actor.percentage)
+            );
         })
       ),
       Rx.Observable.from(conf.parties)
       .pipe(
-        map((farecollector: { buId: string, name: string, percentage: number }) => {
-          (this.settingsForm.get('parties') as FormArray).push(this.createItem('parties', farecollector.buId, farecollector.name, farecollector.percentage ));
+        map((actor: { buId: string, name: string, percentage: number }) => {
+          (this.settingsForm.get('parties') as FormArray).push(
+            this.createItem('parties', actor.buId, actor.name ? actor.name : '', actor.percentage)
+            );
         })
       )
     );

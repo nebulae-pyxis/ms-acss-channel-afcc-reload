@@ -21,6 +21,13 @@ class UserEventConsumer {
 
   handleHelloWorld$() {}
 
+  handleAcssSettingsCreated$(evt){
+    console.log('handleAcssSettingsCreated$', evt);
+    return AfccReloadChannelDA.removeConfigurationValidity()
+    .mapTo({...evt.data, editor: evt.user })
+    .mergeMap(conf => AfccReloadChannelDA.insertConfiguration$(conf))
+  }
+
   handleAfccReloaded$(evt) {
     return AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE).mergeMap(
       conf =>
@@ -236,7 +243,9 @@ class UserEventConsumer {
    
   }
 }
-
+/**
+ * @returns { UserEventConsumer } unique instance
+ */
 module.exports = () => {
   if (!instance) {
     instance = new UserEventConsumer();

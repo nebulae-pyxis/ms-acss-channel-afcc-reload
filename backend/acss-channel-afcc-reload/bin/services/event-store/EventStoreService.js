@@ -63,7 +63,7 @@ class EventStoreService {
     const subscription =
       //MANDATORY:  AVOIDS ACK REGISTRY DUPLICATIONS
       eventSourcing.eventStore.ensureAcknowledgeRegistry$(aggregateType)
-        .mergeMap(() => eventSourcing.eventStore.getEventListener$(aggregateType, mbeKey))
+        .mergeMap(() => eventSourcing.eventStore.getEventListener$(aggregateType, mbeKey, false))
         .filter(evt => evt.et === eventType)
         .mergeMap(evt => Rx.Observable.concat(
           handler.fn.call(handler.obj, evt),
@@ -122,6 +122,10 @@ class EventStoreService {
         fn: afccReloadChannelEventConsumer.handleHelloWorld$,
         obj: afccReloadChannelEventConsumer
       },
+      ACSSConfigurationCreated:{
+        fn: afccReloadChannelEventConsumer.handleAcssSettingsCreated$,
+        obj: afccReloadChannelEventConsumer
+      }
 
     };
   }
@@ -137,7 +141,10 @@ class EventStoreService {
         aggregateType: "HelloWorld",
         eventType: "HelloWorldEvent"
       },
-
+      {
+        aggregateType: "AfccChannel",
+        eventType: "ACSSConfigurationCreated"
+      }
     ]
   }
 }

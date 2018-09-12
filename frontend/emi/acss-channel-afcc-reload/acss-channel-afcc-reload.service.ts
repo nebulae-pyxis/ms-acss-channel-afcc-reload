@@ -4,8 +4,17 @@ import * as Rx from 'rxjs';
 import { GatewayService } from '../../../api/gateway.service';
 import {
   getChannelSettings,
-  AcssChannelAfccReloadHelloWorldSubscription
+  AcssChannelAfccReloadHelloWorldSubscription,
+  createAcssChannelSettings
 } from './gql/AcssChannelAfccReload';
+
+export interface AcssChannelSettings{
+  id: number;
+  fareCollectors: {buId: string, name: string, percentage: number}[];
+  reloadNetworks: {buId: string, name: string, percentage: number}[];
+  parties: {buId: string, name: string, percentage: number}[];
+  lastEdition: number;
+}
 
 @Injectable()
 export class AcssChannelAfccReloadService {
@@ -30,6 +39,17 @@ export class AcssChannelAfccReloadService {
       .valueChanges.map(
         resp => resp.data.AcssChannelAfccReloadGetConfiguration
       );
+  }
+
+  saveChannelSettings(settings: AcssChannelSettings ){
+    return this.gateway.apollo
+    .mutate<any>({
+      mutation: createAcssChannelSettings,
+      variables: {
+        input: settings
+      },
+      errorPolicy: 'all'
+    });
   }
 
   /**

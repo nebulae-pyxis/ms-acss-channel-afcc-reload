@@ -28,6 +28,15 @@ export const getChannelSettings = gql`query getChannelSettings($id: BigInt!){
 }
 `;
 
+export const createAcssChannelSettings = gql`
+  mutation saveSettings($input: AcssChannelAfccReloadConfigurationInput!) {
+    AcssChannelAfccReloadCreateConfiguration(input: $input) {
+      code
+      message
+    }
+  }
+`;
+
 
 //Hello world sample, please remove
 export const AcssChannelAfccReloadHelloWorldSubscription = gql`

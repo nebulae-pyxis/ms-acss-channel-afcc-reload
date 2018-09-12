@@ -13,7 +13,7 @@ export const locale = {
       PERCENTAGE_BELONG: 'Porcentaje'
     },
     ERRORS: {
-      PERCENTAGE_EXECEEDED: 'Este porcentaje no es valido porque el FARE COLLECTOR sumado con este porcentaje excede el 100%',
+      PERCENTAGE_EXECEEDED: 'Este porcentaje sumado con el del recaudador no pueden superar el 100',
       PERCENTAGE_EXECEEDED_PARTIES: 'La suma de los porcentajes no puede superar el 100%',
       PERCENTAGE_NOT_EXECEEDED_PARTIES: 'La suma de los porcentajes no puede ser inferior a  el 100%'
     }

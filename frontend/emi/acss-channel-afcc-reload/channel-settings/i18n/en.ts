@@ -13,7 +13,7 @@ export const locale = {
       PERCENTAGE_BELONG: 'Percentage'
     },
     ERRORS: {
-      PERCENTAGE_EXECEEDED: 'This percentage does not match with the farecollector because the percentage is execeeded',
+      PERCENTAGE_EXECEEDED: 'The sum of this percentage with the percentage of the collector can not exceed 100',
       PERCENTAGE_EXECEEDED_PARTIES: 'The sum of the percentages can not exceed 100%',
       PERCENTAGE_NOT_EXECEEDED_PARTIES: 'The sum of the percentages can not be less than 100%'
     }
