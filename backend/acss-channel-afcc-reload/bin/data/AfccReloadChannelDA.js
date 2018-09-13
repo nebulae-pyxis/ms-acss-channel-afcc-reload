@@ -33,20 +33,25 @@ class AfccReloadChannelDA {
     });
   }
 
-  static insertConfiguration$(doc) {
-    console.log("insertConfiguration$", doc);
+  static insertConfiguration$(conf) {
+    // console.log("insertConfiguration$", doc);
     const collection = mongoDB.db.collection(CollectionName);
-    return Rx.Observable.defer(() => collection.findOneAndUpdate(
-      { id:1 },
-      { $set: doc }
-      )
+
+    return Rx.Observable.forkJoin(
+      Rx.Observable.defer(() => collection.findOneAndUpdate(
+        { id: 1 },
+        { $set: conf },
+        { upsert: true }
+      )),
+      Rx.Observable.of(conf)
+        .map((doc) => {
+          doc.id = doc.lastEdition;
+          return doc;
+        })
+        .do(doc => console.log("###############", doc, "######################"))
+        .mergeMap((doc) => Rx.Observable.defer(() => collection.insertOne(doc))
+        )
     )
-    .map(() => {
-      doc.id = doc.lastEdition;
-      return doc;
-    })
-    .mergeMap(() => Rx.Observable.defer(() => collection.insertOne( doc ) )
-    );
   }
 
   static searchConfiguration$(id) {
