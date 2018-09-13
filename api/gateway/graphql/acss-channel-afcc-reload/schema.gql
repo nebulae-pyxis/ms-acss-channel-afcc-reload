@@ -53,6 +53,8 @@ type AcssChannelAfccReloadEvent {
   afcc: AcssChannelAfccReloadEventAfcc
   "Event source"
   source: AcssChannelAfccReloadSource
+  "Transactions"
+  transactions: [AcssChannelAfccReloadTransaction]
 
 }
 
@@ -150,7 +152,7 @@ type AcssChannelAfccReloadCommandResponse{
 
 type Query {
   AcssChannelAfccReloadGetConfiguration(id: BigInt!): AcssChannelAfccReloadConfigurationObject
-  AcssChannelAfccReloadGetAfccReloads(page: Int!, count: Int!, lowerLimit: BigInt, sortColumn: String, sortOrder: String): [AcssChannelAfccReloadEvent]
+  AcssChannelAfccReloadGetAfccReloads(page: Int!, count: Int!, searchFilter: String): [AcssChannelAfccReloadEvent]
   AcssChannelAfccReloadGetAfccReload(id: ID!): AcssChannelAfccReloadEvent
   # AcssChannelAfccReloadGetAfccReloadDetails: AcssChannelAfccReloadEventDetail
   AcssChannelAfccReloadGetTransactionsFromAfccEvt(evtId: ID!): [AcssChannelAfccReloadTransaction]

@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import * as Rx from 'rxjs';
 import { GatewayService } from '../../../api/gateway.service';
 import {
   getChannelSettings,
-  AcssChannelAfccReloadHelloWorldSubscription,
-  createAcssChannelSettings
+  createAcssChannelSettings,
+  getReloads
 } from './gql/AcssChannelAfccReload';
 
 export interface AcssChannelSettings{
@@ -52,15 +51,26 @@ export class AcssChannelAfccReloadService {
     });
   }
 
-  /**
-  * Hello World subscription sample, please remove
-  */
- getHelloWorldSubscription$(): Observable<any> {
+ /**
+ * Gets the reloads filtered by page, count and a search filter.
+ * @param pageValue Page number of the user table that you want to recover.
+ * @param countValue Max amount of user that will be return
+ * @param searchFilter Search filter (Username, name, email)
+ */
+getReloads$(pageValue, countValue, searchFilter){
   return this.gateway.apollo
-    .subscribe({
-      query: AcssChannelAfccReloadHelloWorldSubscription
-    })
-    .map(resp => resp.data.AcssChannelAfccReloadHelloWorldSubscription.sn);
+  .query<any>({
+    query: getReloads,
+    variables: {
+      page: pageValue,
+      count: countValue,
+      searchFilter: searchFilter
+    },
+    fetchPolicy: 'network-only',
+    errorPolicy: 'all'
+  });
 }
+
+
 
 }

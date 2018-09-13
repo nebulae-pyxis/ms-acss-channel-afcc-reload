@@ -29,17 +29,14 @@ class UserEventConsumer {
   }
 
   handleAfccReloaded$(evt) {
-    console.log(evt);
-    return Rx.Observable.forkJoin(
-      AfccReloadsDA.insertOneEvent$(evt.data),
-      AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE)
-    )
-    .mergeMap(([evtSaved, conf]) =>
-        Rx.Observable.concat(
-          this.verifyBusinessRules$(conf),
-          this.applyBusinessRules$(conf, evt)
-        )
-    );
+    console.log("handleAfccReloaded$", evt);
+    return AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE)
+    .mergeMap((conf) => this.applyBusinessRules$(conf, evt.data))
+    .map( arrayTransactions => ({ ...evt.data, transactions: arrayTransactions }))
+    .mergeMap(reload => Rx.Observable.forkJoin(
+      AfccReloadsDA.insertOneReload$(reload),
+      TransactionsDA.insertTransactions$(reload.transactions)
+    ));
   }
 
   /**
@@ -132,17 +129,6 @@ class UserEventConsumer {
           ...partiesTransactions
         ]
       )
-      .mergeMap(transactionArray =>
-        this.validateFinalTransactions$(
-          transactionArray,
-          configuration,
-          afccEvent
-        )
-      )
-      .mergeMap(transactionArray =>
-        TransactionsDA.insertTransactions$(transactionArray)
-      )
-      .map(result => result.insertedIds);
   }
 
   createTransactionForFareCollector$(conf, evt) {

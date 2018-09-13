@@ -1,0 +1,72 @@
+<div id="acss-actors-settings" class="page-layout simple fullwidth">
+
+  <!-- CONTENT -->
+  <div class="content p-24 w-100-p">
+
+    <!-- WIDGET GROUP -->
+    <div class="widget-group" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start"
+      *fuseIfOnDom [@animateStagger]="{value:'50'}">
+
+      <span fxFlex="100" style="font-size: 16px" fxLayoutAlign="center center">{{'TITLE' | translate }}</span>
+
+        <!-- CONTENT CARD -->
+    <div fxFlex="100" class="content-card mat-white-bg">
+
+        <div fxLayout="column" style="width: 100%; justify-content: space-between" fxLayout.gt-sm="row">
+          <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+            <mat-table id="user-table" class="reloads-table" #table [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}"
+              fusePerfectScrollbar>
+
+              <!-- Business unit ID Column -->
+              <ng-container cdkColumnDef="buID">
+                <mat-header-cell mat-sort-header="buID" *cdkHeaderCellDef>{{'TABLE_HEADER.BU_ID' | translate}}</mat-header-cell>
+                <mat-cell *cdkCellDef="let reload">
+                  <p class="text-truncate">{{reload.buId}}</p>
+                </mat-cell>
+              </ng-container>
+
+              <!-- Business unit name Column -->
+              <ng-container cdkColumnDef="buName">
+                <mat-header-cell mat-sort-header="buName" *cdkHeaderCellDef>{{'TABLE_HEADER.BU_NAME' | translate}}</mat-header-cell>
+                <mat-cell *cdkCellDef="let reload">
+                  <p class="text-truncate">{{reload.buName}}</p>
+                </mat-cell>
+              </ng-container>
+
+              <!-- Business unit name Column -->
+              <ng-container cdkColumnDef="machine">
+                <mat-header-cell mat-sort-header="machine" *cdkHeaderCellDef>{{'TABLE_HEADER.MACHINE' | translate}}</mat-header-cell>
+                <mat-cell *cdkCellDef="let reload">
+                  <p class="text-truncate">{{reload.machine}}</p>
+                </mat-cell>
+              </ng-container>
+
+              <!-- Business unit name Column -->
+              <ng-container cdkColumnDef="amount">
+                <mat-header-cell mat-sort-header="amount" *cdkHeaderCellDef>{{'TABLE_HEADER.AMOUNT' | translate}}</mat-header-cell>
+                <mat-cell *cdkCellDef="let reload">
+                  <p class="text-truncate">{{reload.amount}}</p>
+                </mat-cell>
+              </ng-container>
+
+              <mat-header-row *cdkHeaderRowDef="displayedColumns"></mat-header-row>
+
+              <mat-row *cdkRowDef="let reload; columns: displayedColumns;" class="mat-row" matRipple [routerLink]="['reload.machine']">
+              </mat-row>
+
+            </mat-table>
+
+            <mat-paginator #paginator [length]="1000" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" >
+            </mat-paginator>
+          </div>
+        </div>
+      </div>
+      <!-- / CONTENT CARD -->
+
+
+    </div>
+    <!-- / WIDGET GROUP -->
+  </div>
+  <!-- / CONTENT -->
+
+</div>

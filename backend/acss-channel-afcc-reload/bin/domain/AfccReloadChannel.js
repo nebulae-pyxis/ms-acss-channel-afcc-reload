@@ -65,13 +65,13 @@ class AfccReloadChannel{
   }
 
   getAfccReload$({ args, jwt }, authToken){
-    console.log("getAfccReload$", args);
+    console.log("getAfccReload$", args, "$$$$$$$$$$$$$$$$$");
     return AfccReloadsDA.searchEvent$(args.id)
     .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
   getAfccReloads$({ args, jwt }, authToken){
-    console.log("getAfccReloads$", args);
+    console.log("getAfccReloads$", args, "$$$$$$$$$$$$$$$$$$$$");
     return AfccReloadsDA.searchReloads$(args)
     .mergeMap(payload => this.buildAndSendResponse$(payload));
   }

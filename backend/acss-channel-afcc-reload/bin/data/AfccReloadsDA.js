@@ -23,7 +23,7 @@ class AfccReloadsDA {
   }
 
 
-  static insertOneEvent$(document){
+  static insertOneReload$(document){
     const collection = mongoDB.db.collection(CollectionName);
     return Rx.Observable.defer(() => collection.insertOne(document));
   }
@@ -50,7 +50,7 @@ class AfccReloadsDA {
 
    
   static searchReloads$({page, count, lowerLimit, filter, sortColumn, order}) {
-    let filterObject = {'timestamp' : {$gt: lowerLimit } };
+    let filterObject = {}; // {'timestamp' : {$gt: lowerLimit } };
     const orderObject = {};
     if (filter && filter != "") {
      const filterWithRegex = {
@@ -62,7 +62,7 @@ class AfccReloadsDA {
       filterObject = Object.assign(filterObject, filterWithRegex);
 
     }
-    console.log(filterObject);
+    console.log("filterObject", filterObject);
     
     if (sortColumn && order) {
       let column = sortColumn;      

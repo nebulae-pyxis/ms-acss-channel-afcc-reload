@@ -7,7 +7,8 @@ import { FuseWidgetModule } from '../../../core/components/widget/widget.module'
 import { AcssChannelAfccReloadService } from './acss-channel-afcc-reload.service';
 import { AcssChannelAfccReloadComponent } from './acss-channel-afcc-reload.component';
 import { ChannelSettingsComponent } from './channel-settings/channel-settings.component';
-import { ReloadHistoryComponent } from './reloadHistory/reload-history.component';
+import { ReloadHistoryComponent } from './reload-history/reload-history.component';
+import { ReloadDetailComponent } from './reload-detail/reload-detail.component';
 
 
 const routes: Routes = [
@@ -26,7 +27,8 @@ const routes: Routes = [
   declarations: [
     AcssChannelAfccReloadComponent,
     ChannelSettingsComponent,
-    ReloadHistoryComponent
+    ReloadHistoryComponent,
+    ReloadDetailComponent
   ],
   providers: [ AcssChannelAfccReloadService, DatePipe]
 })

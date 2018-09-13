@@ -37,11 +37,43 @@ export const createAcssChannelSettings = gql`
   }
 `;
 
-
-//Hello world sample, please remove
-export const AcssChannelAfccReloadHelloWorldSubscription = gql`
-  subscription{
-    AcssChannelAfccReloadHelloWorldSubscription{
-      sn
+export const getReloads = gql`
+query getReloads($page: Int!, $count: Int!, $searchFilter: String){
+  AcssChannelAfccReloadGetAfccReloads(page: $page, count: $count, searchFilter: $searchFilter){
+    id
+    amount
+    bu{
+      id
+      name
+    }
+    afcc{
+      before
+      after
+      UId
+      cardId
+      balanceBefore
+      balanceAfter
+    }
+    source{
+      machine
+      ip
+    }
+    transactions{
+      timestamp
+      fromBuId
+      toBuId
+      channel{
+        id
+        sv
+        conf
+      }
+      type
+      evt{
+        id
+        type
+        user
+      }
+    }
   }
-}`;
+}
+`;
