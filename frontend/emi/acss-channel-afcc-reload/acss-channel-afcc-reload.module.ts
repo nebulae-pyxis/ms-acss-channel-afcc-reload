@@ -15,6 +15,10 @@ const routes: Routes = [
   {
     path: '',
     component: AcssChannelAfccReloadComponent
+  },
+  {
+    path: 'reload-details/:id',
+    component: ReloadDetailComponent
   }
 ];
 

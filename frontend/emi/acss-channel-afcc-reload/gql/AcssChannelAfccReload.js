@@ -77,3 +77,8 @@ query getReloads($page: Int!, $count: Int!, $searchFilter: String){
   }
 }
 `;
+
+export const fetchTotalReloadsCount= gql`
+query fetchTotalReloadsCount {
+  AcssChannelAfccReloadGetReloadsCount
+}`;

@@ -49,27 +49,24 @@ class AfccReloadsDA {
    */
 
    
-  static searchReloads$({page, count, lowerLimit, filter, sortColumn, order}) {
-    let filterObject = {}; // {'timestamp' : {$gt: lowerLimit } };
+  static searchReloads$({page, count, searchFilter, sortColumn, order}) {
+    let filterObject = {};
     const orderObject = {};
-    if (filter && filter != "") {
-     const filterWithRegex = {
+    if (searchFilter && searchFilter != "") {
+      filterObject = {
         $or: [
-          { 'bu.name': { $regex: `${filter}.*`, $options: "i" } },
-          { 'source.machine': { $regex: `${filter}.*`, $options: "i" } }
+          { 'bu.name': { $regex: `${searchFilter}.*`, $options: "i" } },
+          { 'source.machine': { $regex: `${searchFilter}.*`, $options: "i" } }
         ]
       };
-      filterObject = Object.assign(filterObject, filterWithRegex);
-
     }
-    console.log("filterObject", filterObject);
-    
+
     if (sortColumn && order) {
-      let column = sortColumn;      
+      let column = sortColumn;
       orderObject[column] = order == 'asc' ? 1 : -1;
     }
     const collection = mongoDB.db.collection(CollectionName);
-    return Rx.Observable.defer(()=>
+    return Rx.Observable.defer(() =>
       collection
         .find(filterObject)
         .sort(orderObject)

@@ -2,17 +2,28 @@
 
   <!-- CONTENT -->
   <div class="content p-24 w-100-p">
+      <!-- <input #filteInputA id="search" matInput placeholder="{{'USER.SEARCH' | translate}}"> -->
 
     <!-- WIDGET GROUP -->
-    <div class="widget-group" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start"
-      *fuseIfOnDom [@animateStagger]="{value:'50'}">
+    <div class="widget-group" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start" >
 
       <span fxFlex="100" style="font-size: 16px" fxLayoutAlign="center center">{{'TITLE' | translate }}</span>
 
-        <!-- CONTENT CARD -->
-    <div fxFlex="100" class="content-card mat-white-bg">
+      <!-- SEARCH -->
+      <div fxFlex="100">
+        <label for="search" class="mr-8">
+          <mat-icon class="secondary-text">search</mat-icon>
+        </label>
+        <mat-form-field floatPlaceholder="never" fxFlex="1 0 auto">
+          <input #filteInput id="search" matInput placeholder="{{'USER.SEARCH' | translate}}">
+        </mat-form-field>
+      </div>
+      <!-- / SEARCH -->
 
-        <div fxLayout="column" style="width: 100%; justify-content: space-between" fxLayout.gt-sm="row">
+
+      <!-- CONTENT CARD -->
+      <div fxFlex="100" class="content-card mat-white-bg">
+        <div fxFlex="100" fxLayout="column" style="width: 100%; justify-content: space-between" fxLayout.gt-sm="row">
           <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
             <mat-table id="user-table" class="reloads-table" #table [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}"
               fusePerfectScrollbar>
@@ -31,7 +42,7 @@
                 <mat-cell *cdkCellDef="let reload">
                   <p class="text-truncate">{{reload.buName}}</p>
                 </mat-cell>
-              </ng-container>
+              </ng-container>|
 
               <!-- Business unit name Column -->
               <ng-container cdkColumnDef="machine">
@@ -51,12 +62,15 @@
 
               <mat-header-row *cdkHeaderRowDef="displayedColumns"></mat-header-row>
 
-              <mat-row *cdkRowDef="let reload; columns: displayedColumns;" class="mat-row" matRipple [routerLink]="['reload.machine']">
+              <mat-row *cdkRowDef="let reload; columns: displayedColumns;" class="mat-row" matRipple [routerLink]="[ 'reload-details', reload.amount ]">
               </mat-row>
-
             </mat-table>
 
-            <mat-paginator #paginator [length]="1000" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" >
+            <mat-paginator #paginator
+            [length]="tableSize"
+            [pageIndex]="0"
+            [pageSize]="10"
+            [pageSizeOptions]="[5, 10, 25, 100]">
             </mat-paginator>
           </div>
         </div>

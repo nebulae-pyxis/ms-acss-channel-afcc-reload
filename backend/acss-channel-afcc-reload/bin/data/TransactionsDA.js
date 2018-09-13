@@ -3,7 +3,7 @@
 let mongoDB = undefined;
 //const mongoDB = require('./MongoDB')();
 const Rx = require('rxjs');
-const CollectionName = "transactions";
+const CollectionName = "Transactions";
 const { CustomError } = require('../tools/customError');
 
 

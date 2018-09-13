@@ -4,7 +4,8 @@ import { GatewayService } from '../../../api/gateway.service';
 import {
   getChannelSettings,
   createAcssChannelSettings,
-  getReloads
+  getReloads,
+  fetchTotalReloadsCount
 } from './gql/AcssChannelAfccReload';
 
 export interface AcssChannelSettings{
@@ -66,6 +67,15 @@ getReloads$(pageValue, countValue, searchFilter){
       count: countValue,
       searchFilter: searchFilter
     },
+    fetchPolicy: 'network-only',
+    errorPolicy: 'all'
+  });
+}
+
+fetchTotalReloadsCount$(){
+  return this.gateway.apollo
+  .query<any>({
+    query: fetchTotalReloadsCount,
     fetchPolicy: 'network-only',
     errorPolicy: 'all'
   });

@@ -31,13 +31,13 @@ class EventStoreService {
     Rx.Observable.interval(5000)
       .mergeMap(() => {
         const buNames = [
-          // { name: "Nebula", id: "Actor's business unit Id" },
-          // { name: "Pyxis", id: "BUID_00012RFT" },
-          { name: "TPM", id: "BUID_12RFT" }
+          { name: "Nebula", id: "Nebula" },
+          { name: "Metro_123", id: "Metro_123" },
+          { name: "Gana_med", id: "Gana_med" }
         ];
         return Rx.Observable.of({
           id: Math.random().toString(),
-          amount: 1000,
+          amount: Math.floor(Math.random() * 20) * 1000,
           timestamp: 1536180161541,
           bu: buNames[Math.floor(Math.random() * buNames.length)],
           afcc: {
@@ -65,11 +65,11 @@ class EventStoreService {
         })
       })
       .mergeMap(evt => afccReloadChannelEventConsumer.handleAfccReloaded$(evt))
-      // .subscribe(
-      //   ok => console.log(ok),
-      //   error => console.log(error),
-      //   () => console.log("Finished")
-      // );
+      .subscribe(
+        ok => {  },
+        error => console.log(error),
+        () => console.log("Finished")
+      );
     
 
     //default error handler

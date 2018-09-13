@@ -155,6 +155,9 @@ class UserEventConsumer {
     const reloadNetworkIndex = conf.reloadNetworks.findIndex(
       rn => rn.buId == evt.bu.id
     );
+    if ( reloadNetworkIndex == -1 ){
+      // return Rx.Observable.throw();
+    }
     return Rx.Observable.of({
       fromBu: evt.bu.id,
       toBu: evt.bu.id,

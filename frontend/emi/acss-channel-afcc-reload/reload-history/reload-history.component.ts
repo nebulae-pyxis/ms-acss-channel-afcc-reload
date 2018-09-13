@@ -1,15 +1,15 @@
 import { AcssChannelAfccReloadService } from '../acss-channel-afcc-reload.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { fuseAnimations } from '../../../../core/animations';
 import { Subscription } from 'rxjs/Subscription';
 // tslint:disable-next-line:import-blacklist
 import * as Rx from 'rxjs/Rx';
-import { MatTableDataSource, MatSnackBar } from '@angular/material';
+import { MatTableDataSource, MatSnackBar, MatPaginator, MatSort } from '@angular/material';
 import { FuseTranslationLoaderService } from '../../../../core/services/translation-loader.service';
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
-import { mergeMap, tap, filter, map } from 'rxjs/operators';
-import { from, pipe } from 'rxjs';
+import { mergeMap, tap, filter, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { from, pipe, fromEvent } from 'rxjs';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -19,13 +19,23 @@ import { from, pipe } from 'rxjs';
   animations: fuseAnimations
 })
 export class ReloadHistoryComponent implements OnInit, OnDestroy {
+  // Rxjs subscriptions
+  subscriptions = [];
 
   dataSource = new MatTableDataSource();
   displayedColumns = ['buID', 'buName', 'machine', 'amount'];
 
+  // Table values
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('filteInput') filter: ElementRef;
+  @ViewChild(MatSort) sort: MatSort;
+  tableSize: number;
   page = 0;
   count = 10;
   searchFilter = '';
+  sortColumn = null;
+  sortOrder = null;
+  itemPerPage = '';
 
   constructor(
     private acssChannelAfccReloadService: AcssChannelAfccReloadService,
@@ -43,6 +53,67 @@ export class ReloadHistoryComponent implements OnInit, OnDestroy {
       this.searchFilter
     );
 
+    /**
+     * query to query the total tag count
+     */
+    this.subscriptions.push(
+      this.acssChannelAfccReloadService.fetchTotalReloadsCount$()
+      .pipe(
+        mergeMap(resp => this.graphQlErrorHandler$(resp)),
+        filter((resp: any) => !resp.errors || resp.errors.length === 0),
+        map(response => response.data.AcssChannelAfccReloadGetReloadsCount)
+      )
+      .subscribe(
+        result => {
+          console.log('fetchTotalReloadsCount', result);
+          this.tableSize = result;
+         },
+         error =>  console.log(error),
+         () => console.log('fetchTotalReloadsCount COMPLETED')
+
+      )
+    );
+
+
+    // Creates an observable for the filter in the table
+    this.subscriptions.push(
+      fromEvent(this.filter.nativeElement, 'keyup')
+        .pipe(
+          debounceTime(200),
+          distinctUntilChanged()
+        )
+        .subscribe(() => {
+          if (this.filter.nativeElement) {
+            const filterValue = this.filter.nativeElement.value.trim();
+            this.searchFilter = filterValue;
+            this.refreshDataTable(
+              this.page,
+              this.count,
+              this.searchFilter
+            );
+          }
+        }));
+
+    // Creates an observable for listen the events when the paginator of the table is modified
+    this.subscriptions.push(
+      this.paginator.page.subscribe(pageChanged => {
+        this.page = pageChanged.pageIndex;
+        this.count = pageChanged.pageSize;
+        console.log(
+          pageChanged.pageIndex,
+          pageChanged.pageSize,
+          this.searchFilter
+        );
+        this.refreshDataTable(
+          pageChanged.pageIndex,
+          pageChanged.pageSize,
+          this.searchFilter
+        );
+      })
+    );
+
+
+
   }
 
   ngOnDestroy() {
@@ -58,7 +129,7 @@ export class ReloadHistoryComponent implements OnInit, OnDestroy {
   refreshDataTable(page, count, searchFilter) {
     this.acssChannelAfccReloadService.getReloads$(page, count, searchFilter)
     .pipe(
-      mergeMap(resp => this.graphQlAlarmsErrorHandler$(resp)),
+      mergeMap(resp => this.graphQlErrorHandler$(resp)),
       filter((resp: any) => !resp.errors || resp.errors.length === 0),
       map(response => response.data.AcssChannelAfccReloadGetAfccReloads)
     )
@@ -75,7 +146,7 @@ export class ReloadHistoryComponent implements OnInit, OnDestroy {
    * Handles the Graphql errors and show a message to the user
    * @param response
    */
-  graphQlAlarmsErrorHandler$(response){
+  graphQlErrorHandler$(response){
     return Rx.Observable.of(JSON.parse(JSON.stringify(response)))
     .pipe(
       tap((resp: any) => {
@@ -91,7 +162,6 @@ export class ReloadHistoryComponent implements OnInit, OnDestroy {
    */
   showSnackBarError(response){
     if (response.errors){
-
       if (Array.isArray(response.errors)) {
         response.errors.forEach(error => {
           if (Array.isArray(error)) {
