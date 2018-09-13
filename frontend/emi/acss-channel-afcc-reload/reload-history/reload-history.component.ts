@@ -127,7 +127,7 @@ export class ReloadHistoryComponent implements OnInit, OnDestroy {
    * @param searchFilter Search filter
    */
   refreshDataTable(page, count, searchFilter) {
-    this.acssChannelAfccReloadService.getReloads$(page, count, searchFilter)
+    this.acssChannelAfccReloadService.getBasicReloadsInfo$(page, count, searchFilter)
     .pipe(
       mergeMap(resp => this.graphQlErrorHandler$(resp)),
       filter((resp: any) => !resp.errors || resp.errors.length === 0),
@@ -135,9 +135,10 @@ export class ReloadHistoryComponent implements OnInit, OnDestroy {
     )
     .subscribe(
       (reloads: any[]) => {
-        const data = reloads.map(reload => ({ buId: reload.bu.id, buName: reload.bu.name, machine: reload.source.machine, amount: reload.amount  }));
-        console.log(data);
-        this.dataSource.data = data;
+        // const data = reloads.map(reload => ({ buId: reload.bu.id, buName: reload.bu.name, machine: reload.source.machine, amount: reload.amount  }));
+
+        console.log(reloads);
+        this.dataSource.data = reloads;
       }
     );
   }

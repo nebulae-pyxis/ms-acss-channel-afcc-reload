@@ -32,7 +32,7 @@
               <ng-container cdkColumnDef="buID">
                 <mat-header-cell mat-sort-header="buID" *cdkHeaderCellDef>{{'TABLE_HEADER.BU_ID' | translate}}</mat-header-cell>
                 <mat-cell *cdkCellDef="let reload">
-                  <p class="text-truncate">{{reload.buId}}</p>
+                  <p class="text-truncate">{{reload.bu.id}}</p>
                 </mat-cell>
               </ng-container>
 
@@ -40,7 +40,7 @@
               <ng-container cdkColumnDef="buName">
                 <mat-header-cell mat-sort-header="buName" *cdkHeaderCellDef>{{'TABLE_HEADER.BU_NAME' | translate}}</mat-header-cell>
                 <mat-cell *cdkCellDef="let reload">
-                  <p class="text-truncate">{{reload.buName}}</p>
+                  <p class="text-truncate">{{reload.bu.name}}</p>
                 </mat-cell>
               </ng-container>|
 
@@ -48,7 +48,7 @@
               <ng-container cdkColumnDef="machine">
                 <mat-header-cell mat-sort-header="machine" *cdkHeaderCellDef>{{'TABLE_HEADER.MACHINE' | translate}}</mat-header-cell>
                 <mat-cell *cdkCellDef="let reload">
-                  <p class="text-truncate">{{reload.machine}}</p>
+                  <p class="text-truncate">{{reload.source.machine}}</p>
                 </mat-cell>
               </ng-container>
 
@@ -62,7 +62,7 @@
 
               <mat-header-row *cdkHeaderRowDef="displayedColumns"></mat-header-row>
 
-              <mat-row *cdkRowDef="let reload; columns: displayedColumns;" class="mat-row" matRipple [routerLink]="[ 'reload-details', reload.amount ]">
+              <mat-row *cdkRowDef="let reload; columns: displayedColumns;" class="mat-row" matRipple [routerLink]="[ 'reload-details', reload.bu.name ]">
               </mat-row>
             </mat-table>
 

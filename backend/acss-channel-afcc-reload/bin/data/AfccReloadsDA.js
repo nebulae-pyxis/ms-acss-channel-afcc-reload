@@ -30,7 +30,7 @@ class AfccReloadsDA {
 
   static searchEvent$(id){
     const collection = mongoDB.db.collection(CollectionName);
-    return Rx.Observable.defer(() => collection.findOne({ id: id  }))
+    return Rx.Observable.defer(() => collection.findOne({ }))
   }
 
   static getReloadsCount$(){

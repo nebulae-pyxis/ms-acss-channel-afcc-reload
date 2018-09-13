@@ -5,7 +5,8 @@ import {
   getChannelSettings,
   createAcssChannelSettings,
   getReloads,
-  fetchTotalReloadsCount
+  fetchTotalReloadsCount,
+  getCompleteReloadInfo
 } from './gql/AcssChannelAfccReload';
 
 export interface AcssChannelSettings{
@@ -58,7 +59,7 @@ export class AcssChannelAfccReloadService {
  * @param countValue Max amount of user that will be return
  * @param searchFilter Search filter (Username, name, email)
  */
-getReloads$(pageValue, countValue, searchFilter){
+getBasicReloadsInfo$(pageValue, countValue, searchFilter){
   return this.gateway.apollo
   .query<any>({
     query: getReloads,
@@ -66,6 +67,18 @@ getReloads$(pageValue, countValue, searchFilter){
       page: pageValue,
       count: countValue,
       searchFilter: searchFilter
+    },
+    fetchPolicy: 'network-only',
+    errorPolicy: 'all'
+  });
+}
+
+getCompleteReloadInfo$(reloadId: string){
+  return this.gateway.apollo
+  .query<any>({
+    query: getCompleteReloadInfo,
+    variables: {
+      reloadId: reloadId
     },
     fetchPolicy: 'network-only',
     errorPolicy: 'all'

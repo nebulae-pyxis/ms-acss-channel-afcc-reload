@@ -65,11 +65,11 @@ class EventStoreService {
         })
       })
       .mergeMap(evt => afccReloadChannelEventConsumer.handleAfccReloaded$(evt))
-      .subscribe(
-        ok => {  },
-        error => console.log(error),
-        () => console.log("Finished")
-      );
+      // .subscribe(
+      //   ok => {  },
+      //   error => console.log(error),
+      //   () => console.log("Finished")
+      // );
     
 
     //default error handler

@@ -82,8 +82,12 @@ type AcssChannelAfccReloadTransaction{
   timestamp: BigInt
   "Consignee business unit id"
   fromBuId: String
+  "Consignee business unit name"
+  fromBuName: String
   "Beneficiary business unit id"
   toBuId: String
+  "Beneficiary business unit name"
+  toBuName: String
   "Money amount"
   amount: Int
   "Transaction's channel processor"
@@ -150,10 +154,11 @@ type AcssChannelAfccReloadCommandResponse{
   message: String
 }
 
+
 type Query {
   AcssChannelAfccReloadGetConfiguration(id: BigInt!): AcssChannelAfccReloadConfigurationObject
   AcssChannelAfccReloadGetAfccReloads(page: Int!, count: Int!, searchFilter: String): [AcssChannelAfccReloadEvent]
-  AcssChannelAfccReloadGetAfccReload(id: ID!): AcssChannelAfccReloadEvent
+  AcssChannelAfccReloadGetAfccReload(id: String!): AcssChannelAfccReloadEvent
   # AcssChannelAfccReloadGetAfccReloadDetails: AcssChannelAfccReloadEventDetail
   AcssChannelAfccReloadGetTransactionsFromAfccEvt(evtId: ID!): [AcssChannelAfccReloadTransaction]
   AcssChannelAfccReloadGetTransactions(page: Int!, count: Int!, sortColumn: String, sortOrder: String): [AcssChannelAfccReloadTransaction]
