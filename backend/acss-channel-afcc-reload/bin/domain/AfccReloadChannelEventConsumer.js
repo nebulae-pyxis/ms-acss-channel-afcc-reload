@@ -23,8 +23,7 @@ class UserEventConsumer {
 
   handleAcssSettingsCreated$(evt){
     console.log('handleAcssSettingsCreated$', evt);
-    return AfccReloadChannelDA.removeConfigurationValidity()
-    .mapTo({...evt.data, editor: evt.user })
+    return Rx.Observable.of({...evt.data, editor: evt.user })
     .mergeMap(conf => AfccReloadChannelDA.insertConfiguration$(conf))
   }
 

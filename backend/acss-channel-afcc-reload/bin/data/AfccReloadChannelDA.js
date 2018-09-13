@@ -34,20 +34,18 @@ class AfccReloadChannelDA {
   }
 
   static insertConfiguration$(doc) {
-    console.log("insertConfiguration$");
+    console.log("insertConfiguration$", doc);
     const collection = mongoDB.db.collection(CollectionName);
-    return Rx.Observable.defer(() => collection.insertOne(doc));
-  }
-
-  static removeConfigurationValidity() {
-    const collection = mongoDB.db.collection(CollectionName);
-    return Rx.Observable.defer(() =>
-      collection.findOne({ id: 1 }, { projection: { lastEdition: 1 } })
-    ).mergeMap(doc =>
-      collection.findOneAndUpdate(
-        { lastEdition: doc.lastEdition },
-        { $set: { id: doc.lastEdition } }
+    return Rx.Observable.defer(() => collection.findOneAndUpdate(
+      { id:1 },
+      { $set: doc }
       )
+    )
+    .map(() => {
+      doc.id = doc.lastEdition;
+      return doc;
+    })
+    .mergeMap(() => Rx.Observable.defer(() => collection.insertOne( doc ) )
     );
   }
 
