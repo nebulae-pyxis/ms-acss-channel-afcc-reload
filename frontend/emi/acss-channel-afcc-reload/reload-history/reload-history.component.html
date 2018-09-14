@@ -15,7 +15,7 @@
           <mat-icon class="secondary-text">search</mat-icon>
         </label>
         <mat-form-field floatPlaceholder="never" fxFlex="1 0 auto">
-          <input #filteInput id="search" matInput placeholder="{{'USER.SEARCH' | translate}}">
+          <input #filteInput id="search" matInput placeholder="{{'SEARCH_FILTER' | translate}}">
         </mat-form-field>
       </div>
       <!-- / SEARCH -->
@@ -62,7 +62,7 @@
 
               <mat-header-row *cdkHeaderRowDef="displayedColumns"></mat-header-row>
 
-              <mat-row *cdkRowDef="let reload; columns: displayedColumns;" class="mat-row" matRipple [routerLink]="[ 'reload-details', reload.bu.name ]">
+              <mat-row *cdkRowDef="let reload; columns: displayedColumns;" class="mat-row" matRipple [routerLink]="[ 'reload-details', reload.id ]">
               </mat-row>
             </mat-table>
 

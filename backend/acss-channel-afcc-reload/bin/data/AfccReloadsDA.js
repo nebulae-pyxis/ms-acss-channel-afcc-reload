@@ -4,6 +4,7 @@ let mongoDB = undefined;
 // const mongoDB = require('./MongoDB').singleton();
 const Rx = require('rxjs');
 const CollectionName = "afccReloadEvents";
+const ObjectID = require("mongodb").ObjectID;
 const { CustomError } = require('../tools/customError');
 
 
@@ -28,11 +29,22 @@ class AfccReloadsDA {
     return Rx.Observable.defer(() => collection.insertOne(document));
   }
 
-  static searchEvent$(id){
+  /**
+   * 
+   * @param { string } id reload id 
+   * @returns { Rx.Observable <any> } 
+   */
+  static searchReload$(id){
     const collection = mongoDB.db.collection(CollectionName);
-    return Rx.Observable.defer(() => collection.findOne({ }))
+    return Rx.Observable.defer(() => collection.findOne(
+      { _id: new ObjectID.createFromHexString(id) }
+      )
+    )    
   }
 
+  /**
+   * @returns {Rx.Observable<number>} reloads quantity
+   */
   static getReloadsCount$(){
     const collection = mongoDB.db.collection(CollectionName);
     return Rx.Observable.defer(() => collection.count() );
@@ -73,7 +85,11 @@ class AfccReloadsDA {
         .skip(count * page)
         .limit(count)
         .toArray()
-    );
+    )
+    .mergeMap(resultArray => Rx.Observable.from(resultArray)
+      .map(reload => ({ ...reload, id: reload._id.toString() }))
+      .toArray()
+    )
   }
 
   

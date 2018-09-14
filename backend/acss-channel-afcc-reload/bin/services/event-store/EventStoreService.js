@@ -27,7 +27,6 @@ class EventStoreService {
    */
   start$() {
 
-
     Rx.Observable.interval(5000)
       .mergeMap(() => {
         const buNames = [
@@ -36,14 +35,13 @@ class EventStoreService {
           { name: "Gana_med", id: "Gana_med" }
         ];
         return Rx.Observable.of({
-          id: Math.random().toString(),
           amount: Math.floor(Math.random() * 20) * 1000,
-          timestamp: 1536180161541,
+          timestamp: Date.now(),
           bu: buNames[Math.floor(Math.random() * buNames.length)],
           afcc: {
             before: "card Before",
             after: "card After",
-            uid: "sdosd78gsod8fg6s",
+            UId: "sdosd78gsod8fg6s",
             cardId: "234563463546345634",
             balanceBefore: 1000,
             balanceAfter: 2000
@@ -54,22 +52,24 @@ class EventStoreService {
           }
         });
       })
-      .map(afccEvt => {
-        return new Event({
-          eventType: "ACSSConfigurationCreated",
-          eventTypeVersion: 1,
-          aggregateType: "AfccChannel",
-          aggregateId: Date.now(),
-          data: afccEvt,
-          user: 'FELIPE:SANTA'
-        })
-      })
-      .mergeMap(evt => afccReloadChannelEventConsumer.handleAfccReloaded$(evt))
-      // .subscribe(
-      //   ok => {  },
-      //   error => console.log(error),
-      //   () => console.log("Finished")
-      // );
+      .mergeMap(afccEvt =>
+        eventSourcing.eventStore
+          .emitEvent$(
+            new Event({
+              eventType: "AfccReloadMade",
+              eventTypeVersion: 1,
+              aggregateType: "AfccReload",
+              aggregateId: Date.now(),
+              data: afccEvt,
+              user: 'Felipe_santa'
+            })
+          )
+      )
+      .subscribe(
+        ok => { },
+        error => console.log(error),
+        () => console.log("Finished")
+      );
     
 
     //default error handler
@@ -162,14 +162,12 @@ class EventStoreService {
 
   generateFunctionMap() {
     return {
-
-      //Sample for handling event-sourcing events, please remove
-      HelloWorldEvent: {
-        fn: afccReloadChannelEventConsumer.handleHelloWorld$,
-        obj: afccReloadChannelEventConsumer
-      },
       ACSSConfigurationCreated:{
         fn: afccReloadChannelEventConsumer.handleAcssSettingsCreated$,
+        obj: afccReloadChannelEventConsumer
+      },
+      AfccReloadMade: {
+        fn: afccReloadChannelEventConsumer.handleAfccReloaded$,
         obj: afccReloadChannelEventConsumer
       }
 
@@ -181,15 +179,13 @@ class EventStoreService {
   */
   generateAggregateEventsArray() {
     return [
-
-      //Sample for assoc events and aggregates, please remove
       {
-        aggregateType: "HelloWorld",
-        eventType: "HelloWorldEvent"
+        aggregateType: "AcssChannel",
+        eventType: "ACSSConfigurationCreated"
       },
       {
-        aggregateType: "AfccChannel",
-        eventType: "ACSSConfigurationCreated"
+        aggregateType: "AfccReload",
+        eventType: "AfccReloadMade"
       }
     ]
   }

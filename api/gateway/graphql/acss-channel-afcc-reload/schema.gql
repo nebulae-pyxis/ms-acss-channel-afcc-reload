@@ -64,7 +64,7 @@ type AcssChannelAfccReloadChannel{
   "Channel softwate version"
   sv: String
   "Channel configuration version"
-  conf: BigInt
+  conf: String
 }
 
 type AcssChannelAfccReloadEvt{
@@ -78,6 +78,8 @@ type AcssChannelAfccReloadEvt{
 
 "Represent transaction that are created by the microservice after process an AFCC reload event"
 type AcssChannelAfccReloadTransaction{
+  "transanction id"
+  id: String
   "Transaction timestamp"
   timestamp: BigInt
   "Consignee business unit id"
@@ -89,7 +91,7 @@ type AcssChannelAfccReloadTransaction{
   "Beneficiary business unit name"
   toBuName: String
   "Money amount"
-  amount: Int
+  amount: Float
   "Transaction's channel processor"
   channel: AcssChannelAfccReloadChannel
   "Transaction Type"

@@ -87,6 +87,7 @@ export const getCompleteReloadInfo = gql`
         ip
       }
       transactions {
+        id
         timestamp
         fromBuId
         fromBuName

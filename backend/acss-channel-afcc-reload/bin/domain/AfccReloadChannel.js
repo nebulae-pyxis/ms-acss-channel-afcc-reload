@@ -42,21 +42,6 @@ class AfccReloadChannel{
     return Rx.Observable.of('Some process for HelloWorld event');
   }
 
-
-  // initHelloWorldEventGenerator(){
-  //   Rx.Observable.interval(1000)
-  //   .take(120)
-  //   .mergeMap(id =>  AfccReloadChannelDA.getHelloWorld$())    
-  //   .mergeMap(evt => {
-  //     return broker.send$(MATERIALIZED_VIEW_TOPIC, 'AcssChannelAfccReloadHelloWorldEvent',evt);
-  //   }).subscribe(
-  //     (evt) => console.log('Gateway GraphQL sample event sent, please remove'),
-  //     (err) => console.error('Gateway GraphQL sample event sent ERROR, please remove'),
-  //     () => console.log('Gateway GraphQL sample event sending STOPPED, please remove'),
-  //   );
-  // }
-
-
   getConfiguration$({ args, jwt }, authToken) {
     console.log(args);
     return AfccReloadChannelDA.searchConfiguration$(args.id)
@@ -66,7 +51,8 @@ class AfccReloadChannel{
 
   getAfccReload$({ args, jwt }, authToken){
     console.log("getAfccReload$", args, "$$$$$$$$$$$$$$$$$");
-    return AfccReloadsDA.searchEvent$(args.id)
+    return AfccReloadsDA.searchReload$(args.id)
+    .map(reload => ({ ...reload, id: reload._id.toString()}))
     .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
@@ -107,7 +93,7 @@ class AfccReloadChannel{
             new Event({
               eventType: "ACSSConfigurationCreated",
               eventTypeVersion: 1,
-              aggregateType: "AfccChannel",
+              aggregateType: "AcssChannel",
               aggregateId: Date.now(),
               data: args.input,
               user: authToken.preferred_username

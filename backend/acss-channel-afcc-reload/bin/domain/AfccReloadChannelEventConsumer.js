@@ -19,8 +19,6 @@ let instance;
 class UserEventConsumer {
   constructor() {}
 
-  handleHelloWorld$() {}
-
   handleAcssSettingsCreated$(evt){
     console.log('handleAcssSettingsCreated$', evt);
     return Rx.Observable.of({...evt.data, editor: evt.user })
@@ -28,14 +26,30 @@ class UserEventConsumer {
   }
 
   handleAfccReloaded$(evt) {
-    console.log("handleAfccReloaded$", evt);
+    // console.log("handleAfccReloaded$", evt);
+    // searh the valid channel settiings
     return AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE)
-    .mergeMap((conf) => this.applyBusinessRules$(conf, evt.data))
+    // .do(conf => console.log(conf))
+    // apply the rules and return the array with all transaction to persist
+    .mergeMap((conf) => this.applyBusinessRules$(conf, evt))
+    // insert all trsansaction to the MongoDB
+    .mergeMap(transactionsArray => TransactionsDA.insertTransactions$(transactionsArray))
+    // gets the transactions after been inserted
+    // .do(r => console.log(r))
+    .map(result => result.ops)
+    .mergeMap(transactions => 
+      Rx.Observable.from(transactions)
+      .map(transaction => {
+        transaction.id = transaction._id.toString();
+        delete transaction._id;  // check performance
+        return transaction;
+      })
+      .toArray()    
+    )
+    // build Reload object with its transactions generated
     .map( arrayTransactions => ({ ...evt.data, transactions: arrayTransactions }))
-    .mergeMap(reload => Rx.Observable.forkJoin(
-      AfccReloadsDA.insertOneReload$(reload),
-      TransactionsDA.insertTransactions$(reload.transactions)
-    ));
+    // inserts the reload object
+    .mergeMap(reload => AfccReloadsDA.insertOneReload$(reload));
   }
 
   /**
@@ -130,82 +144,83 @@ class UserEventConsumer {
       )
   }
 
-  createTransactionForFareCollector$(conf, evt) {
+  createTransactionForFareCollector$(conf, afccEvent) {
     return Rx.Observable.of({
-      fromBu: evt.bu.id,
-      toBu: conf.fareCollectors[0].buId,
-      amount: (evt.amount / 100) * conf.fareCollectors[0].percentage,
+      fromBuId: afccEvent.data.bu.id,
+      toBuId: conf.fareCollectors[0].buId,
+      amount: (afccEvent.data.amount / 100) * conf.fareCollectors[0].percentage,
       channel: {
         id: CHANNEL_ID,
-        v: process.env.npm_package_version,
-        c: conf.lastEdition
+        sv: process.env.npm_package_version,
+        conf: conf.lastEdition
       },
       timestamp: Date.now(),
       type: DEFAULT_TRANSACTION_TYPE,
       evt: {
         // missing to define
-        id: evt.id,     // missing to define
-        type: evt.type, // missing to define
-        user: evt.user  // missing to define
+        id: afccEvent._id.toString(),     // missing to define
+        type: afccEvent.et, // missing to define
+        user: afccEvent.user  // missing to define
       }
     });
   }
 
-  createTransactionForReloadNetWork$(conf, evt) {
+  createTransactionForReloadNetWork$(conf, afccEvent) {
+    console.log(conf);
     const reloadNetworkIndex = conf.reloadNetworks.findIndex(
-      rn => rn.buId == evt.bu.id
+      rn => rn.buId == afccEvent.data.bu.id
     );
     if ( reloadNetworkIndex == -1 ){
       // return Rx.Observable.throw();
     }
     return Rx.Observable.of({
-      fromBu: evt.bu.id,
-      toBu: evt.bu.id,
+      fromBuId: afccEvent.data.bu.id,
+      toBuId: afccEvent.data.bu.id,
       amount:
-        (evt.amount / 100) * conf.reloadNetworks[reloadNetworkIndex].percentage,
+        (afccEvent.data.amount / 100) * conf.reloadNetworks[reloadNetworkIndex].percentage,
       channel: {
         id: CHANNEL_ID,
-        v: process.env.npm_package_version,
-        c: conf.lastEdition
+        sv: process.env.npm_package_version,
+        conf: conf.lastEdition
       },
       timestamp: Date.now(),
       type: DEFAULT_TRANSACTION_TYPE,
       evt: {
         // missing to define
-        id: evt.id, // missing to define
-        type: evt.type, // missing to define
-        user: evt.user // missing to define
+        id: afccEvent._id, // missing to define
+        type: afccEvent.et, // missing to define
+        user: afccEvent.user // missing to define
       }
     });
   }
 
-  createTransactionForParties$(conf, evt) {
+  createTransactionForParties$(conf, afccEvent) {
     const reloadNetworkIndex = conf.reloadNetworks.findIndex(
-      rn => rn.buId == evt.bu.id
+      rn => rn.buId == afccEvent.data.bu.id
     );
     const surplusAsPercentage =
       100 -
       (conf.fareCollectors[0].percentage +
         conf.reloadNetworks[reloadNetworkIndex].percentage);
-    const surplusAmount = (evt.amount / 100) * surplusAsPercentage;
+    const surplusAmount = (afccEvent.data.amount / 100) * surplusAsPercentage;
     return Rx.Observable.from(conf.parties)
       .map(p => {
         return {
-          fromBu: evt.bu.id,
-          toBu: p.buId,
+          fromBuId: afccEvent.data.bu.id,
+          toBuId: p.buId,
           amount: (surplusAmount / 100) * p.percentage,
           channel: {
             id: CHANNEL_ID,
-            v: process.env.npm_package_version,
-            c: conf.lastEdition
+            sv: process.env.npm_package_version,
+            conf: conf.lastEdition
           },
           timestamp: Date.now(),
           type: DEFAULT_TRANSACTION_TYPE,
           evt: {
             // missing to define
-            id: evt.id, // missing to define
-            type: evt.type, // missing to define
-            user: evt.user // missing to define
+            id: afccEvent._id, // missing to define
+            type: afccEvent.et, // missing to define
+            user: afccEvent.user // missing to define
           }
         };
       })

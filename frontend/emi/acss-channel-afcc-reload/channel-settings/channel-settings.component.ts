@@ -9,7 +9,7 @@ import { FuseTranslationLoaderService } from '../../../../core/services/translat
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
 import { FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
-import { mergeMap, map } from 'rxjs/operators';
+import { mergeMap, map, tap } from 'rxjs/operators';
 
 
 @Component({
