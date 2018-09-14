@@ -11,7 +11,7 @@
               <mat-tab-group dynamicHeight>
 
                   <mat-tab label="{{ 'SETTINGS_LBL' | translate }}">
-                      <acss-channel-settings></acss-channel-settings>
+                      <acss-channel-settings [currentVersion]="true" ></acss-channel-settings>
                   </mat-tab>
                   <mat-tab label=" {{'HISTORY_LBL' | translate}}">
                       <afcc-reload-history></afcc-reload-history>

@@ -9,121 +9,122 @@
 
       <span fxFlex="100" style="font-size: 16px" fxLayoutAlign="center center">{{'SETTINGS.TITLE' | translate }}</span>
 
-        <!-- FARECOLLECTOR -->
-        <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
-          <span fxLayoutAlign="center center"> {{'SETTINGS.FARE_COLLECTOR_TITTLE' | translate}} </span>
-          <button mat-icon-button>
-            <mat-icon>info</mat-icon>
-          </button>
-        </div>
-        <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
-          <div *ngFor="let item of settingsForm.get('fareCollectors')['controls']; let i = index;" fxFlex="100" fxLayoutAlign="center center"
-            formArrayName="fareCollectors">
-            <div style="border-style: ridge" [formGroupName]="i">
+      <!-- FARECOLLECTOR -->
+      <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
+        <span fxLayoutAlign="center center"> {{'SETTINGS.FARE_COLLECTOR_TITTLE' | translate}} </span>
+        <button mat-icon-button>
+          <mat-icon>info</mat-icon>
+        </button>
+      </div>
+      <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
+        <div *ngFor="let item of settingsForm.get('fareCollectors')['controls']; let i = index;" fxFlex="100"
+          fxLayoutAlign="center center" formArrayName="fareCollectors">
+          <div style="border-style: ridge" [formGroupName]="i">
 
-              <mat-form-field>
-                <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
-              </mat-form-field>
-              <mat-form-field>
-                <input matInput formControlName="businessUnitName" placeholder="{{'FORM.BU_NAME' | translate}}">
-              </mat-form-field>
-              <mat-form-field>
-                <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
-              </mat-form-field>
-              <button mat-icon-button (click)="deleteControl( 'fareCollectors', i)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
+            <mat-form-field>
+              <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput formControlName="businessUnitName" placeholder="{{'FORM.BU_NAME' | translate}}">
+            </mat-form-field>
+            <mat-form-field>
+              <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
+            </mat-form-field>
+            <button *ngIf="currentVersion" mat-icon-button (click)="deleteControl( 'fareCollectors', i)">
+              <mat-icon>delete</mat-icon>
+            </button>
           </div>
-          <button *ngIf="settingsForm.get('fareCollectors').value.length == 0" mat-icon-button (click)="addActor('fareCollectors')">
-            <mat-icon>add</mat-icon>
-          </button>
         </div>
+        <button *ngIf="settingsForm.get('fareCollectors').value.length == 0 && currentVersion" mat-icon-button (click)="addActor('fareCollectors')">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
 
-        <!-- Chosen name: {{ orderForm.controls.items.controls[i].controls.name.value }} -->
-        <!-- FARECOLLECTOR -->
-        <!-- RELOADERS -->
-        <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
-          <span fxLayoutAlign="center center"> {{'SETTINGS.RELOADERS_TITTLE' | translate}} </span>
-          <button mat-icon-button>
-            <mat-icon>info</mat-icon>
-          </button>
-        </div>
-        <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
-          <div *ngFor="let item of settingsForm.get('reloaders')['controls']; let i = index;" fxFlex="100" fxLayout="column" fxLayoutAlign="center center" formArrayName="reloaders">
-            <div style="border-style: ridge" [formGroupName]="i">
-              <mat-form-field class="example-full-width">
-                <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
-              </mat-form-field>
-              <mat-form-field class="example-full-width">
-                <input matInput formControlName="businessUnitName" placeholder="{{'FORM.BU_NAME' | translate}}">
-              </mat-form-field>
-              <mat-form-field class="example-full-width">
-                <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
-              </mat-form-field>
-              <button mat-icon-button (click)="deleteControl( 'reloaders', i)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </div>
-            <div *ngIf="settingsForm.get('reloaders')['controls'][i]['controls']['percentage'].errors">
-              <span style="color: red" *ngIf="settingsForm.get('reloaders')['controls'][i]['controls']['percentage'].errors['percentageExceeded']">
-                {{'ERRORS.PERCENTAGE_EXECEEDED' | translate}}
-              </span>
-            </div>
+      <!-- Chosen name: {{ orderForm.controls.items.controls[i].controls.name.value }} -->
+      <!-- FARECOLLECTOR -->
+      <!-- RELOADERS -->
+      <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
+        <span fxLayoutAlign="center center"> {{'SETTINGS.RELOADERS_TITTLE' | translate}} </span>
+        <button mat-icon-button>
+          <mat-icon>info</mat-icon>
+        </button>
+      </div>
+      <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
+        <div *ngFor="let item of settingsForm.get('reloaders')['controls']; let i = index;" fxFlex="100" fxLayout="column"
+          fxLayoutAlign="center center" formArrayName="reloaders">
+          <div style="border-style: ridge" [formGroupName]="i">
+            <mat-form-field class="example-full-width">
+              <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+            </mat-form-field>
+            <mat-form-field class="example-full-width">
+              <input matInput formControlName="businessUnitName" placeholder="{{'FORM.BU_NAME' | translate}}">
+            </mat-form-field>
+            <mat-form-field class="example-full-width">
+              <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
+            </mat-form-field>
+            <button *ngIf="currentVersion" mat-icon-button (click)="deleteControl( 'reloaders', i)">
+              <mat-icon>delete</mat-icon>
+            </button>
           </div>
-          <!-- <span style="color: red" *ngIf="validateReloadNetworks()">Error en la configuracion</span> -->
-          <button mat-icon-button (click)="addActor('reloaders')">
-            <mat-icon>add</mat-icon>
-          </button>
-        </div>
-
-        <!-- RELOADERS -->
-        <!-- THIRD PARTIES -->
-        <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
-          <span fxLayoutAlign="center center"> {{'SETTINGS.PARTIES_TITTLE' | translate}} </span>
-          <button mat-icon-button>
-            <mat-icon>info</mat-icon>
-          </button>
-        </div>
-        <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
-          <div fxFlex="100" fxLayoutAlign="center center" formArrayName="parties" *ngFor="let item of settingsForm.get('parties')['controls']; let i = index;">
-            <div style="border-style: ridge" [formGroupName]="i">
-
-              <mat-form-field class="example-full-width">
-                <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
-              </mat-form-field>
-              <mat-form-field class="example-full-width">
-                <input matInput formControlName="businessUnitName" placeholder="{{'FORM.BU_NAME' | translate}}">
-              </mat-form-field>
-              <mat-form-field class="example-full-width">
-                <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
-              </mat-form-field>
-              <button mat-icon-button (click)="deleteControl( 'parties', i)">
-                <mat-icon>delete</mat-icon>
-              </button>
-
-            </div>
-          </div>
-          <div *ngIf="settingsForm.errors">
-            <span style="color: red" *ngIf="settingsForm.errors['percentageExceeded']">
-              {{'ERRORS.PERCENTAGE_EXECEEDED_PARTIES' | translate}}
-            </span>
-            <span style="color: red" *ngIf="settingsForm.errors['percentageNotReached']">
-              {{'ERRORS.PERCENTAGE_NOT_EXECEEDED_PARTIES' | translate}}
+          <div *ngIf="settingsForm.get('reloaders')['controls'][i]['controls']['percentage'].errors ">
+            <span style="color: red" *ngIf="settingsForm.get('reloaders')['controls'][i]['controls']['percentage'].errors['percentageExceeded']">
+              {{'ERRORS.PERCENTAGE_EXECEEDED' | translate}}
             </span>
           </div>
-          <button mat-icon-button (click)="addActor('parties')">
-            <mat-icon>add</mat-icon>
-          </button>
         </div>
+        <!-- <span style="color: red" *ngIf="validateReloadNetworks()">Error en la configuracion</span> -->
+        <button *ngIf="currentVersion" mat-icon-button (click)="addActor('reloaders')">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
 
-        <!-- THIRD PARTIES -->
-        <!-- ACTION BUTTONS -->
-        <div fxFlex="100" fxLayout="row" fxLayoutAlign="space-around center">
-          <button mat-raised-button color="primary" [disabled]="!settingsForm.valid" (click)="saveConfiguration()">SAVE</button>
-          <button mat-raised-button color="primary" (click)="saveConfiguration()" >CANCEL</button>
+      <!-- RELOADERS -->
+      <!-- THIRD PARTIES -->
+      <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
+        <span fxLayoutAlign="center center"> {{'SETTINGS.PARTIES_TITTLE' | translate}} </span>
+        <button mat-icon-button>
+          <mat-icon>info</mat-icon>
+        </button>
+      </div>
+      <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
+        <div fxFlex="100" fxLayoutAlign="center center" formArrayName="parties" *ngFor="let item of settingsForm.get('parties')['controls']; let i = index;">
+          <div style="border-style: ridge" [formGroupName]="i">
+
+            <mat-form-field class="example-full-width">
+              <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+            </mat-form-field>
+            <mat-form-field class="example-full-width">
+              <input matInput formControlName="businessUnitName" placeholder="{{'FORM.BU_NAME' | translate}}">
+            </mat-form-field>
+            <mat-form-field class="example-full-width">
+              <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
+            </mat-form-field>
+            <button *ngIf="currentVersion" mat-icon-button (click)="deleteControl( 'parties', i)">
+              <mat-icon>delete</mat-icon>
+            </button>
+
+          </div>
         </div>
-        <!-- ACTION BUTTONS -->
+        <div *ngIf="settingsForm.errors && currentVersion">
+          <span style="color: red" *ngIf="settingsForm.errors['percentageExceeded']">
+            {{'ERRORS.PERCENTAGE_EXECEEDED_PARTIES' | translate}}
+          </span>
+          <span style="color: red" *ngIf="settingsForm.errors['percentageNotReached']">
+            {{'ERRORS.PERCENTAGE_NOT_EXECEEDED_PARTIES' | translate}}
+          </span>
+        </div>
+        <button *ngIf="currentVersion" mat-icon-button (click)="addActor('parties')">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <!-- THIRD PARTIES -->
+      <!-- ACTION BUTTONS -->
+      <div *ngIf="currentVersion" fxFlex="100" fxLayout="row" fxLayoutAlign="space-around center">
+        <button mat-raised-button color="primary" [disabled]="!settingsForm.valid" (click)="saveConfiguration()">SAVE</button>
+        <button mat-raised-button color="primary" (click)="saveConfiguration()">CANCEL</button>
+      </div>
+      <!-- ACTION BUTTONS -->
 
 
 

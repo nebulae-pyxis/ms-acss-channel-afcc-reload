@@ -121,7 +121,7 @@
             </div>
             <div fxLayoutAlign="space-evenly center">
               <span>{{'CHANNEL_CONF_VERSION' | translate}}</span>
-              <span>{{transaction.channel.conf}}</span>
+              <span [routerLink]="['../../configuration', transaction.channel.conf ]" >{{transaction.channel.conf}}</span>
             </div>
           </div>
         </div>

@@ -17,6 +17,10 @@ const routes: Routes = [
     component: AcssChannelAfccReloadComponent
   },
   {
+    path: 'configuration/:version',
+    component: ChannelSettingsComponent
+  },
+  {
     path: 'reload-details/:id',
     component: ReloadDetailComponent
   }

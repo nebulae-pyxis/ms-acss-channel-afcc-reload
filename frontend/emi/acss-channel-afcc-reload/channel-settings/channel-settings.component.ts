@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 import { AcssChannelAfccReloadService, AcssChannelSettings } from '../acss-channel-afcc-reload.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { fuseAnimations } from '../../../../core/animations';
 import { Subscription } from 'rxjs/Subscription';
 // tslint:disable-next-line:import-blacklist
@@ -10,6 +10,7 @@ import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
 import { FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
 import { mergeMap, map, tap } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -21,33 +22,37 @@ import { mergeMap, map, tap } from 'rxjs/operators';
 })
 
 export class ChannelSettingsComponent implements OnInit, OnDestroy {
-
-  allSubscription = [];
+  @Input() currentVersion: boolean;
+  subscriptions = [];
   settingsForm: FormGroup = new FormGroup({});
 
   constructor(
     private acssChannelAfccReloadService: AcssChannelAfccReloadService,
     private translationLoader: FuseTranslationLoaderService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private route: ActivatedRoute
   ) {
     this.translationLoader.loadTranslations(english, spanish);
   }
 
   ngOnInit() {
+    console.log('this.currentVersion', this.currentVersion);
     this.settingsForm = new FormGroup({
       fareCollectors: new FormArray([]),
       reloaders: new FormArray([]),
       parties: new FormArray([] )
     }, [ this.validateParties.bind(this) ]);
 
-    this.acssChannelAfccReloadService.getChannelSettings$(1)
-      .pipe(
-        mergeMap(dataResult => this.loadSettingsOnForm$(dataResult))
-      )
-      .subscribe(r => { });
-
-      this.settingsForm.statusChanges.subscribe(
-        r => console.log(r)
+      this.subscriptions.push(
+        this.route.params
+        .pipe(
+          map(params => params.conf ? params.conf : 1),
+          mergeMap(conf  => this.acssChannelAfccReloadService.getChannelSettings$(conf)),
+          mergeMap(dataResult =>  this.loadSettingsOnForm$(dataResult))
+        )
+        .subscribe(form => {
+          console.log('FORM IS', form );
+        })
       );
   }
 
@@ -59,26 +64,44 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     switch (type){
       case 'fareCollectors':
         return this.formBuilder.group({
-          businessUnitId: new FormControl(businessUnitId, [Validators.required ]),
-          businessUnitName: new FormControl({value: businessUnitName, disabled: true}, [Validators.required]),
-          percentage: new FormControl(percentage, [Validators.required, Validators.min(0), Validators.max(100)])
+          businessUnitId: new FormControl(
+            { value: businessUnitId, disabled: !this.currentVersion },
+            [Validators.required]
+          ),
+          businessUnitName: new FormControl(
+            { value: businessUnitName, disabled: true },
+            [Validators.required]
+          ),
+          percentage: new FormControl(
+            { value: percentage, disabled: !this.currentVersion },
+            [
+              Validators.required,
+              Validators.min(0),
+              Validators.max(100)
+            ]
+          )
         });
       case 'reloaders':
         return this.formBuilder.group({
-          businessUnitId: new FormControl(businessUnitId, [Validators.required ]),
-          businessUnitName: new FormControl({value: businessUnitName, disabled: true}, [Validators.required]),
-          percentage: new FormControl(percentage, [Validators.required, Validators.min(0), Validators.max(100), this.validateReloaders.bind(this) ])
+          businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }, [Validators.required]),
+          businessUnitName: new FormControl({ value: businessUnitName, disabled: true }, [Validators.required]),
+          percentage: new FormControl(
+            { value: percentage, disabled: !this.currentVersion },
+            [Validators.required, Validators.min(0), Validators.max(100), this.validateReloaders.bind(this)]
+          )
         });
       case 'parties':
         return this.formBuilder.group({
-          businessUnitId: new FormControl(businessUnitId, [Validators.required ]),
-          businessUnitName: new FormControl({value: businessUnitName, disabled: true}, [Validators.required]),
-          percentage: new FormControl(percentage, [ Validators.required, Validators.min(0), Validators.max(100) ])
+          businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }, [Validators.required]),
+          businessUnitName: new FormControl({ value: businessUnitName, disabled: true }, [Validators.required]),
+          percentage: new FormControl(
+            { value: percentage, disabled: !this.currentVersion },
+            [Validators.required, Validators.min(0), Validators.max(100)])
         });
       default: {
         return this.formBuilder.group({
-          businessUnitId: new FormControl(businessUnitId),
-          businessUnitName: new FormControl({value: businessUnitName, disabled: true}),
+          businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }),
+          businessUnitName: new FormControl({ value: businessUnitName, disabled: true }),
           percentage: new FormControl(percentage)
         });
       }
