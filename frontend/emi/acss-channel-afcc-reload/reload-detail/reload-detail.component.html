@@ -4,79 +4,77 @@
   <div class="content p-24 w-100-p">
 
     <!-- WIDGET GROUP -->
-    <div class="widget-group" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start">
+    <div *ngIf="selectedReload" class="widget-group" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start">
 
-      <span fxFlex="100" style="font-size: 16px" fxLayoutAlign="center center">{{'SETTINGS.TITLE' | translate }}</span>
+      <span fxFlex="100" style="font-size: 16px" fxLayoutAlign="center center">{{'RELOAD_DETAILS_TITLE' | translate }}</span>
       <!-- BASIC RELOAD INFO -->
-      <div fxFlex="100" fxLayout="row" fxLayoutAlign="space-around center">
+      <div *ngIf="selectedReload" fxFlex="100" fxLayout="row" fxLayoutAlign="space-around center">
         <div fxFlex="50" fxLayout="column" fxLayoutAlign="space-evenly center">
 
           <mat-form-field class="example-full-width">
-            <input matInput placeholder="Business unid ID" value="NebulaE">
+            <input matInput disabled placeholder="{{'RELOAD.BU_ID' | translate }}" value="{{ selectedReload.bu.id }}">
           </mat-form-field>
           <mat-form-field class="example-full-width">
-            <input matInput placeholder="Business unid ID" value="NebulaE">
+            <input matInput disabled placeholder="{{'RELOAD.SOURCE_MACHINE' | translate }}" value="{{selectedReload.source.machine}}">
           </mat-form-field>
           <mat-form-field class="example-full-width">
-            <input matInput placeholder="Business unid ID" value="NebulaE">
+            <input matInput disabled placeholder="{{'RELOAD.AMOUNT' | translate }}" value="{{selectedReload.amount}}">
           </mat-form-field>
 
         </div>
         <div fxFlex="50" fxLayout="column" fxLayoutAlign="space-evenly center">
 
           <mat-form-field class="example-full-width">
-            <input matInput placeholder="Business unid ID" value="NebulaE">
+            <input matInput disabled placeholder="{{'RELOAD.BU_NAME' | translate }}" value="{{selectedReload.bu.name}}">
           </mat-form-field>
           <mat-form-field class="example-full-width">
-            <input matInput placeholder="Business unid ID" value="NebulaE">
+            <input matInput disabled placeholder="{{'RELOAD.SOURCE_IP' | translate }}" value="{{selectedReload.source.ip}}">
           </mat-form-field>
           <mat-form-field class="example-full-width">
-            <input matInput placeholder="Business unid ID" value="NebulaE">
+            <input matInput disabled placeholder="{{'RELOAD.TRCNS_QTY' | translate }}" value="{{selectedReload.transactions.length}}">
           </mat-form-field>
         </div>
       </div>
       <!-- BASIC RELOAD INFO -->
-      <!-- ADVANCED RELOAD INFO -->
-      <mat-accordion *ngIf="false" fxFlex="100" >
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              {{ 'ADVANCED INFO' | translate }}
-            </mat-panel-title>
-            <!-- <mat-panel-description>
-              Type your name and age
-            </mat-panel-description> -->
-          </mat-expansion-panel-header>
-          <div  style="background: grey" fxFlex="100"  fxLayout="column" fxLayoutAlign="space-evenly stretch" id="panel-content" >
-            <div fxFlex="100">
-                <mat-form-field class="example-full-width">
-                    <input matInput placeholder="Business unid ID" value="NebulaE">
-                  </mat-form-field>
-                  <mat-form-field class="example-full-width">
-                    <input matInput placeholder="Business unid ID" value="NebulaE">
-                  </mat-form-field>
-            </div>
 
-            <div style="background: red" fxFlex="100" >
-              <div fxFlex="100" id="comparison-table">
-                <div fxFlex="50" style="background: gainsboro" >
-                  <span>before</span>
-                </div>
-                <div fxFlex="50" style="background: gainsboro" >
-                    <span>after</span>
+       <!-- ADVANCED RELOAD INFO -->
+       <mat-accordion fxFlex="100">
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ 'ADVANCED_INFO' | translate }}
+              </mat-panel-title>
+              <!-- <mat-panel-description>
+                  Type your name and age
+                </mat-panel-description> -->
+            </mat-expansion-panel-header>
+            <div fxFlex="100" fxLayout="column" fxLayoutAlign="space-evenly stretch" id="panel-content">
+              <div fxFlex="100">
+                <mat-form-field class="example-full-width">
+                  <input matInput disabled placeholder="{{'CARD_ID' | translate}}" value="{{ selectedReload.afcc.cardId }}">
+                </mat-form-field>
+                <mat-form-field class="example-full-width">
+                  <input matInput disabled placeholder="{{ 'card_UID' | translate }}" value="{{ selectedReload.afcc.UId }}">
+                </mat-form-field>
+              </div>
+
+              <div fxFlex="100">
+                <div fxFlex="100" id="comparison-table">
+                  <div fxFlex="50">
+                    <span>{{ selectedReload.afcc.before }}</span>
                   </div>
+                  <div fxFlex="50">
+                    <span>{{ selectedReload.afcc.after }}</span>
+                  </div>
+                </div>
               </div>
             </div>
-
-
-
-          </div>
-        </mat-expansion-panel>
-      </mat-accordion>
-      <!-- ADVANCED RELOAD INFO -->
+          </mat-expansion-panel>
+        </mat-accordion>
+        <!-- ADVANCED RELOAD INFO -->
 
       <!-- TRANSACTIONS -->
-      <fuse-widget *ngFor="let i of [1,2,3,4,5,6]" class="widget" fxLayout="column" fxFlex="100"
+      <fuse-widget *ngFor="let transaction of selectedReload.transactions" class="widget" fxLayout="column" fxFlex="100"
         fxFlex.gt-xs="50" fxFlex.gt-md="25">
         <!-- Front -->
         <div class="fuse-widget-front mat-white-bg mat-elevation-z2">
@@ -85,24 +83,24 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <span>
-              TRANSACTION_ID
+              {{transaction.id}}
             </span>
           </div>
-          <div fxLayout="column" fxLayoutAlign= "center center" >
-            <div fxLayout="row" fxLayoutAlign="space-around center" >
+          <div fxLayout="column" fxLayoutAlign="center center">
+            <div fxLayout="row" fxLayoutAlign="space-around center">
               <span>
-                NOMBRE_A(ID)
+                {{ transaction.fromBuName + '(' + transaction.fromBuId + ')' }}
               </span>
               <mat-icon>arrow_right_alt</mat-icon>
-              <span> NOMBRE_B(ID)</span>
+              <span> {{ transaction.toBuName + '(' + transaction.toBuId + ')' }}</span>
             </div>
             <div style="font-size: 24px">
-              $1.230
+              {{ '$' + transaction.amount }}
             </div>
           </div>
           <div class="p-16 grey-50-bg border-top" fxLayout="row" fxLayoutAlign="center center">
             <!-- <span class="h4 secondary-text text-truncate"> DATE: </span> -->
-            <span class="h4 ml-8">  Thursday, September 13, 2018 8:52:11 PM </span>
+            <span class="h4 ml-8"> {{transaction.timestamp}} </span>
           </div>
         </div>
         <!-- / Front -->
@@ -112,25 +110,26 @@
           <button mat-icon-button fuseWidgetToggle class="fuse-widget-flip-button" aria-label="Flip widget">
             <mat-icon class="s-16">close</mat-icon>
           </button>
-          <div  style="background: red" fxLayout="column" fxLayoutAlign="space-evenly none" style="width: 100%; height: 100%;">
-            <span style="text-align: center">CANAL PROCESADOR</span>
-            <div fxLayoutAlign="space-evenly center"  >
-              <span>Canal ID:</span>
-              <span>ACSS channel</span>
+          <div style="background: red" fxLayout="column" fxLayoutAlign="space-evenly none" style="width: 100%; height: 100%;">
+            <span style="text-align: center">{{'PROCESSOR_CHANNEL' | translate}}</span>
+            <div fxLayoutAlign="space-evenly center">
+              <span>{{'CHANNEL_ID' | translate}}</span>
+              <span>{{ transaction.channel.id }}</span>
             </div>
             <div fxLayoutAlign="space-evenly center">
-              <span>Software version:</span>
-              <span>12</span>
+              <span>{{'CHANNEL_SOFTWARE_VERSION' | translate}}</span>
+              <span>{{ transaction.channel.sv }}</span>
             </div>
             <div fxLayoutAlign="space-evenly center">
-              <span>Configuration version:</span>
-              <span>12</span>
+              <span>{{'CHANNEL_CONF_VERSION' | translate}}</span>
+              <span>{{transaction.channel.conf}}</span>
             </div>
           </div>
         </div>
         <!-- / Back -->
 
       </fuse-widget>
+
       <!-- TRANSACTIONS -->
 
     </div>

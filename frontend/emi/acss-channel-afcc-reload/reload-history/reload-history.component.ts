@@ -1,7 +1,6 @@
 import { AcssChannelAfccReloadService } from '../acss-channel-afcc-reload.service';
 import { Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { fuseAnimations } from '../../../../core/animations';
-import { Subscription } from 'rxjs/Subscription';
 // tslint:disable-next-line:import-blacklist
 import * as Rx from 'rxjs/Rx';
 import { MatTableDataSource, MatSnackBar, MatPaginator, MatSort } from '@angular/material';
@@ -9,7 +8,7 @@ import { FuseTranslationLoaderService } from '../../../../core/services/translat
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
 import { mergeMap, tap, filter, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { from, pipe, fromEvent } from 'rxjs';
+import { fromEvent } from 'rxjs';
 
 @Component({
   // tslint:disable-next-line:component-selector
