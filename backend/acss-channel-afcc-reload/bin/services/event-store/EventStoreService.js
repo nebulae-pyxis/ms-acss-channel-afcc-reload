@@ -121,7 +121,7 @@ class EventStoreService {
         fn: afccReloadChannelEventConsumer.handleAcssSettingsCreated$,
         obj: afccReloadChannelEventConsumer
       },
-      AfccReloadMade: {
+      AfccReloadSold: {
         fn: afccReloadChannelEventConsumer.handleAfccReloaded$,
         obj: afccReloadChannelEventConsumer
       }
@@ -139,8 +139,8 @@ class EventStoreService {
         eventType: "ACSSConfigurationCreated"
       },
       {
-        aggregateType: "AfccReload",
-        eventType: "AfccReloadMade"
+        aggregateType: "Afcc",
+        eventType: "AfccReloadSold"
       }
     ]
   }
