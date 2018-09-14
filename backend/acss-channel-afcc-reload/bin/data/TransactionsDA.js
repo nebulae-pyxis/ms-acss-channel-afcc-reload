@@ -4,6 +4,7 @@ let mongoDB = undefined;
 //const mongoDB = require('./MongoDB')();
 const Rx = require('rxjs');
 const CollectionName = "Transactions";
+const ACSS_DB_NAME = process.env.MONGODB_ACSS_DB_NAME;
 const { CustomError } = require('../tools/customError');
 
 
@@ -28,7 +29,7 @@ class TransactionsDA {
    * @returns {Observable<Object[]>} Array with each transaction that was made as a consequence of processing the AFCC event to which afccEvtId refers.
    */
   static searchTransactionFromAfccEvt$(afccEvtId){
-    const collection = mongoDB.db.collection(CollectionName);
+    const collection = mongoDB.client.db(ACSS_DB_NAME).collection(CollectionName);
     return Rx.Observable.defer(() => collection.find({ }).toArray())
     .catch(error => Rx.Observable.throw(error))
   }
@@ -52,7 +53,7 @@ class TransactionsDA {
       let column = sortColumn;      
       orderObject[column] = order == 'asc' ? 1 : -1;
     }
-    const collection = mongoDB.db.collection(CollectionName);
+    const collection = mongoDB.client.db(ACSS_DB_NAME).collection(CollectionName);
     return Rx.Observable.defer(()=>
       collection
         .find(filterObject)
@@ -64,7 +65,7 @@ class TransactionsDA {
   }
 
   static insertTransactions$(documents){
-    const collection = mongoDB.db.collection(CollectionName);
+    const collection = mongoDB.client.db(ACSS_DB_NAME).collection(CollectionName);
     return Rx.Observable.defer(() => collection.insertMany(documents));    
   }
 }
