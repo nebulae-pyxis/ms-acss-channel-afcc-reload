@@ -8,6 +8,8 @@ const eventSourcing = require("../tools/EventSourcing")();
 const Event = require("@nebulae/event-store").Event;
 const broker = require("../tools/broker/BrokerFactory")();
 const MATERIALIZED_VIEW_TOPIC = "materialized-view-updates";
+const { PERMISSION_DENIED_ERROR } = require("../tools/ErrorCodes");
+const RoleValidator = require("../tools/RoleValidator");
 const {
   CustomError,
   DefaultError
@@ -23,16 +25,6 @@ class AfccReloadChannel{
     // this.initHelloWorldEventGenerator();
   }
 
-  /**
-   *  HelloWorld Query, please remove
-   *  this is a queiry form GraphQL
-   */
-  getHelloWorld$({ args, jwt, fieldASTs }, authToken) {
-    console.log(args);
-    return AfccReloadChannelDA.getHelloWorld$()
-      .mergeMap(rawResponse => this.buildSuccessResponse$(rawResponse))
-      .catch(err => this.errorHandler$(err));
-  }
 
   /**
    * Handle HelloWorld Query, please remove
@@ -42,70 +34,131 @@ class AfccReloadChannel{
     return Rx.Observable.of('Some process for HelloWorld event');
   }
 
+  /**
+   * search by the settings version indicated in the query params
+   * @param {any} param0 Object with args and jwt 
+   * @param {any} authToken JWT Authtoken decoded
+   */
   getConfiguration$({ args, jwt }, authToken) {
-    console.log(args);
-    return AfccReloadChannelDA.searchConfiguration$(args.id)
+    console.log('getConfiguration$', args);
+    return RoleValidator.checkPermissions$(
+      authToken.realm_access.roles,
+      "AfccReloadAcssChannel",
+      "getConfiguration$",
+      PERMISSION_DENIED_ERROR,
+      ["operator"]
+    )
+    .mergeMap(() => AfccReloadChannelDA.searchConfiguration$(args.id) )    
     .mergeMap(payload => this.buildAndSendResponse$(payload))
     .do(r => console.log(JSON.stringify(r)));
   }
 
+   /**
+   * Search by the Afcc reload  indicated in the query params
+   * @param {any} param0 Object with args and jwt 
+   * @param {any} authToken JWT Authtoken decoded
+   */
   getAfccReload$({ args, jwt }, authToken){
-    console.log("getAfccReload$", args, "$$$$$$$$$$$$$$$$$");
-    return AfccReloadsDA.searchReload$(args.id)
+    console.log("getAfccReload$", args);
+    return RoleValidator.checkPermissions$(
+      authToken.realm_access.roles,
+      "AfccReloadAcssChannel",
+      "getAfccReload$",
+      PERMISSION_DENIED_ERROR,
+      ["operator"]
+    )
+    .mergeMap(() =>  AfccReloadsDA.searchReload$(args.id) ) 
     .map(reload => ({ ...reload, id: reload._id.toString()}))
     .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
+   /**
+   * Search by the Afcc reloads  that match by the parms indicated in the query params
+   * @param {any} param0 Object with args and jwt 
+   * @param {any} authToken JWT Authtoken decoded
+   */
   getAfccReloads$({ args, jwt }, authToken){
-    console.log("getAfccReloads$", args, "$$$$$$$$$$$$$$$$$$$$");
-    return AfccReloadsDA.searchReloads$(args)
-    .mergeMap(payload => this.buildAndSendResponse$(payload));
-  }
-
-  getReloadsCount$({ args, jwt }, authToken){
-    return AfccReloadsDA.getReloadsCount$()
-    .mergeMap(payload => this.buildAndSendResponse$(payload));
-  }
-
-  getTransactions$({ args, jwt }, authToken){
-    return TransactionDA.searchTransactions$(args)
+    console.log("getAfccReloads$", args);
+    return RoleValidator.checkPermissions$(
+      authToken.realm_access.roles,
+      "AfccReloadAcssChannel",
+      "getAfccReload$",
+      PERMISSION_DENIED_ERROR,
+      ["operator"]
+    )
+    .mergeMap(() => AfccReloadsDA.searchReloads$(args) )     
     .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
   /**
-   * 
-   * @param {Object} param0 Object that contains query Arguments, jwt and fiel
-   * @param {String} authToken 
+   * Search by the Afcc reloads  collections size in mongo collection.
+   * @param {any} param0 Object with args and jwt 
+   * @param {any} authToken JWT Authtoken decoded
    */
-  getTransactionsFromAfccEvt$({ args, jwt }, authToken){
-    console.log("getTransactionsFromAfccEvt", args);
-    return TransactionDA.searchTransactionFromAfccEvt$('123')
+  getReloadsCount$({ args, jwt }, authToken){
+    return RoleValidator.checkPermissions$(
+      authToken.realm_access.roles,
+      "AfccReloadAcssChannel",
+      "getAfccReload$",
+      PERMISSION_DENIED_ERROR,
+      ["operator"]
+    )
+    .mergeMap(() => AfccReloadsDA.getReloadsCount$() ) 
     .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
+   /**
+   * Search by the ACSS transactions  that match by the parms indicated in the query params
+   * @param {any} param0 Object with args and jwt 
+   * @param {any} authToken JWT Authtoken decoded
+   */
+  getTransactions$({ args, jwt }, authToken){
+    return RoleValidator.checkPermissions$(
+      authToken.realm_access.roles,
+      "AfccReloadAcssChannel",
+      "getAfccReload$",
+      PERMISSION_DENIED_ERROR,
+      ["operator"]
+    )
+    .mergeMap(() => TransactionDA.searchTransactions$(args) )     
+    .mergeMap(payload => this.buildAndSendResponse$(payload));
+  }
+
+
+
+   /**
+   * Create new Acss channel configuration, and replace the current channel cconfiguration
+   * @param {Object} param0 Object that contains query Arguments, jwt and fiel
+   * @param {String} authToken  JWT Authtoken decoded
+   */
   createConfiguration$({ args, jwt }, authToken) {
     console.log("createConfiguration$", args); 
 
-    return Rx.Observable.of({})
-      .mergeMap(() =>
-        eventSourcing.eventStore
-          .emitEvent$(
-            new Event({
-              eventType: "ACSSConfigurationCreated",
-              eventTypeVersion: 1,
-              aggregateType: "AcssChannel",
-              aggregateId: Date.now(),
-              data: args.input,
-              user: authToken.preferred_username
-            })
-          )
+    return RoleValidator.checkPermissions$(
+      authToken.realm_access.roles,
+      "AfccReloadAcssChannel",
+      "getAfccReload$",
+      PERMISSION_DENIED_ERROR,
+      ["operator"]
+    )
+    .mergeMap(() => 
+      eventSourcing.eventStore.emitEvent$(
+        new Event({
+          eventType: "ACSSConfigurationCreated",
+          eventTypeVersion: 1,
+          aggregateType: "AcssChannel",
+          aggregateId: Date.now(),
+          data: args.input,
+          user: authToken.preferred_username
+        })
       )
-      .mapTo({
-        code: 200,
-        message: "persistBasicInfoTag$"
-      })
-      .do(r => console.log("RESPUESTA ==>", r))
-      .mergeMap(payload => this.buildAndSendResponse$(payload));
+    )
+    .mapTo({
+      code: 200,
+      message: "persistBasicInfoTag$"
+    })
+    .do(r => console.log("RESPUESTA ==>", r))
+    .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 
 

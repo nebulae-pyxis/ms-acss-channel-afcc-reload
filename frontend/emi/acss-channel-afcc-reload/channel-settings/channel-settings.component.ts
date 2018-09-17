@@ -9,7 +9,7 @@ import { FuseTranslationLoaderService } from '../../../../core/services/translat
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
 import { FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
-import { mergeMap, map, tap } from 'rxjs/operators';
+import { mergeMap, map, tap, filter } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 
 
@@ -25,6 +25,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
   @Input() currentVersion: boolean;
   subscriptions = [];
   settingsForm: FormGroup = new FormGroup({});
+  currentConf: any;
 
   constructor(
     private acssChannelAfccReloadService: AcssChannelAfccReloadService,
@@ -38,9 +39,9 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     console.log('this.currentVersion', this.currentVersion);
     this.settingsForm = new FormGroup({
-      fareCollectors: new FormArray([]),
-      reloaders: new FormArray([]),
-      parties: new FormArray([] )
+      fareCollectors: new FormArray([], [Validators.required]),
+      reloaders: new FormArray([], [Validators.required]),
+      parties: new FormArray([], [Validators.required] )
     }, [ this.validateParties.bind(this) ]);
 
       this.subscriptions.push(
@@ -48,6 +49,8 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
         .pipe(
           map(params => params.conf ? params.conf : 1),
           mergeMap(conf  => this.acssChannelAfccReloadService.getChannelSettings$(conf)),
+          filter(r => r !== null ),
+          tap(conf => this.currentConf = conf),
           mergeMap(dataResult =>  this.loadSettingsOnForm$(dataResult))
         )
         .subscribe(form => {
@@ -133,12 +136,36 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
       );
   }
 
+  logForm(){
+    console.log(this.settingsForm);
+  }
+
+  restoreSettings(){
+    Rx.Observable.of({})
+    .pipe(
+      tap(() => {
+        this.settingsForm = new FormGroup({
+          fareCollectors: new FormArray([], [Validators.required]),
+          reloaders: new FormArray([], [Validators.required]),
+          parties: new FormArray([], [Validators.required] )
+        }, [ this.validateParties.bind(this) ]);
+      }),
+      mergeMap(() => this.loadSettingsOnForm$(this.currentConf))
+    )
+    .subscribe(
+      ok => console.log(ok),
+      err => console.log(err),
+      () => console.log('Stream finished!!')
+    );
+  }
+
   deleteControl(formType: string, index: number){
     const formGroup = this.settingsForm.get(formType) as FormArray;
     formGroup.removeAt(index);
   }
 
   loadSettingsOnForm$(conf: any) {
+
     return Rx.Observable.forkJoin(
       Rx.Observable.from(conf.fareCollectors)
       .pipe(
@@ -178,7 +205,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     const acumulated = formGroup.get('parties')['controls'].reduce((count: number, fg: FormGroup) => count + fg.value.percentage, 0);
     return (acumulated > 100)
       ? { 'percentageExceeded': true }
-      : (acumulated < 100)
+      : (acumulated < 100 && acumulated !== 0)
         ? { 'percentageNotReached': true }
         : null;
   }

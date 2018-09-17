@@ -170,8 +170,9 @@ class UserEventConsumer {
     const reloadNetworkIndex = conf.reloadNetworks.findIndex(
       rn => rn.buId == afccEvent.data.bu.id
     );
+    console.log(conf.reloadNetworks, afccEvent.data.bu.id);
     if ( reloadNetworkIndex == -1 ){
-      // return Rx.Observable.throw();
+      console.error("RELOAD NETWOT NO FOUND")
     }
     return Rx.Observable.of({
       fromBuId: afccEvent.data.bu.id,

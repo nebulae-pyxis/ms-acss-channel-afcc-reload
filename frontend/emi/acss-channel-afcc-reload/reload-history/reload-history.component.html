@@ -25,12 +25,13 @@
       <div fxFlex="100" class="content-card mat-white-bg">
         <div fxFlex="100" fxLayout="column" style="width: 100%; justify-content: space-between" fxLayout.gt-sm="row">
           <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
-            <mat-table id="user-table" class="reloads-table" #table [dataSource]="dataSource" matSort [@animateStagger]="{value:'50'}"
+              <!-- matSort -->
+            <mat-table id="user-table" class="reloads-table" #table [dataSource]="dataSource" [@animateStagger]="{value:'50'}"
               fusePerfectScrollbar>
 
               <!-- Business unit ID Column -->
               <ng-container cdkColumnDef="buID">
-                <mat-header-cell mat-sort-header="buID" *cdkHeaderCellDef>{{'TABLE_HEADER.BU_ID' | translate}}</mat-header-cell>
+                <mat-header-cell mat-header="buID" *cdkHeaderCellDef>{{'TABLE_HEADER.BU_ID' | translate}}</mat-header-cell>
                 <mat-cell *cdkCellDef="let reload">
                   <p class="text-truncate">{{reload.bu.id}}</p>
                 </mat-cell>
@@ -38,7 +39,7 @@
 
               <!-- Business unit name Column -->
               <ng-container cdkColumnDef="buName">
-                <mat-header-cell mat-sort-header="buName" *cdkHeaderCellDef>{{'TABLE_HEADER.BU_NAME' | translate}}</mat-header-cell>
+                <mat-header-cell mat-header="buName" *cdkHeaderCellDef>{{'TABLE_HEADER.BU_NAME' | translate}}</mat-header-cell>
                 <mat-cell *cdkCellDef="let reload">
                   <p class="text-truncate">{{reload.bu.name}}</p>
                 </mat-cell>
@@ -46,7 +47,7 @@
 
               <!-- Business unit name Column -->
               <ng-container cdkColumnDef="machine">
-                <mat-header-cell mat-sort-header="machine" *cdkHeaderCellDef>{{'TABLE_HEADER.MACHINE' | translate}}</mat-header-cell>
+                <mat-header-cell mat-header="machine" *cdkHeaderCellDef>{{'TABLE_HEADER.MACHINE' | translate}}</mat-header-cell>
                 <mat-cell *cdkCellDef="let reload">
                   <p class="text-truncate">{{reload.source.machine}}</p>
                 </mat-cell>
@@ -54,7 +55,7 @@
 
               <!-- Business unit name Column -->
               <ng-container cdkColumnDef="amount">
-                <mat-header-cell mat-sort-header="amount" *cdkHeaderCellDef>{{'TABLE_HEADER.AMOUNT' | translate}}</mat-header-cell>
+                <mat-header-cell mat-header="amount" *cdkHeaderCellDef>{{'TABLE_HEADER.AMOUNT' | translate}}</mat-header-cell>
                 <mat-cell *cdkCellDef="let reload">
                   <p class="text-truncate">{{reload.amount}}</p>
                 </mat-cell>

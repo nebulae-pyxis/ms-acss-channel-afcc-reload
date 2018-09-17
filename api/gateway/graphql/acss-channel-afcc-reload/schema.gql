@@ -1,9 +1,3 @@
-"Hello world sample, please remove"
-type HelloWorldAcssChannelAfccReload{
-  "text"
-  sn: String!  
-}
-
 "Actor types"
 enum AcssChannelAfccReloadActorType{
   FARECOLLECTOR
@@ -162,16 +156,11 @@ type Query {
   AcssChannelAfccReloadGetAfccReloads(page: Int!, count: Int!, searchFilter: String): [AcssChannelAfccReloadEvent]
   AcssChannelAfccReloadGetAfccReload(id: String!): AcssChannelAfccReloadEvent
   # AcssChannelAfccReloadGetAfccReloadDetails: AcssChannelAfccReloadEventDetail
-  AcssChannelAfccReloadGetTransactionsFromAfccEvt(evtId: ID!): [AcssChannelAfccReloadTransaction]
   AcssChannelAfccReloadGetTransactions(page: Int!, count: Int!, sortColumn: String, sortOrder: String): [AcssChannelAfccReloadTransaction]
   AcssChannelAfccReloadGetReloadsCount: Int!
 
 }
 
-type Subscription {
-  "Hello world sample, please remove"
-  AcssChannelAfccReloadHelloWorldSubscription: HelloWorldAcssChannelAfccReload
-}
 
 type Mutation {
   AcssChannelAfccReloadCreateConfiguration(input: AcssChannelAfccReloadConfigurationInput!): AcssChannelAfccReloadCommandResponse

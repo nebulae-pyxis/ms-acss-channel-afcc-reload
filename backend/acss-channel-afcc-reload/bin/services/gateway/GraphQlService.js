@@ -158,10 +158,6 @@ class GraphQlService {
       },
       {
         aggregateType: "AfccChannel",
-        messageType: "gateway.graphql.query.getTransactionsFromAfccEvt"
-      },
-      {
-        aggregateType: "AfccChannel",
         messageType: "gateway.graphql.query.createConfiguration"
       },   
       {
@@ -190,10 +186,6 @@ class GraphQlService {
       },
       "gateway.graphql.query.getTransactions": {
         fn: afccReloadChannel.getTransactions$,
-        obj: afccReloadChannel
-      },
-      "gateway.graphql.query.getTransactionsFromAfccEvt": {
-        fn: afccReloadChannel.getTransactionsFromAfccEvt$,
         obj: afccReloadChannel
       },
       "gateway.graphql.query.createConfiguration": {

@@ -69,17 +69,6 @@ module.exports = {
             .mergeMap(response => getResponseFromBackEnd$(response))
             .toPromise();
         },
-        AcssChannelAfccReloadGetTransactionsFromAfccEvt(root, args, context){
-            return broker
-            .forwardAndGetReply$(
-                "AfccChannel",
-                "gateway.graphql.query.getTransactionsFromAfccEvt",
-                { root, args, jwt: context.encodedToken },
-                2000
-            )
-            .mergeMap(response => getResponseFromBackEnd$(response))
-            .toPromise();
-        },
         AcssChannelAfccReloadGetReloadsCount(root, args, context){
             return broker
             .forwardAndGetReply$(
@@ -110,16 +99,16 @@ module.exports = {
     },
     //// SUBSCRIPTIONS ///////
     Subscription: {
-        AcssChannelAfccReloadHelloWorldSubscription: {
-            subscribe: withFilter(
-                (payload, variables, context, info) => {
-                    return pubsub.asyncIterator("AcssChannelAfccReloadHelloWorldSubscription");
-                },
-                (payload, variables, context, info) => {
-                    return true;
-                }
-            )
-        }
+        // AcssChannelAfccReloadHelloWorldSubscription: {
+        //     subscribe: withFilter(
+        //         (payload, variables, context, info) => {
+        //             return pubsub.asyncIterator("AcssChannelAfccReloadHelloWorldSubscription");
+        //         },
+        //         (payload, variables, context, info) => {
+        //             return true;
+        //         }
+        //     )
+        // }
 
     }
 };
@@ -129,13 +118,13 @@ module.exports = {
 //// SUBSCRIPTIONS SOURCES ////
 
 const eventDescriptors = [
-    {
-        backendEventName: 'AcssChannelAfccReloadHelloWorldEvent',
-        gqlSubscriptionName: 'AcssChannelAfccReloadHelloWorldSubscription',
-        dataExtractor: (evt) => evt.data,// OPTIONAL, only use if needed
-        onError: (error, descriptor) => console.log(`Error processing ${descriptor.backendEventName}`),// OPTIONAL, only use if needed
-        onEvent: (evt, descriptor) => console.log(`Event of type  ${descriptor.backendEventName} arraived`),// OPTIONAL, only use if needed
-    },
+    // {
+    //     backendEventName: 'AcssChannelAfccReloadHelloWorldEvent',
+    //     gqlSubscriptionName: 'AcssChannelAfccReloadHelloWorldSubscription',
+    //     dataExtractor: (evt) => evt.data,// OPTIONAL, only use if needed
+    //     onError: (error, descriptor) => console.log(`Error processing ${descriptor.backendEventName}`),// OPTIONAL, only use if needed
+    //     onEvent: (evt, descriptor) => console.log(`Event of type  ${descriptor.backendEventName} arraived`),// OPTIONAL, only use if needed
+    // },
 ];
 
 
