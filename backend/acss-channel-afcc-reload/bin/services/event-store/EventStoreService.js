@@ -27,50 +27,6 @@ class EventStoreService {
    */
   start$() {
 
-    Rx.Observable.interval(5000)
-.mergeMap(() => {
-  const buNames = [
-    { name: "Nebula", id: "Nebula" },
-    { name: "Metro_123", id: "Metro_123" },
-    { name: "Gana_med", id: "Gana_med" }
-  ];
-  return Rx.Observable.of({
-    amount: Math.floor(Math.random() * 20) * 1000,
-    timestamp: Date.now(),
-    bu: buNames[Math.floor(Math.random() * buNames.length)],
-    afcc: {
-      before: "card Before",
-      after: "card After",
-      UId: "sdosd78gsod8fg6s",
-      cardId: "234563463546345634",
-      balanceBefore: 1000,
-      balanceAfter: 2000
-    },
-    source: {
-      machine: "Nesas-12",
-      ip: "192.168.1.15"
-    }
-  });
-})
-.mergeMap(afccEvt =>
-  eventSourcing.eventStore
-    .emitEvent$(
-      new Event({
-        eventType: "AfccReloadSold",
-        eventTypeVersion: 1,
-        aggregateType: "Afcc",
-        aggregateId: Date.now(),
-        data: afccEvt,
-        user: 'Felipe_santa'
-      })
-    )
-)
-.subscribe(
-  ok => {  },
-  error => console.log(error),
-  () => console.log("Finished")
-);
-
     //default error handler
     const onErrorHandler = error => {
       console.error("Error handling  EventStore incoming event", error);

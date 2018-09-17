@@ -49,7 +49,8 @@ type AcssChannelAfccReloadEvent {
   source: AcssChannelAfccReloadSource
   "Transactions"
   transactions: [AcssChannelAfccReloadTransaction]
-
+  "When transaction was processed"
+  timestamp: BigInt
 }
 
 type AcssChannelAfccReloadChannel{
