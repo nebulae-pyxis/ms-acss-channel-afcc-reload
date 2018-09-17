@@ -12,6 +12,7 @@ export const locale = {
     },
     ADVANCED_INFO: 'Información detallada',
     PROCESSOR_CHANNEL: 'Canal procesador',
+    MORE_DETAILS: 'Click for more details',
     CHANNEL_ID: 'ID: ',
     CHANNEL_SOFTWARE_VERSION: 'Version del software',
     CHANNEL_CONF_VERSION: 'Configuracion del canal'

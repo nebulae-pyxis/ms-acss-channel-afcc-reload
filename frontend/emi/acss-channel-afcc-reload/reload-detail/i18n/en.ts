@@ -12,6 +12,7 @@ export const locale = {
     },
     ADVANCED_INFO: 'Advanced Info',
     PROCESSOR_CHANNEL: 'Processor channel',
+    MORE_DETAILS: 'Click for more details',
     CHANNEL_ID: 'ID: ',
     CHANNEL_SOFTWARE_VERSION: 'Software version',
     CHANNEL_CONF_VERSION: 'Configuration Channel'

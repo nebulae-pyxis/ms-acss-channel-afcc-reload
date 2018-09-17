@@ -6,9 +6,14 @@
     <!-- WIDGET GROUP -->
     <div *ngIf="selectedReload" class="widget-group" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start">
 
-      <span fxFlex="100" style="font-size: 16px" fxLayoutAlign="center center">{{'RELOAD_DETAILS_TITLE' | translate }}</span>
+      <div fxFlex="5"  fxLayoutAlign="start center">
+          <button mat-icon-button aria-label="back" [routerLink]="['../..']" >
+              <mat-icon>keyboard_backspace</mat-icon>
+          </button>
+      </div>
+      <span fxFlex="95" style="font-size: 24px" fxLayoutAlign="center center">{{'RELOAD_DETAILS_TITLE' | translate }}</span>
       <!-- BASIC RELOAD INFO -->
-      <div *ngIf="selectedReload" fxFlex="100" fxLayout="row" fxLayoutAlign="space-around center">
+      <div *ngIf="selectedReload" fxFlex="94" fxLayout="row" fxLayoutAlign="space-around center">
         <div fxFlex="50" fxLayout="column" fxLayoutAlign="space-evenly center">
 
           <mat-form-field class="example-full-width">
@@ -44,12 +49,12 @@
               <mat-panel-title>
                 {{ 'ADVANCED_INFO' | translate }}
               </mat-panel-title>
-              <!-- <mat-panel-description>
-                  Type your name and age
-                </mat-panel-description> -->
+              <mat-panel-description>
+                  {{'MORE_DETAILS' | translate}}
+                </mat-panel-description>
             </mat-expansion-panel-header>
-            <div fxFlex="100" fxLayout="column" fxLayoutAlign="space-evenly stretch" id="panel-content">
-              <div fxFlex="100" >
+            <div id="panel-content" fxFlex="100" fxLayout="column" fxLayoutAlign="space-evenly stretch">
+              <div fxFlex="100" fxLayoutAlign="space-around center" >
                 <mat-form-field class="example-full-width">
                   <input matInput disabled placeholder="{{'CARD_ID' | translate}}" value="{{ selectedReload.afcc.cardId }}">
                 </mat-form-field>

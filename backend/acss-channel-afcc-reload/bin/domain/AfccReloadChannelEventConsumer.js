@@ -26,16 +26,13 @@ class UserEventConsumer {
   }
 
   handleAfccReloaded$(evt) {
-    // console.log("handleAfccReloaded$", evt);
     // searh the valid channel settiings
     return AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE)
-    // .do(conf => console.log(conf))
     // apply the rules and return the array with all transaction to persist
     .mergeMap((conf) => this.applyBusinessRules$(conf, evt))
     // insert all trsansaction to the MongoDB
     .mergeMap(transactionsArray => TransactionsDA.insertTransactions$(transactionsArray))
     // gets the transactions after been inserted
-    // .do(r => console.log(r))
     .map(result => result.ops)
     .mergeMap(transactions => 
       Rx.Observable.from(transactions)
@@ -53,7 +50,7 @@ class UserEventConsumer {
   }
 
   /**
-   *
+   * Verifies if the new settings 
    * @param {Object} conf Business rules where
    */
   verifyBusinessRules$(conf) {
@@ -144,6 +141,12 @@ class UserEventConsumer {
       )
   }
 
+
+  /**
+   * Create all transaction for each fare collector actor
+   * @param { Object } conf Channel configuration
+   * @param { Object } afccEvent AFCC reload event 
+   */
   createTransactionForFareCollector$(conf, afccEvent) {
     return Rx.Observable.of({
       fromBuId: afccEvent.data.bu.id,
@@ -165,6 +168,11 @@ class UserEventConsumer {
     });
   }
 
+  /**
+   * Create all transaction for each reload network actor
+   * @param { Object } conf Channel configuration
+   * @param { Object } afccEvent AFCC reload event 
+   */
   createTransactionForReloadNetWork$(conf, afccEvent) {
     console.log(conf);
     const reloadNetworkIndex = conf.reloadNetworks.findIndex(
@@ -195,6 +203,11 @@ class UserEventConsumer {
     });
   }
 
+  /**
+   * Create all transaction for each third part actor
+   * @param { Object } conf Channel configuration
+   * @param { Object } afccEvent AFCC reload event 
+   */
   createTransactionForParties$(conf, afccEvent) {
     const reloadNetworkIndex = conf.reloadNetworks.findIndex(
       rn => rn.buId == afccEvent.data.bu.id
@@ -228,6 +241,12 @@ class UserEventConsumer {
       .toArray();
   }
 
+  /**
+   * Verifies if the sumary of all transactions money match with the AFCC mount
+   * @param {any[]} transactionArray Array with all transaction as result of an AFCC reload event
+   * @param {any} conf Channel configuration
+   * @param {any} evt AFCC reload event
+   */
   validateFinalTransactions$(transactionArray, conf, evt) {
     return Rx.Observable.defer(() => Rx.Observable.of(transactionArray.reduce((acumulated, tr) => acumulated + tr.amount, 0)) )
     .mergeMap(amountProcessed => {

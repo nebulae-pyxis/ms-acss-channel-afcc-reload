@@ -20,6 +20,8 @@ export interface AcssChannelSettings{
 @Injectable()
 export class AcssChannelAfccReloadService {
 
+  selectedTab = 0;
+
 
   constructor(private gateway: GatewayService) {
 

@@ -46,6 +46,7 @@ export const getReloads = gql`
       searchFilter: $searchFilter
     ) {
       id
+      timestamp
       amount
       bu {
         id

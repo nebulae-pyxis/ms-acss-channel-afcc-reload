@@ -1,3 +1,4 @@
+import { AcssChannelAfccReloadService } from './acss-channel-afcc-reload.service';
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '../../../core/animations';
 import { locale as english } from './i18n/en';
@@ -14,7 +15,10 @@ import { FuseTranslationLoaderService } from '../../../core/services/translation
 })
 export class AcssChannelAfccReloadComponent implements OnInit, OnDestroy {
 
-  constructor( private translationLoader: FuseTranslationLoaderService ) {
+  constructor(
+    private translationLoader: FuseTranslationLoaderService,
+    private acssChannelAfccReloadService: AcssChannelAfccReloadService
+    ) {
     this.translationLoader.loadTranslations(english, spanish);
   }
 
@@ -22,6 +26,15 @@ export class AcssChannelAfccReloadComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+  }
+
+  onTabChange(event: any){
+    console.log(event);
+    this.acssChannelAfccReloadService.selectedTab = event.index;
+  }
+
+  getTabIndex(){
+    return this.acssChannelAfccReloadService.selectedTab;
   }
 
 }
