@@ -17,7 +17,7 @@
         <div fxFlex="50" fxLayout="column" fxLayoutAlign="space-evenly center">
 
           <mat-form-field class="example-full-width">
-            <input matInput disabled placeholder="{{'RELOAD.BU_ID' | translate }}" value="{{ selectedReload.bu.id }}">
+            <input matInput disabled placeholder="{{'RELOAD.BU_ID' | translate }}" value="{{ selectedReload.businessId }}">
           </mat-form-field>
           <mat-form-field class="example-full-width">
             <input matInput disabled placeholder="{{'RELOAD.SOURCE_MACHINE' | translate }}" value="{{selectedReload.source.machine}}">
@@ -30,7 +30,7 @@
         <div fxFlex="50" fxLayout="column" fxLayoutAlign="space-evenly center">
 
           <mat-form-field class="example-full-width">
-            <input matInput disabled placeholder="{{'RELOAD.BU_NAME' | translate }}" value="{{selectedReload.bu.name}}">
+            <input matInput disabled placeholder="{{'RELOAD.BU_NAME' | translate }}" value="{{selectedReload.businessName}}">
           </mat-form-field>
           <mat-form-field class="example-full-width">
             <input matInput disabled placeholder="{{'RELOAD.SOURCE_IP' | translate }}" value="{{selectedReload.source.ip}}">
@@ -65,10 +65,10 @@
               <div fxFlex="100">
                 <div  fxLayout.lt-sm="column"  fxFlex="100" id="comparison-table">
                   <div style="border-style: groove;" fxFlex="50">
-                    <span>{{ selectedReload.afcc.before }}</span>
+                    <span>{{ selectedReload.afcc.data.before }}</span>
                   </div>
                   <div style="border-style: groove;" fxFlex="50">
-                    <span>{{ selectedReload.afcc.after }}</span>
+                    <span>{{ selectedReload.afcc.data.after }}</span>
                   </div>
                 </div>
               </div>
@@ -93,10 +93,10 @@
           <div fxLayout="column" fxLayoutAlign="center center">
             <div fxLayout="row" fxLayoutAlign="space-around center">
               <span>
-                {{ transaction.fromBuName + '(' + transaction.fromBuId + ')' }}
+                {{ transaction.fromBuName + '(' + transaction.fromBu + ')' }}
               </span>
               <mat-icon>arrow_right_alt</mat-icon>
-              <span> {{ transaction.toBuName + '(' + transaction.toBuId + ')' }}</span>
+              <span> {{ transaction.toBuName + '(' + transaction.toBu + ')' }}</span>
             </div>
             <div style="font-size: 24px">
               {{ '$' + transaction.amount }}
@@ -122,11 +122,11 @@
             </div>
             <div fxLayoutAlign="space-evenly center">
               <span>{{'CHANNEL_SOFTWARE_VERSION' | translate}}</span>
-              <span>{{ transaction.channel.sv }}</span>
+              <span>{{ transaction.channel.v }}</span>
             </div>
             <div fxLayoutAlign="space-evenly center">
               <span>{{'CHANNEL_CONF_VERSION' | translate}}</span>
-              <span [routerLink]="['../../configuration', transaction.channel.conf ]" >{{transaction.channel.conf}}</span>
+              <span [routerLink]="['../../configuration', transaction.channel.conf ]" >{{transaction.channel.c}}</span>
             </div>
           </div>
         </div>

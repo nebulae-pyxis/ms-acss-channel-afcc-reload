@@ -46,7 +46,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getConfiguration$",
       PERMISSION_DENIED_ERROR,
-      ["operator"]
+      ["SYSADMIN"]
     )
     .mergeMap(() => AfccReloadChannelDA.searchConfiguration$(args.id) )    
     .mergeMap(payload => this.buildAndSendResponse$(payload))
@@ -65,7 +65,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getAfccReload$",
       PERMISSION_DENIED_ERROR,
-      ["operator"]
+      ["SYSADMIN"]
     )
     .mergeMap(() =>  AfccReloadsDA.searchReload$(args.id) ) 
     .map(reload => ({ ...reload, id: reload._id.toString()}))
@@ -84,7 +84,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getAfccReload$",
       PERMISSION_DENIED_ERROR,
-      ["operator"]
+      ["SYSADMIN"]
     )
     .mergeMap(() => AfccReloadsDA.searchReloads$(args) )     
     .mergeMap(payload => this.buildAndSendResponse$(payload));
@@ -101,7 +101,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getAfccReload$",
       PERMISSION_DENIED_ERROR,
-      ["operator"]
+      ["SYSADMIN"]
     )
     .mergeMap(() => AfccReloadsDA.getReloadsCount$() ) 
     .mergeMap(payload => this.buildAndSendResponse$(payload));
@@ -118,7 +118,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getAfccReload$",
       PERMISSION_DENIED_ERROR,
-      ["operator"]
+      ["SYSADMIN"]
     )
     .mergeMap(() => TransactionDA.searchTransactions$(args) )     
     .mergeMap(payload => this.buildAndSendResponse$(payload));
@@ -139,7 +139,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getAfccReload$",
       PERMISSION_DENIED_ERROR,
-      ["operator"]
+      ["SYSADMIN"]
     )
     .mergeMap(() => 
       eventSourcing.eventStore.emitEvent$(

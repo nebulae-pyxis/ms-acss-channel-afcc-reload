@@ -33,7 +33,7 @@
               <ng-container cdkColumnDef="buID">
                 <mat-header-cell mat-header="buID" *cdkHeaderCellDef>{{'TABLE_HEADER.BU_ID' | translate}}</mat-header-cell>
                 <mat-cell *cdkCellDef="let reload">
-                  <p class="text-truncate">{{reload.bu.id}}</p>
+                  <p class="text-truncate">{{reload.businessId}}</p>
                 </mat-cell>
               </ng-container>
 
@@ -41,7 +41,7 @@
               <ng-container cdkColumnDef="buName">
                 <mat-header-cell mat-header="buName" *cdkHeaderCellDef>{{'TABLE_HEADER.BU_NAME' | translate}}</mat-header-cell>
                 <mat-cell *cdkCellDef="let reload">
-                  <p class="text-truncate">{{reload.bu.name}}</p>
+                  <p class="text-truncate">{{reload.businessName}}</p>
                 </mat-cell>
               </ng-container>|
 

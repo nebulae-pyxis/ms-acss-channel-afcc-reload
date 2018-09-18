@@ -149,13 +149,13 @@ class UserEventConsumer {
    */
   createTransactionForFareCollector$(conf, afccEvent) {
     return Rx.Observable.of({
-      fromBuId: afccEvent.data.businessId,
-      toBuId: conf.fareCollectors[0].buId,
+      fromBu: afccEvent.data.businessId,
+      toBu: conf.fareCollectors[0].buId,
       amount: (afccEvent.data.amount / 100) * conf.fareCollectors[0].percentage,
       channel: {
         id: CHANNEL_ID,
-        sv: process.env.npm_package_version,
-        conf: conf.lastEdition
+        v: process.env.npm_package_version,
+        c: conf.lastEdition
       },
       timestamp: Date.now(),
       type: DEFAULT_TRANSACTION_TYPE,
@@ -182,14 +182,14 @@ class UserEventConsumer {
       console.error("RELOAD NETWOT NO FOUND")
     }
     return Rx.Observable.of({
-      fromBuId: afccEvent.data.businessId,
-      toBuId: afccEvent.data.businessId,
+      fromBu: afccEvent.data.businessId,
+      toBu: afccEvent.data.businessId,
       amount:
         (afccEvent.data.amount / 100) * conf.reloadNetworks[reloadNetworkIndex].percentage,
       channel: {
         id: CHANNEL_ID,
-        sv: process.env.npm_package_version,
-        conf: conf.lastEdition
+        v: process.env.npm_package_version,
+        c: conf.lastEdition
       },
       timestamp: Date.now(),
       type: DEFAULT_TRANSACTION_TYPE,
@@ -218,13 +218,13 @@ class UserEventConsumer {
     return Rx.Observable.from(conf.parties)
       .map(p => {
         return {
-          fromBuId: afccEvent.data.businessId,
-          toBuId: p.buId,
+          fromBu: afccEvent.data.businessId,
+          toBu: p.buId,
           amount: (surplusAmount / 100) * p.percentage,
           channel: {
             id: CHANNEL_ID,
-            sv: process.env.npm_package_version,
-            conf: conf.lastEdition
+            v: process.env.npm_package_version,
+            c: conf.lastEdition
           },
           timestamp: Date.now(),
           type: DEFAULT_TRANSACTION_TYPE,

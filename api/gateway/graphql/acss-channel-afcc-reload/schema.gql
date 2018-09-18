@@ -5,27 +5,30 @@ enum AcssChannelAfccReloadActorType{
   PARTIES
 }
 
-type AcssChannelAfccReloadEventBusinessUnit{
-  "Business unit id"
-  id: String
-  "Business unit name"
-  name: String
-}
-
-"AFCC data object"
-type AcssChannelAfccReloadEventAfcc{
+type AcssChannelAfccReloadEventAfccData{
   "Payment method before reload"
   before: String
   "Payment method after reload"
   after: String
-  "MISSING"
+}
+
+type AcssChannelAfccReloadEventAfccBalance{
+   "Payment method balance before reload"
+   before: Int
+   "Payment method balance after reload"
+   after: Int
+}
+
+"AFCC data object"
+type AcssChannelAfccReloadEventAfcc{
+  "Object to represent the before and after states"
+  data: AcssChannelAfccReloadEventAfccData
+  "Univervesal card Id"
   UId: String
   "Payment method Id"
   cardId: String
-  "Payment method balance before reload"
-  balanceBefore: Int
-  "Payment method balance after reload"
-  balanceAfter: Int
+  "Card balance"
+  balance: AcssChannelAfccReloadEventAfccBalance 
 }
 
 type AcssChannelAfccReloadSource{
@@ -42,7 +45,7 @@ type AcssChannelAfccReloadEvent {
   "Reload amount"
   amount: Int
   "Business unit id"
-  bu: AcssChannelAfccReloadEventBusinessUnit
+  businessId: String
   "AFCC data object"
   afcc: AcssChannelAfccReloadEventAfcc
   "Event source"
@@ -57,9 +60,9 @@ type AcssChannelAfccReloadChannel{
   "Channel processor id"
   id: String
   "Channel softwate version"
-  sv: String
+  v: String
   "Channel configuration version"
-  conf: String
+  c: String
 }
 
 type AcssChannelAfccReloadEvt{
@@ -78,13 +81,9 @@ type AcssChannelAfccReloadTransaction{
   "Transaction timestamp"
   timestamp: BigInt
   "Consignee business unit id"
-  fromBuId: String
-  "Consignee business unit name"
-  fromBuName: String
+  fromBu: String
   "Beneficiary business unit id"
-  toBuId: String
-  "Beneficiary business unit name"
-  toBuName: String
+  toBu: String
   "Money amount"
   amount: Float
   "Transaction's channel processor"

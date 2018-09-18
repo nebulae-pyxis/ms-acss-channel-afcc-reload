@@ -48,10 +48,7 @@ export const getReloads = gql`
       id
       timestamp
       amount
-      bu {
-        id
-        name
-      }
+      businessId
       source {
         machine
         ip
@@ -67,46 +64,44 @@ export const fetchTotalReloadsCount = gql`
 `;
 
 export const getCompleteReloadInfo = gql`
-  query getCompleteReloadInfo($reloadId: String!) {
-    AcssChannelAfccReloadGetAfccReload(id: $reloadId) {
-      id
-      amount
-      bu {
-        id
-        name
-      }
-      afcc {
+  query getCompleteReloadInfo($reloadId: String!){
+  AcssChannelAfccReloadGetAfccReload(id: $reloadId){
+    id
+    amount
+    businessId
+    afcc{
+      data{
         before
         after
-        UId
-        cardId
-        balanceBefore
-        balanceAfter
       }
-      source {
-        machine
-        ip
+      UId
+      cardId
+      balance{
+        before
+        after
       }
-      transactions {
+    }
+    source{
+      machine
+      ip
+    }
+    transactions{
+      timestamp
+      fromBu
+      toBu
+      amount
+      type
+      channel{
         id
-        timestamp
-        fromBuId
-        fromBuName
-        toBuId
-        toBuName
-        amount
+        v
+        c
+      }      
+      evt{
+        id
         type
-        channel {
-          id
-          sv
-          conf
-        }
-        evt {
-          id
-          type
-          user
-        }
+        user
       }
     }
   }
+}
 `;
