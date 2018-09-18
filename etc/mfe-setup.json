@@ -16,11 +16,11 @@
         "subgroups": [
             {
                 "groupId": "SYSTEM",
-                "id": "acss-channel-afcc-reload-subgroup",
+                "id": "processor-channels",
                 "icon": "dashboard",
                 "translate": {
-                    "en": "ACSS channel AFCC reload",
-                    "es": "Canal ACSS para recargas AFCC"
+                    "en": "Processor channels",
+                    "es": "Canales procesadores"
                 },
                 "priority": 2000
             }
@@ -28,7 +28,7 @@
         "contents": [
             {
                 "groupId": "SYSTEM",
-                "subgroupId": "acss-channel-afcc-reload-subgroup",
+                "subgroupId": "processor-channels",
                 "id": "acss-channel-afcc-reload",
                 "icon": "dashboard",
                 "translate": {
