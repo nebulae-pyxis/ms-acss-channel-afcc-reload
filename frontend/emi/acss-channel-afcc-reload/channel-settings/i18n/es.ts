@@ -2,8 +2,8 @@ export const locale = {
   lang: 'es',
   data: {
     SETTINGS: {
-      TITLE: 'Business unit configurations',
-      FARE_COLLECTOR_TITTLE: 'Recolector',
+      TITLE: 'Configuracion de unidad de negocio',
+      FARE_COLLECTOR_TITTLE: 'Fare collector',
       RELOADERS_TITTLE: 'Red de recargas',
       PARTIES_TITTLE: 'Terceros'
     },

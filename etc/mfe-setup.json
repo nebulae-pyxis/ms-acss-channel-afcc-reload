@@ -4,18 +4,18 @@
         "src": "frontend/emi/acss-channel-afcc-reload",
         "groups": [
             {
-              "id": "CHANNEL_PROCESSORS",
+              "id": "SYSTEM",
               "icon": "location_searching",
               "translate": {
-                "en": "Canales procesadores",
-                "es": "Channel processors"
+                "en": "System",
+                "es": "Sistema"
               },
-              "priority": 1000
+              "priority": 100
             }
           ],
         "subgroups": [
             {
-                "groupId": "CHANNEL_PROCESSORS",
+                "groupId": "SYSTEM",
                 "id": "acss-channel-afcc-reload-subgroup",
                 "icon": "dashboard",
                 "translate": {
@@ -27,7 +27,7 @@
         ],
         "contents": [
             {
-                "groupId": "CHANNEL_PROCESSORS",
+                "groupId": "SYSTEM",
                 "subgroupId": "acss-channel-afcc-reload-subgroup",
                 "id": "acss-channel-afcc-reload",
                 "icon": "dashboard",
