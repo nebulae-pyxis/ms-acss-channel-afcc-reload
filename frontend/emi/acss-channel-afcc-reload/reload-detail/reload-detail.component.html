@@ -13,8 +13,8 @@
       </div>
       <span fxFlex="95" style="font-size: 24px" fxLayoutAlign="center center">{{'RELOAD_DETAILS_TITLE' | translate }}</span>
       <!-- BASIC RELOAD INFO -->
-      <div *ngIf="selectedReload" fxFlex="94" fxLayout="row" fxLayoutAlign="space-around center">
-        <div fxFlex="50" fxLayout="column" fxLayoutAlign="space-evenly center">
+      <div *ngIf="selectedReload" fxFlex.lt-sm="100" fxFlex="94" fxLayout.lt-sm="column" fxLayout="row"  fxLayoutAlign="space-around center">
+        <div fxFlex="50" fxFlex.lt-ms="100"  fxLayout="column" fxLayoutAlign="space-evenly center">
 
           <mat-form-field class="example-full-width">
             <input matInput disabled placeholder="{{'RELOAD.BU_ID' | translate }}" value="{{ selectedReload.businessId }}">
@@ -27,7 +27,7 @@
           </mat-form-field>
 
         </div>
-        <div fxFlex="50" fxLayout="column" fxLayoutAlign="space-evenly center">
+        <div fxFlex="50" fxLayout="column"  fxLayoutAlign="space-evenly center">
 
           <mat-form-field class="example-full-width">
             <input matInput disabled placeholder="{{'RELOAD.BU_NAME' | translate }}" value="{{selectedReload.businessName}}">
@@ -53,8 +53,8 @@
                   {{'MORE_DETAILS' | translate}}
                 </mat-panel-description>
             </mat-expansion-panel-header>
-            <div id="panel-content" fxFlex="100" fxLayout="column" fxLayoutAlign="space-evenly stretch">
-              <div fxFlex="100" fxLayoutAlign="space-around center" >
+            <div id="panel-content" fxFlex="100" fxLayout="row" fxLayoutWrap fxLayoutAlign="space-evenly stretch">
+              <div fxFlex="100" fxLayout.lt-sm="column" fxLayoutAlign="space-around center" >
                 <mat-form-field class="example-full-width">
                   <input matInput disabled placeholder="{{'CARD_ID' | translate}}" value="{{ selectedReload.afcc.cardId }}">
                 </mat-form-field>
@@ -65,7 +65,7 @@
               <div fxFlex="100">
                 <div  fxLayout.lt-sm="column"  fxFlex="100" id="comparison-table">
                   <div style="border-style: groove;" fxFlex="50">
-                    <span>{{ selectedReload.afcc.data.before }}</span>
+                    <span>{{selectedReload.afcc.data.before }}</span>
                   </div>
                   <div style="border-style: groove;" fxFlex="50">
                     <span>{{ selectedReload.afcc.data.after }}</span>
@@ -92,19 +92,19 @@
           </div>
           <div fxLayout="column" fxLayoutAlign="center center">
             <div fxLayout="row" fxLayoutAlign="space-around center">
-              <span>
-                {{ transaction.fromBuName + '(' + transaction.fromBu + ')' }}
+              <span >
+                {{ transaction.fromBuName ? transaction.fromBuName : ''  + '(' + transaction.fromBu + ')' }}
               </span>
               <mat-icon>arrow_right_alt</mat-icon>
-              <span> {{ transaction.toBuName + '(' + transaction.toBu + ')' }}</span>
+              <span> {{ transaction.toBuName ? transaction.toBuName : '' + '(' + transaction.toBu + ')' }}</span>
             </div>
             <div style="font-size: 24px">
-              {{ '$' + transaction.amount }}
+              {{ transaction.amount | currency }}
             </div>
           </div>
           <div class="p-16 grey-50-bg border-top" fxLayout="row" fxLayoutAlign="center center">
             <!-- <span class="h4 secondary-text text-truncate"> DATE: </span> -->
-            <span class="h4 ml-8"> {{transaction.timestamp}} </span>
+            <span class="h4 ml-8"> {{transaction.timestamp | date:'H:mm:ss d/MMM/yyyy' }} </span>
           </div>
         </div>
         <!-- / Front -->
@@ -122,7 +122,7 @@
             </div>
             <div fxLayoutAlign="space-evenly center">
               <span>{{'CHANNEL_SOFTWARE_VERSION' | translate}}</span>
-              <span>{{ transaction.channel.v }}</span>
+              <span>{{ transaction.channel.v  }}</span>
             </div>
             <div fxLayoutAlign="space-evenly center">
               <span>{{'CHANNEL_CONF_VERSION' | translate}}</span>

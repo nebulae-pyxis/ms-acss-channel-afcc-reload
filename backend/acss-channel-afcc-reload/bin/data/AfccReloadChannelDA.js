@@ -4,7 +4,7 @@ let mongoDB = undefined;
 //const mongoDB = require('./MongoDB')();
 const Rx = require('rxjs');
 const CollectionName = "acssChannel";
-const { CustomError } = require('../tools/customError');
+const { CustomError, AfccReloadProcessError } = require('../tools/customError');
 
 
 class AfccReloadChannelDA {
@@ -44,19 +44,27 @@ class AfccReloadChannelDA {
         { upsert: true }
       )),
       Rx.Observable.of(conf)
-        .map((doc) => {
-          doc.id = doc.lastEdition;
-          return doc;
-        })
-        .do(doc => console.log("###############", doc, "######################"))
+        .map((doc) => ({...doc, id: doc.lastEdition}))
         .mergeMap((doc) => Rx.Observable.defer(() => collection.insertOne(doc))
         )
     )
   }
 
-  static searchConfiguration$(id) {
+  static searchConfiguration$(id, afccEvent) {
     const collection = mongoDB.db.collection(CollectionName);
-    return Rx.Observable.defer(() => collection.findOne({ id: id }));
+    return Rx.Observable.defer(() => collection.findOne({ id: id }))
+    .mergeMap(config => 
+      config
+      ? Rx.Observable.of(config)
+      : Rx.Observable.throw(
+        new AfccReloadProcessError(
+          'ChannelConfigurationNoFound',
+          'Channel configuration no found',
+          afccEvent,
+          undefined
+        )
+      )
+    )
   }
 }
 

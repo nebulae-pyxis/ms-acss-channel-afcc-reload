@@ -10,6 +10,7 @@ export const locale = {
     FORM: {
       BUID_PLACEHOLDER: 'ID de unidad de negocio',
       BU_NAME: 'Nombre de la unidad de negocio',
+      BU_FROM: 'Unidad de negocio que paga',
       PERCENTAGE_BELONG: 'Porcentaje'
     },
     ERRORS: {

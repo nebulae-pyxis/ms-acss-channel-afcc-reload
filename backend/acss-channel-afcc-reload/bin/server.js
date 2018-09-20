@@ -10,6 +10,7 @@ const mongoDB = require('./data/MongoDB').singleton();
 const AfccReloadChannelDA = require('./data/AfccReloadChannelDA');
 const AfccReloadsDA = require('./data/AfccReloadsDA');
 const TransactionsDA = require('./data/TransactionsDA');
+const TransactionsErrorsDA = require('./data/TransactionsErrorsDA');
 const graphQlService = require('./services/gateway/GraphQlService')();
 const Rx = require('rxjs');
 
@@ -21,7 +22,8 @@ const start = () => {
         Rx.Observable.forkJoin(
             AfccReloadChannelDA.start$(),
             AfccReloadsDA.start$(),
-            TransactionsDA.start$()
+            TransactionsDA.start$(),
+            TransactionsErrorsDA.start$()
         ),
         graphQlService.start$()
     ).subscribe(

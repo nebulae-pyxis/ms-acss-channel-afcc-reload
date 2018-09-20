@@ -5,8 +5,9 @@ const broker = require("../tools/broker/BrokerFactory")();
 const MATERIALIZED_VIEW_TOPIC = "materialized-view-updates";
 const AfccReloadsDA = require("../data/AfccReloadsDA");
 const AfccReloadChannelDA = require("../data/AfccReloadChannelDA");
+const TransactionsErrorsDA = require('../data/TransactionsErrorsDA');
 const TransactionsDA = require("../data/TransactionsDA");
-const { CustomError } = require("../tools/customError");
+const { CustomError, AfccReloadProcessError } = require("../tools/customError");
 const CHANNEL_ID = "ACSS_CHANNEL_AFCC_RELOAD";
 const CURRENT_RULE = 1;
 const DEFAULT_TRANSACTION_TYPE = "AFCC_RELOADED";
@@ -20,16 +21,24 @@ class UserEventConsumer {
   constructor() {}
 
   handleAcssSettingsCreated$(evt){
-    console.log('handleAcssSettingsCreated$', evt);
+    console.log('handleAcssSettingsCreated$', JSON.stringify(evt));
     return Rx.Observable.of({...evt.data, editor: evt.user })
     .mergeMap(conf => AfccReloadChannelDA.insertConfiguration$(conf))
   }
 
+  /**
+   * 
+   * @param {any} evt AfccEvent  
+   */
   handleAfccReloaded$(evt) {
     // searh the valid channel settiings
-    return AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE)
-      // apply the rules and return the array with all transaction to persist
+    return AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE, evt)
+      // verifies that the actors interacting with the event are in the channel configuration
+      .mergeMap(conf => this.validateAfccEvent$(conf, evt))
+      // apply the rules and return the array with all transaction to persist      
       .mergeMap((conf) => this.applyBusinessRules$(conf, evt))
+      .mergeMap(result => this.validateFinalTransactions$(result.transactions, result.conf, evt))
+      // .do(r => console.log(r))
       // insert all trsansaction to the MongoDB
       .mergeMap(transactionsArray => TransactionsDA.insertTransactions$(transactionsArray))
       // gets the transactions after been inserted
@@ -46,7 +55,8 @@ class UserEventConsumer {
       // build Reload object with its transactions generated
       .map(arrayTransactions => ({ ...evt.data, timestamp: evt.timestamp, transactions: arrayTransactions }))
       // inserts the reload object
-      .mergeMap(reload => AfccReloadsDA.insertOneReload$(reload));
+      .mergeMap(reload => AfccReloadsDA.insertOneReload$(reload))
+      .catch(error => this.errorHandler$(error, evt))
   }
 
   /**
@@ -133,11 +143,14 @@ class UserEventConsumer {
           fareCollectorTransation,
           reloadNetworkTransation,
           partiesTransactions
-        ]) => [
-          fareCollectorTransation,
-          reloadNetworkTransation,
-          ...partiesTransactions
-        ]
+        ]) => ({
+          transactions: [
+            fareCollectorTransation,
+            reloadNetworkTransation,
+            ...partiesTransactions
+          ],
+          conf: configuration
+        })
       )
   }
 
@@ -148,23 +161,13 @@ class UserEventConsumer {
    * @param { Object } afccEvent AFCC reload event 
    */
   createTransactionForFareCollector$(conf, afccEvent) {
-    return Rx.Observable.of({
-      fromBu: afccEvent.data.businessId,
-      toBu: conf.fareCollectors[0].buId,
-      amount: (afccEvent.data.amount / 100) * conf.fareCollectors[0].percentage,
-      channel: {
-        id: CHANNEL_ID,
-        v: process.env.npm_package_version,
-        c: conf.lastEdition
-      },
-      timestamp: Date.now(),
-      type: DEFAULT_TRANSACTION_TYPE,
-      evt: {
-        id: afccEvent._id.toString(),     // missing to define
-        type: afccEvent.et, // missing to define
-        user: afccEvent.user  // missing to define
-      }
-    });
+    return this.createTransactionObject$(
+      conf.fareCollectors[0],
+      (afccEvent.data.amount / 100) * conf.fareCollectors[0].percentage,
+      conf,
+      DEFAULT_TRANSACTION_TYPE,
+      afccEvent
+    )
   }
 
   /**
@@ -173,32 +176,22 @@ class UserEventConsumer {
    * @param { Object } afccEvent AFCC reload event 
    */
   createTransactionForReloadNetWork$(conf, afccEvent) {
-    console.log(conf);
-    const reloadNetworkIndex = conf.reloadNetworks.findIndex(
-      rn => rn.buId == afccEvent.data.businessId
-    );
-    console.log(conf.reloadNetworks, afccEvent.data.businessId);
+    const reloadNetworkIndex = conf.reloadNetworks.findIndex( rn => rn.buId == afccEvent.data.businessId );
     if ( reloadNetworkIndex == -1 ){
-      console.error("RELOAD NETWOT NO FOUND")
+      return Rx.Observable.throw(
+        new AfccReloadProcessError(
+          `${afccEvent.data.businessId} business unit id no found in reloadnetwork settings`, 
+          'ReloadNetworkTransactionError',
+           afccEvent, conf)
+      )  
     }
-    return Rx.Observable.of({
-      fromBu: afccEvent.data.businessId,
-      toBu: afccEvent.data.businessId,
-      amount:
-        (afccEvent.data.amount / 100) * conf.reloadNetworks[reloadNetworkIndex].percentage,
-      channel: {
-        id: CHANNEL_ID,
-        v: process.env.npm_package_version,
-        c: conf.lastEdition
-      },
-      timestamp: Date.now(),
-      type: DEFAULT_TRANSACTION_TYPE,
-      evt: {
-        id: afccEvent._id, // missing to define
-        type: afccEvent.et, // missing to define
-        user: afccEvent.user // missing to define
-      }
-    });
+    return this.createTransactionObject$(
+      conf.reloadNetworks[reloadNetworkIndex],
+      (afccEvent.data.amount / 100) * conf.reloadNetworks[reloadNetworkIndex].percentage,
+      conf,
+      DEFAULT_TRANSACTION_TYPE,
+      afccEvent
+    )
   }
 
   /**
@@ -210,31 +203,24 @@ class UserEventConsumer {
     const reloadNetworkIndex = conf.reloadNetworks.findIndex(
       rn => rn.buId == afccEvent.data.businessId
     );
+    if(reloadNetworkIndex === -1){
+      return Rx.Observable.throw(
+        new AfccReloadProcessError(`${afccEvent.data.businessId} business unit id no found in reloadnetwork settings `, 'PartiesTransactionError', afccEvent, conf)
+      ) 
+    }
     const surplusAsPercentage =
       100 -
       (conf.fareCollectors[0].percentage +
         conf.reloadNetworks[reloadNetworkIndex].percentage);
     const surplusAmount = (afccEvent.data.amount / 100) * surplusAsPercentage;
     return Rx.Observable.from(conf.parties)
-      .map(p => {
-        return {
-          fromBu: afccEvent.data.businessId,
-          toBu: p.buId,
-          amount: (surplusAmount / 100) * p.percentage,
-          channel: {
-            id: CHANNEL_ID,
-            v: process.env.npm_package_version,
-            c: conf.lastEdition
-          },
-          timestamp: Date.now(),
-          type: DEFAULT_TRANSACTION_TYPE,
-          evt: {
-            id: afccEvent._id, // missing to define
-            type: afccEvent.et, // missing to define
-            user: afccEvent.user // missing to define
-          }
-        };
-      })
+        .mergeMap(p =>  this.createTransactionObject$(
+          p,
+          (surplusAmount / 100) * p.percentage,
+          conf,
+          DEFAULT_TRANSACTION_TYPE,
+          afccEvent
+        ) )
       .toArray();
   }
 
@@ -244,24 +230,106 @@ class UserEventConsumer {
    * @param {any} conf Channel configuration
    * @param {any} evt AFCC reload event
    */
-  validateFinalTransactions$(transactionArray, conf, evt) {
-    return Rx.Observable.defer(() => Rx.Observable.of(transactionArray.reduce((acumulated, tr) => acumulated + tr.amount, 0)) )
-    .mergeMap(amountProcessed => {
-      if (amountProcessed == evt.amount) {
-        console.log("Se repartio todo el dinero");
-        return Rx.Observable.of(transactionArray);
-      } else {
-        console.log("no se repartio el dinero del evento de venta");
-        return Rx.Observable.throw(
-          new CustomError(
-            "amount mismatch",
-            "validateFinalTransactions$",
-            undefined,
-            "The reload amount does not macth with all transaction amount"
-          )
-        );
+  validateFinalTransactions$(transactionArray, conf, afccEvent) {
+    // console.log("################################################################");
+    // console.log("### Valor de la recarga ==>", afccEvent.data.amount)
+    return Rx.Observable.defer(() => Rx.Observable.of(transactionArray.reduce((acumulated, tr) => acumulated + Math.floor(tr.amount * 100), 0)))
+    .map(amountProcessed => Math.floor(amountProcessed)/100)
+      .mergeMap(amountProcessed => {
+        console.log("Cantida de dinero repartido en las transacciones ==> ", amountProcessed)
+        if (amountProcessed == afccEvent.data.amount) {
+          return Rx.Observable.of(transactionArray);
+        }
+        else {
+          return Rx.Observable.of(amountProcessed)
+            .map(amount => Math.round((afccEvent.data.amount - amount) * 100) / 100)
+            .do(a => console.log("#### Dinero de los sobrados ==> ", a))
+            .mergeMap((amount) => this.createTransactionObject$(
+              conf.surplusCollectors[0],
+              amount,
+              conf,
+              DEFAULT_TRANSACTION_TYPE,
+              afccEvent
+            ))
+            .map(finalTransaction => [...transactionArray, finalTransaction])
+        }
+      })
+      .do(allTransactions => {
+        allTransactions.forEach(t => {
+          console.log("Transaction_amount: ", t.amount);
+        })       
+        const total = allTransactions.reduce((acc, tr) => acc + Math.floor(tr.amount * 100), 0)/100;
+        console.log(total);
+      })
+  }
+
+  /**
+   * 
+   * @param {any} transaction transaction object
+   * @param {number} decimals decimal to truncate the amount
+   */
+  truncateAmount$(transaction, decimals = 2){
+    return Rx.Observable.of(Math.pow(10, decimals))
+    .map((n) => ({...transaction, amount: Math.floor(transaction.amount * n)/n  }));
+  }
+
+  /**
+   * 
+   * @param {string} toBu 
+   * @param {Float} amount 
+   * @param {any} channel 
+   * @param {string} type 
+   * @param {any} event 
+   */
+  createTransactionObject$(actorConf, amount, conf, type, afccEvent) {
+    console.log(conf);
+    return Rx.Observable.of({
+      fromBu: actorConf.fromBu,
+      toBu: actorConf.buId,
+      amount: amount,
+      channel: {
+        id: CHANNEL_ID,
+        v: process.env.npm_package_version,
+        c: conf.lastEdition
+      },
+      timestamp: Date.now(),
+      type: type,
+      evt: {
+        id: afccEvent._id, // missing to define
+        type: afccEvent.et, // missing to define
+        user: afccEvent.user // missing to define
       }
-    })   
+    })
+    .mergeMap(transaction => this.truncateAmount$(transaction))
+  }
+
+  validateAfccEvent$(conf, afccEvent){
+    return Rx.Observable.of({})
+    .mapTo(conf)
+  }
+
+  /**
+   * 
+   * @param {Error} err Error Object
+   * @param {any} afccReloadEvent AFCC event 
+   * @param {any} channelConf channel configuration used to process the afcc event
+   */
+  errorHandler$(err) {
+    console.log(err);
+    return Rx.Observable.of(err)
+    .mergeMap(err => {
+      const isCustomError = err instanceof AfccReloadProcessError;
+      if(isCustomError){
+        return TransactionsErrorsDA.insertError$(err.getContent())
+      }
+      // missin what happen if thr error is not controlled ??
+      return Rx.Observable.of(new AfccReloadProcessError(
+        'unknow',
+        'unknow',
+        undefined,
+        undefined
+      ));
+    });   
   }
 }
 /**

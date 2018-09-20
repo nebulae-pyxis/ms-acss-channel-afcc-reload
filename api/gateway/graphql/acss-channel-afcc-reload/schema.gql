@@ -98,6 +98,8 @@ type AcssChannelAfccReloadTransaction{
 type AcssChannelAfccReloadActor{
   "Actor's business unit Id"
   buId: String
+  "Consignee business unit id"
+  fromBu: String
   "Actor name"
   name: String
   "percentage belonging"
@@ -107,6 +109,8 @@ type AcssChannelAfccReloadActor{
 input AcssChannelAfccReloadActorInput{
   "Actor's business unit Id"
   buId: String
+   "Consignee business unit id"
+  fromBu: String
   "Actor name"
   name: String
   "percentage belonging"
@@ -123,6 +127,8 @@ type AcssChannelAfccReloadConfigurationObject{
   reloadNetworks: [AcssChannelAfccReloadActor]
   "List of parties actors in this configuration"
   parties: [AcssChannelAfccReloadActor]
+  "surplus collector"
+  surplusCollectors: [AcssChannelAfccReloadActor]
   "Last edition for this configuation"
   lastEdition: BigInt
   "user who Created this configuration"
@@ -139,6 +145,8 @@ input AcssChannelAfccReloadConfigurationInput{
   reloadNetworks: [AcssChannelAfccReloadActorInput]
   "List of parties actors in this configuration"
   parties: [AcssChannelAfccReloadActorInput]
+  "surplusCollectors"
+  surplusCollectors: [AcssChannelAfccReloadActorInput]
   "Last edition for this configuation"
   lastEdition: BigInt
 }

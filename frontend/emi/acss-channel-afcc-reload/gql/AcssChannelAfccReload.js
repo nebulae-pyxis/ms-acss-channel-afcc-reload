@@ -11,18 +11,23 @@ export const getChannelSettings = gql`
       lastEdition
       editor
       fareCollectors {
+        fromBu
         buId
-        name
         percentage
       }
       reloadNetworks {
+        fromBu
         buId
-        name
         percentage
       }
       parties {
+        fromBu
         buId
-        name
+        percentage
+      }
+      surplusCollectors{
+        fromBu
+        buId
         percentage
       }
     }
@@ -95,7 +100,7 @@ export const getCompleteReloadInfo = gql`
         id
         v
         c
-      }      
+      }
       evt{
         id
         type

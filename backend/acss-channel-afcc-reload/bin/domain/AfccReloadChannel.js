@@ -67,8 +67,13 @@ class AfccReloadChannel{
       PERMISSION_DENIED_ERROR,
       ["SYSADMIN"]
     )
-    .mergeMap(() =>  AfccReloadsDA.searchReload$(args.id) ) 
-    .map(reload => ({ ...reload, id: reload._id.toString()}))
+    .mergeMap(() =>  AfccReloadsDA.searchReload$(args.id) )
+    .map(reload => {
+      reload.id = reload._id.toString();
+      reload.afcc.data.before = JSON.stringify(reload.afcc.data.before);
+      reload.afcc.data.after = JSON.stringify(reload.afcc.data.after)
+      return reload;
+    })
     .mergeMap(payload => this.buildAndSendResponse$(payload));
   }
 

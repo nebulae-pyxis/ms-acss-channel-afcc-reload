@@ -33,17 +33,20 @@ export class ReloadDetailComponent implements OnInit, OnDestroy {
         map(params => params.id),
         mergeMap(reloadId => this.acssChannelAfccReloadService.getCompleteReloadInfo$(reloadId)),
         map(response => response.data.AcssChannelAfccReloadGetAfccReload),
-        tap(reload => this.selectedReload = reload)
+        tap(r => console.log(r)),
+        tap(reload => {
+          this.selectedReload = reload;
+          console.log('$$$$$$$$$$', this.selectedReload);
+        })
       )
-      .subscribe(params => {
-        console.log('The reload ID to search is ==> ', params);
-      })
+      .subscribe(params => { })
     );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
+
 
 
 }

@@ -12,6 +12,13 @@ import { FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@ang
 import { mergeMap, map, tap, filter } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 
+export interface Actor{
+  buId: string;
+  fromBu: string;
+  name: string;
+  percentage: number;
+}
+
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -41,7 +48,8 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     this.settingsForm = new FormGroup({
       fareCollectors: new FormArray([], [Validators.required]),
       reloaders: new FormArray([], [Validators.required]),
-      parties: new FormArray([], [Validators.required] )
+      parties: new FormArray([], [Validators.required] ),
+      surplusCollectors: new FormArray([], [Validators.required] )
     }, [ this.validateParties.bind(this) ]);
 
       this.subscriptions.push(
@@ -62,22 +70,14 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
   }
 
-  createItem(type?: string, businessUnitId?: string, businessUnitName?: string, percentage?: number): FormGroup {
+  createItem(type?: string, businessUnitFrom?: string, businessUnitId?: string, percentage?: number): FormGroup {
 
     switch (type){
       case 'fareCollectors':
         return this.formBuilder.group({
-          businessUnitId: new FormControl(
-            { value: businessUnitId, disabled: !this.currentVersion },
-            [Validators.required]
-          ),
-          businessUnitName: new FormControl(
-            { value: businessUnitName, disabled: true },
-            [Validators.required]
-          ),
-          percentage: new FormControl(
-            { value: percentage, disabled: !this.currentVersion },
-            [
+          businessUnitFrom: new FormControl( { value: businessUnitFrom, disabled: !this.currentVersion }, [Validators.required]),
+          businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }, [Validators.required]),
+          percentage: new FormControl({ value: percentage, disabled: !this.currentVersion }, [
               Validators.required,
               Validators.min(0),
               Validators.max(100)
@@ -86,8 +86,9 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
         });
       case 'reloaders':
         return this.formBuilder.group({
+          businessUnitFrom: new FormControl({ value: businessUnitFrom, disabled: !this.currentVersion }, [Validators.required]),
           businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }, [Validators.required]),
-          businessUnitName: new FormControl({ value: businessUnitName, disabled: true }, [Validators.required]),
+          // businessUnitName: new FormControl({ value: businessUnitName, disabled: true }, [Validators.required]),
           percentage: new FormControl(
             { value: percentage, disabled: !this.currentVersion },
             [Validators.required, Validators.min(0), Validators.max(100), this.validateReloaders.bind(this)]
@@ -95,16 +96,23 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
         });
       case 'parties':
         return this.formBuilder.group({
+          businessUnitFrom: new FormControl({ value: businessUnitFrom, disabled: !this.currentVersion }, [Validators.required]),
           businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }, [Validators.required]),
-          businessUnitName: new FormControl({ value: businessUnitName, disabled: true }, [Validators.required]),
+          // businessUnitName: new FormControl({ value: businessUnitName, disabled: true }, [Validators.required]),
           percentage: new FormControl(
             { value: percentage, disabled: !this.currentVersion },
             [Validators.required, Validators.min(0), Validators.max(100)])
         });
+        case 'surplusCollectors':
+          return this.formBuilder.group({
+            businessUnitFrom: new FormControl({ value: businessUnitFrom, disabled: !this.currentVersion }, [Validators.required]),
+            businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }, [Validators.required])
+          });
       default: {
         return this.formBuilder.group({
+          businessUnitFrom: new FormControl({ value: businessUnitFrom, disabled: !this.currentVersion }, [Validators.required]),
           businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }),
-          businessUnitName: new FormControl({ value: businessUnitName, disabled: true }),
+          // businessUnitName: new FormControl({ value: businessUnitName, disabled: true }),
           percentage: new FormControl(percentage)
         });
       }
@@ -121,9 +129,10 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     const formValue = this.settingsForm.getRawValue();
     Rx.Observable.of({
       id: 1,
-      fareCollectors: [...formValue.fareCollectors.map(e => ({ buId: e.businessUnitId, percentage: e.percentage }))],
-      reloadNetworks: [...formValue.reloaders.map(e => ({ buId: e.businessUnitId, percentage: e.percentage }))],
-      parties: [...formValue.parties.map(e => ({ buId: e.businessUnitId, percentage: e.percentage }))],
+      fareCollectors: [...formValue.fareCollectors.map(e => ({ buId: e.businessUnitId, percentage: e.percentage, fromBu: e.businessUnitFrom }))],
+      reloadNetworks: [...formValue.reloaders.map(e => ({ buId: e.businessUnitId, percentage: e.percentage, fromBu: e.businessUnitFrom }))],
+      parties: [...formValue.parties.map(e => ({ buId: e.businessUnitId, percentage: e.percentage, fromBu: e.businessUnitFrom }))],
+      surplusCollectors: [...formValue.surplusCollectors.map(e => ({ buId: e.businessUnitId, fromBu: e.businessUnitFrom }))],
       lastEdition: Date.now()
     })
       .pipe(
@@ -140,14 +149,18 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     console.log(this.settingsForm);
   }
 
-  restoreSettings(){
+  restoreSettings(i){
+    console.log(i);
+
+    console.log('FORMULARIO ==> ', this.settingsForm.getRawValue());
     Rx.Observable.of({})
     .pipe(
       tap(() => {
         this.settingsForm = new FormGroup({
           fareCollectors: new FormArray([], [Validators.required]),
           reloaders: new FormArray([], [Validators.required]),
-          parties: new FormArray([], [Validators.required] )
+          parties: new FormArray([], [Validators.required] ),
+          surplusCollectors: new FormArray([], [Validators.required] )
         }, [ this.validateParties.bind(this) ]);
       }),
       mergeMap(() => this.loadSettingsOnForm$(this.currentConf))
@@ -169,28 +182,36 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     return Rx.Observable.forkJoin(
       Rx.Observable.from(conf.fareCollectors)
       .pipe(
-        map((actor: { buId: string, name: string, percentage: number }) => {
+        map((actor: Actor) => {
           (this.settingsForm.get('fareCollectors') as FormArray).push(
-            this.createItem('fareCollectors', actor.buId, actor.name ? actor.name : '' , actor.percentage )
+            this.createItem('fareCollectors', actor.fromBu, actor.buId, actor.percentage )
             );
         })
       ),
       Rx.Observable.from(conf.reloadNetworks)
       .pipe(
-        map((actor: { buId: string, name: string, percentage: number }) => {
+        map((actor: Actor ) => {
           (this.settingsForm.get('reloaders') as FormArray).push(
-            this.createItem('reloaders', actor.buId, actor.name ? actor.name : '', actor.percentage)
+            this.createItem('reloaders', actor.fromBu, actor.buId, actor.percentage)
             );
         })
       ),
       Rx.Observable.from(conf.parties)
       .pipe(
-        map((actor: { buId: string, name: string, percentage: number }) => {
+        map((actor: Actor) => {
           (this.settingsForm.get('parties') as FormArray).push(
-            this.createItem('parties', actor.buId, actor.name ? actor.name : '', actor.percentage)
+            this.createItem('parties', actor.fromBu, actor.buId, actor.percentage)
             );
         })
-      )
+      ),
+      Rx.Observable.from(conf.surplusCollectors)
+        .pipe(
+          map((actor: Actor) => {
+            (this.settingsForm.get('surplusCollectors') as FormArray).push(
+              this.createItem('surplusCollectors', actor.fromBu, actor.buId)
+            );
+          })
+        )
     );
   }
 

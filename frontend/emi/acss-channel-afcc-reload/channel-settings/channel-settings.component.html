@@ -11,125 +11,160 @@
 
       <!-- FARECOLLECTOR -->
       <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
-          <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
-              <span fxLayoutAlign="center center"> {{'SETTINGS.FARE_COLLECTOR_TITTLE' | translate}} </span>
-              <button mat-icon-button>
-                <mat-icon>info</mat-icon>
+        <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
+          <span fxLayoutAlign="center center"> {{'SETTINGS.FARE_COLLECTOR_TITTLE' | translate}} </span>
+          <button mat-icon-button>
+            <mat-icon>info</mat-icon>
+          </button>
+        </div>
+        <div fxFlex="100">
+          <div *ngFor="let item of settingsForm.get('fareCollectors')['controls']; let i = index;" fxFlex="100"
+            formArrayName="fareCollectors">
+            <div [formGroupName]="i" fxFlex="100" fxLayoutWrap >
+              <mat-form-field fxFlex="40" fxFlex.xs="100" >
+                <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
+              </mat-form-field>
+              <mat-form-field fxFlex="40" fxFlex.xs="100">
+                <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+              </mat-form-field>
+              <mat-form-field fxFlex="15" fxFlex.xs="100">
+                <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}"
+                [value]="settingsForm.controls['fareCollectors']['controls'][i].controls.percentage.value" >
+                <!-- value="{{  }}" -->
+              </mat-form-field>
+              <button *ngIf="currentVersion" fxFlex="5" fxFlex.xs="100" mat-icon-button (click)="deleteControl( 'fareCollectors', i)">
+                <mat-icon>delete</mat-icon>
               </button>
             </div>
-            <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
-              <div *ngFor="let item of settingsForm.get('fareCollectors')['controls']; let i = index;" fxFlex="100"
-                fxLayoutAlign="center center" formArrayName="fareCollectors">
-
-                <div [formGroupName]="i">
-                  <mat-form-field>
-                    <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
-                  </mat-form-field>
-                  <mat-form-field>
-                    <input matInput formControlName="businessUnitName" placeholder="{{'FORM.BU_NAME' | translate}}">
-                  </mat-form-field>
-                  <mat-form-field>
-                    <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
-                  </mat-form-field>
-                  <button *ngIf="currentVersion" mat-icon-button (click)="deleteControl( 'fareCollectors', i)">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </div>
-              </div>
-              <button *ngIf="settingsForm.get('fareCollectors').value.length == 0 && currentVersion" mat-icon-button (click)="addActor('fareCollectors')">
-                <mat-icon>add</mat-icon>
-              </button>
-            </div>
+          </div>
+          <button *ngIf="settingsForm.get('fareCollectors').value.length == 0 && currentVersion" mat-icon-button
+            (click)="addActor('fareCollectors')">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
       </mat-card>
 
       <!-- Chosen name: {{ orderForm.controls.items.controls[i].controls.name.value }} -->
       <!-- FARECOLLECTOR -->
       <!-- RELOADERS -->
       <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
-          <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
-              <span fxLayoutAlign="center center"> {{'SETTINGS.RELOADERS_TITTLE' | translate}} </span>
-              <button mat-icon-button>
-                <mat-icon>info</mat-icon>
+        <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
+          <span fxLayoutAlign="center center"> {{'SETTINGS.RELOADERS_TITTLE' | translate}} </span>
+          <button mat-icon-button>
+            <mat-icon>info</mat-icon>
+          </button>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="space-around stretch"  fxFlex="100">
+          <div *ngFor="let item of settingsForm.get('reloaders')['controls']; let i = index;" fxFlex="100"
+            formArrayName="reloaders">
+            <div [formGroupName]="i" fxFlex="100" fxLayoutWrap>
+              <mat-form-field fxFlex="40" fxFlex.xs="100" class="example-full-width">
+                <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
+              </mat-form-field>
+              <mat-form-field fxFlex="40" fxFlex.xs="100" class="example-full-width">
+                <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+              </mat-form-field>
+              <mat-form-field fxFlex="15" fxFlex.xs="100" class="example-full-width">
+                <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
+              </mat-form-field>
+              <button fxFlex="5" fxFlex.xs="100" *ngIf="currentVersion" mat-icon-button (click)="deleteControl( 'reloaders', i)">
+                <mat-icon>delete</mat-icon>
               </button>
             </div>
-            <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
-              <div *ngFor="let item of settingsForm.get('reloaders')['controls']; let i = index;" fxFlex="100" fxLayout="column"
-                fxLayoutAlign="center center" formArrayName="reloaders">
-                <div [formGroupName]="i">
-                  <mat-form-field class="example-full-width">
-                    <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
-                  </mat-form-field>
-                  <mat-form-field class="example-full-width">
-                    <input matInput formControlName="businessUnitName" placeholder="{{'FORM.BU_NAME' | translate}}">
-                  </mat-form-field>
-                  <mat-form-field class="example-full-width">
-                    <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
-                  </mat-form-field>
-                  <button *ngIf="currentVersion" mat-icon-button (click)="deleteControl( 'reloaders', i)">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </div>
-                <div *ngIf="settingsForm.get('reloaders')['controls'][i]['controls']['percentage'].errors ">
-                  <span style="color: red" *ngIf="settingsForm.get('reloaders')['controls'][i]['controls']['percentage'].errors['percentageExceeded']">
-                    {{'ERRORS.PERCENTAGE_EXECEEDED' | translate}}
-                  </span>
-                </div>
-              </div>
-              <!-- <span style="color: red" *ngIf="validateReloadNetworks()">Error en la configuracion</span> -->
-              <button *ngIf="currentVersion" mat-icon-button (click)="addActor('reloaders')">
-                <mat-icon>add</mat-icon>
-              </button>
+            <div *ngIf="settingsForm.get('reloaders')['controls'][i]['controls']['percentage'].errors ">
+              <span style="color: red" *ngIf="settingsForm.get('reloaders')['controls'][i]['controls']['percentage'].errors['percentageExceeded']">
+                {{'ERRORS.PERCENTAGE_EXECEEDED' | translate}}
+              </span>
             </div>
+          </div>
+          <!-- <span style="color: red" *ngIf="validateReloadNetworks()">Error en la configuracion</span> -->
+          <button *ngIf="currentVersion" mat-icon-button (click)="addActor('reloaders')">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
       </mat-card>
 
 
       <!-- RELOADERS -->
       <!-- THIRD PARTIES -->
       <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
-          <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
-              <span fxLayoutAlign="center center"> {{'SETTINGS.PARTIES_TITTLE' | translate}} </span>
-              <button mat-icon-button>
-                <mat-icon>info</mat-icon>
-              </button>
-            </div>
-            <div fxLayout="column" fxLayoutAlign="center center" fxFlex="100">
-              <div fxFlex="100" fxLayoutAlign="center center" formArrayName="parties" *ngFor="let item of settingsForm.get('parties')['controls']; let i = index;">
-                <div [formGroupName]="i">
+        <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
+          <span fxLayoutAlign="center center"> {{'SETTINGS.PARTIES_TITTLE' | translate}} </span>
+          <button mat-icon-button>
+            <mat-icon>info</mat-icon>
+          </button>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="space-around stretch" fxFlex="100">
+          <div formArrayName="parties" *ngFor="let item of settingsForm.get('parties')['controls']; let i = index;">
+            <div [formGroupName]="i" fxFlex="100" fxLayoutWrap>
+              <mat-form-field fxFlex="40" fxFlex.xs="100" class="example-full-width">
+                <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
+              </mat-form-field>
+              <mat-form-field fxFlex="40" fxFlex.xs="100" class="example-full-width">
+                <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+              </mat-form-field>
 
-                  <mat-form-field class="example-full-width">
-                    <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
-                  </mat-form-field>
-                  <mat-form-field class="example-full-width">
-                    <input matInput formControlName="businessUnitName" placeholder="{{'FORM.BU_NAME' | translate}}">
-                  </mat-form-field>
-                  <mat-form-field class="example-full-width">
-                    <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
-                  </mat-form-field>
-                  <button *ngIf="currentVersion" mat-icon-button (click)="deleteControl( 'parties', i)">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </div>
-              </div>
-              <div *ngIf="settingsForm.errors && currentVersion">
-                <span style="color: red" *ngIf="settingsForm.errors['percentageExceeded']">
-                  {{'ERRORS.PERCENTAGE_EXECEEDED_PARTIES' | translate}}
-                </span>
-                <span style="color: red" *ngIf="settingsForm.errors['percentageNotReached']">
-                  {{'ERRORS.PERCENTAGE_NOT_EXECEEDED_PARTIES' | translate}}
-                </span>
-              </div>
-              <button *ngIf="currentVersion" mat-icon-button (click)="addActor('parties')">
-                <mat-icon>add</mat-icon>
+              <mat-form-field fxFlex="15" fxFlex.xs="100" class="example-full-width">
+                <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
+              </mat-form-field>
+              <button *ngIf="currentVersion" fxFlex="5" fxFlex.xs="100" mat-icon-button (click)="deleteControl( 'parties', i)">
+                <mat-icon>delete</mat-icon>
               </button>
             </div>
+          </div>
+          <div *ngIf="settingsForm.errors && currentVersion">
+            <span style="color: red" *ngIf="settingsForm.errors['percentageExceeded']">
+              {{'ERRORS.PERCENTAGE_EXECEEDED_PARTIES' | translate}}
+            </span>
+            <span style="color: red" *ngIf="settingsForm.errors['percentageNotReached']">
+              {{'ERRORS.PERCENTAGE_NOT_EXECEEDED_PARTIES' | translate}}
+            </span>
+          </div>
+          <button *ngIf="currentVersion" mat-icon-button (click)="addActor('parties')">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
       </mat-card>
-
-
       <!-- THIRD PARTIES -->
+
+      <!-- BUSINESS UNIT WHERE SURPLUS WILL BE APPLIED  -->
+      <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
+        <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
+          <span fxLayoutAlign="center center"> {{'SETTINGS.SURPLUS_COLLECTOR_TITTLE' | translate}} </span>
+          <button mat-icon-button>
+            <mat-icon>info</mat-icon>
+          </button>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="space-around stretch" fxFlex="100">
+          <div *ngFor="let item of settingsForm.get('surplusCollectors')['controls']; let i = index;" fxFlex="100"
+            formArrayName="surplusCollectors">
+
+            <div [formGroupName]="i"  fxFlex="100" fxLayoutWrap>
+              <mat-form-field fxFlex="46" fxFlex.xs="100" class="example-full-width">
+                <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
+              </mat-form-field>
+              <mat-form-field fxFlex="46" fxFlex.xs="100">
+                <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+              </mat-form-field>
+              <button *ngIf="currentVersion" fxFlex="5" fxFlex.xs="100" mat-icon-button (click)="deleteControl( 'surplusCollectors', i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+          <button *ngIf="settingsForm.get('surplusCollectors').value.length == 0 && currentVersion" mat-icon-button
+            (click)="addActor('surplusCollectors')">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      </mat-card>
+      <!-- BUSINESS UNIT WHERE SURPLUS WILL BE APPLIED  -->
+
+
+
       <!-- ACTION BUTTONS -->
       <div *ngIf="currentVersion" fxFlex="100" fxLayout="row" fxLayoutAlign="space-around center">
         <button mat-raised-button color="primary" [disabled]="!settingsForm.valid" (click)="saveConfiguration()">SAVE</button>
-        <button mat-raised-button color="primary" (click)="restoreSettings()" >CANCEL</button>
+        <button mat-raised-button color="primary" (click)="restoreSettings()">CANCEL</button>
       </div>
       <!-- ACTION BUTTONS -->
 
