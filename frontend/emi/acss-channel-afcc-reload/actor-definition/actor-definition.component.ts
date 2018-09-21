@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '../../../../core/animations';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
@@ -12,7 +12,8 @@ interface Content {
   selector: 'actor-definition',
   templateUrl: './actor-definition.component.html',
   styleUrls: ['./actor-definition.component.scss'],
-  animations: fuseAnimations
+  animations: fuseAnimations,
+  encapsulation: ViewEncapsulation.None
 })
 export class ActorDefinitionComponent {
   data: Content;

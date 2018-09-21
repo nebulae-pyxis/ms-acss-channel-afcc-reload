@@ -3,6 +3,7 @@
 const Rx = require("rxjs");
 const AfccReloadChannelDA = require("../data/AfccReloadChannelDA");
 const TransactionDA = require("../data/TransactionsDA");
+const TransactionsErrorsDA = require('../data/TransactionsErrorsDA');
 const AfccReloadsDA = require("../data/AfccReloadsDA");
 const eventSourcing = require("../tools/EventSourcing")();
 const Event = require("@nebulae/event-store").Event;
@@ -10,6 +11,7 @@ const broker = require("../tools/broker/BrokerFactory")();
 const MATERIALIZED_VIEW_TOPIC = "materialized-view-updates";
 const { PERMISSION_DENIED_ERROR } = require("../tools/ErrorCodes");
 const RoleValidator = require("../tools/RoleValidator");
+const Helper = require('./AfccReloadChannelHelper');
 const {
   CustomError,
   DefaultError
@@ -49,8 +51,8 @@ class AfccReloadChannel{
       ["SYSADMIN"]
     )
     .mergeMap(() => AfccReloadChannelDA.searchConfiguration$(args.id) )    
-    .mergeMap(payload => this.buildAndSendResponse$(payload))
-    .do(r => console.log(JSON.stringify(r)));
+    .mergeMap(payload => this.buildSuccessResponse$(payload))
+    .catch(e => this.errorHandler$(e))
   }
 
    /**
@@ -74,7 +76,8 @@ class AfccReloadChannel{
       reload.afcc.data.after = JSON.stringify(reload.afcc.data.after)
       return reload;
     })
-    .mergeMap(payload => this.buildAndSendResponse$(payload));
+    .mergeMap(payload => this.buildSuccessResponse$(payload))
+    .catch(e => this.errorHandler$(e))
   }
 
    /**
@@ -92,7 +95,8 @@ class AfccReloadChannel{
       ["SYSADMIN"]
     )
     .mergeMap(() => AfccReloadsDA.searchReloads$(args) )     
-    .mergeMap(payload => this.buildAndSendResponse$(payload));
+    .mergeMap(payload => this.buildSuccessResponse$(payload))
+    .catch(e => this.errorHandler$(e))
   }
 
   /**
@@ -109,7 +113,21 @@ class AfccReloadChannel{
       ["SYSADMIN"]
     )
     .mergeMap(() => AfccReloadsDA.getReloadsCount$() ) 
-    .mergeMap(payload => this.buildAndSendResponse$(payload));
+    .mergeMap(payload => this.buildSuccessResponse$(payload))
+    .catch(e => this.errorHandler$(e))
+  }
+
+  getAfccReloadErrors$({ args, jwt }, authToken){
+    return RoleValidator.checkPermissions$(
+      authToken.realm_access.roles,
+      "AfccReloadAcssChannel",
+      "getAfccReload$",
+      PERMISSION_DENIED_ERROR,
+      ["SYSADMIN"]
+    )
+    .mergeMap(() => TransactionsErrorsDA.findReloadErrors$(args) ) 
+    .mergeMap(payload => this.buildSuccessResponse$(payload))
+    .catch(e => this.errorHandler$(e))
   }
 
    /**
@@ -126,7 +144,8 @@ class AfccReloadChannel{
       ["SYSADMIN"]
     )
     .mergeMap(() => TransactionDA.searchTransactions$(args) )     
-    .mergeMap(payload => this.buildAndSendResponse$(payload));
+    .mergeMap(payload => this.buildSuccessResponse$(payload))
+    .catch(e => this.errorHandler$(e))
   }
 
 
@@ -137,7 +156,7 @@ class AfccReloadChannel{
    * @param {String} authToken  JWT Authtoken decoded
    */
   createConfiguration$({ args, jwt }, authToken) {
-    console.log("createConfiguration$", args); 
+    // console.log("createConfiguration$", args); 
 
     return RoleValidator.checkPermissions$(
       authToken.realm_access.roles,
@@ -146,6 +165,8 @@ class AfccReloadChannel{
       PERMISSION_DENIED_ERROR,
       ["SYSADMIN"]
     )
+    .mergeMap(() => Helper.verifyBusinessRules$(args.input))
+    .do(() => console.log('PASA POR EL MAPPER'))  
     .mergeMap(() => 
       eventSourcing.eventStore.emitEvent$(
         new Event({
@@ -162,17 +183,13 @@ class AfccReloadChannel{
       code: 200,
       message: "persistBasicInfoTag$"
     })
-    .do(r => console.log("RESPUESTA ==>", r))
-    .mergeMap(payload => this.buildAndSendResponse$(payload));
+
+    .mergeMap(payload => this.buildSuccessResponse$(payload))
+    .catch(e => this.errorHandler$(e))
   }
 
 
   //#region  mappers for API responses
-  buildAndSendResponse$(payload){
-    return Rx.Observable.of(payload)
-    .mergeMap(rawPayload => this.buildSuccessResponse$(rawPayload))
-    .catch(err => { this.errorHandler$(err) });  
-  }
 
   buildSuccessResponse$(rawRespponse) {
     return Rx.Observable.of(rawRespponse)
@@ -187,6 +204,7 @@ class AfccReloadChannel{
   }
 
   errorHandler$(err) {
+    console.log(" =>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Se ha generado un error en el api resolver");
     return Rx.Observable.of(err)
       .map(err => {
         const exception = { data: null, result: {} };

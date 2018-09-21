@@ -136,7 +136,9 @@
       <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
         <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
           <span fxLayoutAlign="center center"> {{'SETTINGS.SURPLUS_COLLECTOR_TITTLE' | translate}} </span>
-          <button mat-icon-button (click)="viewDefinition('LEFTOVER_COLLECTORS')">
+          <button mat-icon-button
+            aria-label="Button that shows a red tooltip"
+           (click)="viewDefinition('LEFTOVER_COLLECTORS')">
             <mat-icon>info</mat-icon>
           </button>
         </div>

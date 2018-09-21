@@ -62,6 +62,9 @@ export const getReloads = gql`
   }
 `;
 
+// export const getReloadErrors = gql `
+// `;
+
 export const fetchTotalReloadsCount = gql`
   query fetchTotalReloadsCount {
     AcssChannelAfccReloadGetReloadsCount

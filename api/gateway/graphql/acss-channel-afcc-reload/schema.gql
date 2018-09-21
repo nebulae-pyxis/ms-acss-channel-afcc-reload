@@ -56,6 +56,14 @@ type AcssChannelAfccReloadEvent {
   timestamp: BigInt
 }
 
+type AcssChannelAfccReloadError{
+  name: String
+  message: String
+  afccEvent: String
+  channleConf: AcssChannelAfccReloadConfigurationObject
+  timestamp: BigInt
+}
+
 type AcssChannelAfccReloadChannel{
   "Channel processor id"
   id: String
@@ -162,6 +170,7 @@ type AcssChannelAfccReloadCommandResponse{
 type Query {
   AcssChannelAfccReloadGetConfiguration(id: BigInt!): AcssChannelAfccReloadConfigurationObject
   AcssChannelAfccReloadGetAfccReloads(page: Int!, count: Int!, searchFilter: String): [AcssChannelAfccReloadEvent]
+  AcssChannelAfccReloadGetAfccReloadErrors(page: Int!, count: Int!, searchFilter: String): [AcssChannelAfccReloadEvent]
   AcssChannelAfccReloadGetAfccReload(id: String!): AcssChannelAfccReloadEvent
   # AcssChannelAfccReloadGetAfccReloadDetails: AcssChannelAfccReloadEventDetail
   AcssChannelAfccReloadGetTransactions(page: Int!, count: Int!, sortColumn: String, sortOrder: String): [AcssChannelAfccReloadTransaction]

@@ -3,6 +3,7 @@ export const locale = {
   data: {
     SETTINGS_LBL: 'Settings',
     HISTORY_LBL: 'Historical',
-    RELOAD_DETAIL_LBL: 'Reload details'
+    RELOAD_DETAIL_LBL: 'Reload details',
+    ERRORS_HISTORY_LBL: 'Errors history'
   }
 };

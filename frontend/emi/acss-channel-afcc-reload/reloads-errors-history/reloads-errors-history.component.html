@@ -1,0 +1,98 @@
+<div id="acss-actors-settings" class="page-layout simple fullwidth">
+
+  <!-- CONTENT -->
+  <div class="content p-24 w-100-p">
+      <!-- <input #filteInputA id="search" matInput placeholder="{{'USER.SEARCH' | translate}}"> -->
+
+    <!-- WIDGET GROUP -->
+    <div class="widget-group" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start" >
+
+      <span fxFlex="100" style="font-size: 24px; text-align: center" fxLayoutAlign="center center">{{'TITLE' | translate }}</span>
+
+      <!-- SEARCH -->
+      <div fxFlex="100">
+        <label for="search" class="mr-8">
+          <mat-icon class="secondary-text">search</mat-icon>
+        </label>
+        <mat-form-field floatPlaceholder="never" fxFlex="1 0 auto">
+          <input #filteInput id="search" matInput placeholder="{{'SEARCH_FILTER' | translate}}">
+        </mat-form-field>
+      </div>
+      <!-- / SEARCH -->
+
+
+      <!-- CONTENT CARD -->
+      <div fxFlex="100" class="content-card mat-white-bg">
+        <div fxFlex="100" fxLayout="column" style="width: 100%; justify-content: space-between" fxLayout.gt-sm="row">
+          <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="100" fxFlex.gt-md="100">
+              <!-- matSort -->
+            <mat-table id="user-table" class="reloads-table" #table [dataSource]="dataSource" [@animateStagger]="{value:'50'}"
+              fusePerfectScrollbar>
+
+              <!-- Business unit ID Column -->
+              <ng-container cdkColumnDef="date">
+                <mat-header-cell mat-header="date" *cdkHeaderCellDef>{{'TABLE_HEADER.DATE' | translate}}</mat-header-cell>
+                <mat-cell *cdkCellDef="let reload">
+                  <p class="text-truncate">{{reload.businessId}}</p>
+                </mat-cell>
+              </ng-container>
+
+              <!-- Business unit name Column -->
+              <ng-container cdkColumnDef="name">
+                <mat-header-cell mat-header="name" *cdkHeaderCellDef>{{'TABLE_HEADER.NAME' | translate}}</mat-header-cell>
+                <mat-cell *cdkCellDef="let reload">
+                  <p class="text-truncate">{{reload.businessName}}</p>
+                </mat-cell>
+              </ng-container>|
+
+              <!-- Business unit name Column -->
+              <ng-container cdkColumnDef="buName">
+                <mat-header-cell mat-header="buName" *cdkHeaderCellDef>{{'TABLE_HEADER.BU_NAME' | translate}}</mat-header-cell>
+                <mat-cell *cdkCellDef="let reload">
+                  <p class="text-truncate">{{reload.source.machine}}</p>
+                </mat-cell>
+              </ng-container>
+
+              <!-- Business unit name Column -->
+              <ng-container cdkColumnDef="sourceIp">
+                <mat-header-cell mat-header="sourceIp" *cdkHeaderCellDef>{{'TABLE_HEADER.SOURCE_IP' | translate}}</mat-header-cell>
+                <mat-cell *cdkCellDef="let reload">
+                  <p class="text-truncate">{{reload.amount}}</p>
+                </mat-cell>
+              </ng-container>
+              <!-- Business unit name Column -->
+
+              <!-- Business unit name Column -->
+              <ng-container cdkColumnDef="amount">
+                  <mat-header-cell mat-header="amount" *cdkHeaderCellDef>{{'TABLE_HEADER.AMOUNT' | translate}}</mat-header-cell>
+                  <mat-cell *cdkCellDef="let reload">
+                    <p class="text-truncate">{{reload.amount}}</p>
+                  </mat-cell>
+                </ng-container>
+                <!-- Business unit name Column -->
+
+
+              <mat-header-row *cdkHeaderRowDef="displayedColumns"></mat-header-row>
+
+              <mat-row *cdkRowDef="let reload; columns: displayedColumns;" class="mat-row" matRipple [routerLink]="[ 'reload-details', reload.id ]">
+              </mat-row>
+            </mat-table>
+
+            <mat-paginator #paginator
+            [length]="tableSize"
+            [pageIndex]="0"
+            [pageSize]="10"
+            [pageSizeOptions]="[5, 10, 25, 100]">
+            </mat-paginator>
+          </div>
+        </div>
+      </div>
+      <!-- / CONTENT CARD -->
+
+
+    </div>
+    <!-- / WIDGET GROUP -->
+  </div>
+  <!-- / CONTENT -->
+
+</div>

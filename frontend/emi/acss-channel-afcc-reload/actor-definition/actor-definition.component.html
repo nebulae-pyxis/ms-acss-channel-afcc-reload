@@ -1,13 +1,11 @@
 <div class="dialog-content-wrapper">
-  <form>
-    <mat-toolbar matDialogTitle class="mat-accent m-0">
-      <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
-        <span>{{ data.title }}</span>
-        <button mat-button class="mat-icon-button" (click)="dialogRef.close()" aria-label="Close dialog">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-    </mat-toolbar>
-    <div style="margin: 6px;">{{ data.content }}</div>
-  </form>
+  <div fxLayout="column">
+    <div fxLayout="row" fxLayoutAlign="space-between none">
+      <span style="font-size: 24px; margin-bottom: 10px;">{{ data.title }}</span>
+      <button mat-button class="mat-icon-button" (click)="dialogRef.close()" aria-label="Close dialog">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div>{{ data.content }}</div>
+  </div>
 </div>

@@ -75,6 +75,20 @@ getBasicReloadsInfo$(pageValue, countValue, searchFilter){
   });
 }
 
+getBasicReloadErrorsInfo$(pageValue, countValue, searchFilter){
+  return this.gateway.apollo
+  .query<any>({
+    query: getReloads,
+    variables: {
+      page: pageValue,
+      count: countValue,
+      searchFilter: searchFilter
+    },
+    fetchPolicy: 'network-only',
+    errorPolicy: 'all'
+  });
+}
+
 getCompleteReloadInfo$(reloadId: string){
   return this.gateway.apollo
   .query<any>({
@@ -88,6 +102,15 @@ getCompleteReloadInfo$(reloadId: string){
 }
 
 fetchTotalReloadsCount$(){
+  return this.gateway.apollo
+  .query<any>({
+    query: fetchTotalReloadsCount,
+    fetchPolicy: 'network-only',
+    errorPolicy: 'all'
+  });
+}
+
+fetchTotalReloadErrorsCount$(){
   return this.gateway.apollo
   .query<any>({
     query: fetchTotalReloadsCount,

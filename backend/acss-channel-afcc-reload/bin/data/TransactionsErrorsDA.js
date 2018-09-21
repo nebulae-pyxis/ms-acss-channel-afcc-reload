@@ -32,6 +32,36 @@ class TransactionsErrorsDA {
     const collection = mongoDB.client.db(ACSS_DB_NAME).collection(COLLECTION_NAME);
     return Rx.Observable.defer(() => collection.insertOne(error));    
   }
+
+  static findReloadErrors$({page, count, searchFilter, sortColumn, order}) {
+    let filterObject = {};
+    const orderObject = {};
+    if (searchFilter && searchFilter != "") {
+      filterObject = {
+        $or: [
+          { 'name': { $regex: `${searchFilter}.*`, $options: "i" } }
+        ]
+      };
+    }
+
+    if (sortColumn && order) {
+      let column = sortColumn;
+      orderObject[column] = order == 'asc' ? 1 : -1;
+    }
+    const collection = mongoDB.client.db(ACSS_DB_NAME).collection(COLLECTION_NAME);
+    return Rx.Observable.defer(() =>
+      collection
+        .find(filterObject)
+        .sort(orderObject)
+        .skip(count * page)
+        .limit(count)
+        .toArray()
+    )
+    .mergeMap(resultArray => Rx.Observable.from(resultArray)
+      .map(reloadError => ({ ...reloadError, id: reloadError._id.toString() }))
+      .toArray()
+    )
+  }
 }
 /**
  * @returns { TransactionsErrorsDA } TransactionsDA instance

@@ -1,11 +1,9 @@
 "use strict";
 
 const Rx = require("rxjs");
-const DEFAULT_TRANSACTION_TYPE = "AFCC_RELOADED";
+const DEFAULT_TRANSACTION_TYPE = "AFCC_RELOAD";
 const CHANNEL_ID = "ACSS_CHANNEL_AFCC_RELOAD";
-const { CustomError, DefaultError } = require("../tools/customError");
-
-let instance;
+const { CustomError, AfccReloadProcessError } = require("../tools/customError");
 
 class AfccReloadChannelHelper {
   constructor() {}
@@ -225,6 +223,76 @@ class AfccReloadChannelHelper {
       AfccReloadChannelHelper.truncateAmount$(transaction)
     );
   }
+
+
+  /**
+ * Verifies if the new settings 
+ * @param {Object} conf Business rules where
+ */
+  static verifyBusinessRules$(conf) {
+    return Rx.Observable.forkJoin(
+      Rx.Observable.defer(() => conf.fareCollectors.map(e => e.percentage)),
+      Rx.Observable.defer(() => conf.reloadNetworks.map(e => e.percentage)).toArray(),
+      Rx.Observable.defer(() => conf.parties.map(e => e.percentage)).toArray(),
+      Rx.Observable.defer(() => conf.surplusCollectors.map(e => e))
+    )
+      .mergeMap(([fareCollector, reloadNetworks, parties, surplusCollector]) =>
+        Rx.Observable.forkJoin(
+          Rx.Observable.merge(AfccReloadChannelHelper.verifyFarecollectorVsReloads$(fareCollector, reloadNetworks))
+            .mergeMap(surplus => AfccReloadChannelHelper.VerifyPartiesPercentages$(parties, surplus))
+        )
+      )
+      .mergeMap(() => Rx.Observable.of(conf))
+  }
+
+  /**
+ *
+ * @param {*} fareCollectors
+ * @param {*} reloadNetworks
+ * @return {Observable<boolean>} surplus available for the third parties
+ */
+  static verifyFarecollectorVsReloads$(fareCollector, reloadNetworks) {
+    console.log("VAlidando verifyFarecollectorVsReloads", fareCollector, reloadNetworks)
+    return Rx.Observable.from(reloadNetworks)
+      .map(reloadNetwork => fareCollector + reloadNetwork <= 100) // validate that the combination don't  exceed 100%
+      .toArray()
+      .do(r => console.log("Validaciones", ...r))
+      .map(array => array.findIndex(r => r == false))
+      .mergeMap(index => (index === -1)
+        ? Rx.Observable.of(true)
+        : Rx.Observable.throw(
+          new CustomError(
+            "value exceed",
+            "verifyFarecollectorVsReloads$",
+            undefined,
+            "A fareCollector and Reloaders wrong combination"
+          )
+        ));
+  }
+
+  /**
+ * Verify if the percentage Configuration for the parties is correct
+ * @param {number[]} parties Array numbers
+ * @param {boolean} surplus surplus money available to parties ?
+ * @returns { Observable<any> }
+ */
+  static VerifyPartiesPercentages$(parties, surplus) {
+    return Rx.Observable.of(parties)
+      .map(parties => parties.reduce((acc, item) => acc + item, 0))
+      .mergeMap(totalPercentageInParties => (totalPercentageInParties != 100)
+        ? Rx.Observable.throw(
+          new CustomError(
+            "name",
+            "verifyBusinessRules",
+            "Error with percentages in the parties percentages"
+          )
+        )
+        : Rx.Observable.of(true)
+      )
+  } 
+
+
+
 }
 
 /**

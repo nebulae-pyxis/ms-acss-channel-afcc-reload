@@ -114,6 +114,26 @@ module.exports = {
               .mergeMap(response => getResponseFromBackEnd$(response))
               .toPromise();
       },
+      AcssChannelAfccReloadGetAfccReloadErrors(root, args, context) {
+        return RoleValidator.checkPermissions$(
+            context.authToken.realm_access.roles,
+            contextName,
+            "AcssChannelAfccReloadGetAfccReloadErrors",
+            BUSINESS_PERMISSION_DENIED_ERROR_CODE,
+            "Permission denied",
+            ["SYSADMIN"]
+        )
+            .mergeMap(() =>
+                broker.forwardAndGetReply$(
+                    "AfccChannel",
+                    "gateway.graphql.query.getAfccReloadErrors",
+                    { root, args, jwt: context.encodedToken },
+                    2000
+                ))
+            .catch(err => errorHandler$(err, "AcssChannelAfccReloadGetAfccReloadErrors"))
+            .mergeMap(response => getResponseFromBackEnd$(response))
+            .toPromise();
+    },
       AcssChannelAfccReloadGetTransactions(root, args, context) {
           return RoleValidator.checkPermissions$(
               context.authToken.realm_access.roles,

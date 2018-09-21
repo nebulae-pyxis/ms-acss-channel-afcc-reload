@@ -7,7 +7,7 @@ export const locale = {
       BU_ID: 'Business unit ID',
       BU_NAME: 'Business unit name',
       MACHINE: 'Machine',
-      AMOUNT: 'Monto'
+      AMOUNT: 'Amount'
     }
   }
 };

@@ -3,7 +3,7 @@
 let mongoDB = undefined;
 // const mongoDB = require('./MongoDB').singleton();
 const Rx = require('rxjs');
-const CollectionName = "afccReloadEvents";
+const CollectionName = "AfccReloadEvents";
 const ObjectID = require("mongodb").ObjectID;
 const { CustomError } = require('../tools/customError');
 
