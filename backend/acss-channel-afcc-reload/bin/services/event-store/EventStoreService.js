@@ -26,6 +26,53 @@ class EventStoreService {
    *    emit value: { aggregateType, eventType, handlerName}
    */
   start$() {
+
+    Rx.Observable.interval(5000)
+    .mergeMap(() => {
+      const buNames = [
+        { name: "Nebula", id: "5b91826fa90045787d25eb91" },
+        { name: "Metro_123", id: "5b91826fa90045787d25eb91" },
+        { name: "Gana_med", id: "5b91826fa90045787d25eb91" }
+      ];
+      return Rx.Observable.of({
+        amount: Math.floor(Math.random() * 1000) * 50,
+        businessId: buNames[Math.floor(Math.random() * 3)].id,
+        afcc: {
+          data: {
+            before: {},
+            after: {}
+          },
+          uId: 'CARD_UIID',
+          cardId: "CARD_ID",
+          balance: {
+            before: 1000,
+            after: 2000
+          }
+        },
+        source: {
+          machine: "Nesas-12",
+          ip: "192.168.1.15"
+        }
+      });
+    })
+    .mergeMap(afccEvt =>
+      eventSourcing.eventStore
+        .emitEvent$(
+          new Event({
+            eventType: "AfccReloadSold",
+            eventTypeVersion: 1,
+            aggregateType: "Afcc",
+            aggregateId: Date.now(),
+            data: afccEvt,
+            user: 'Felipe_santa'
+          })
+        )
+    )
+    // .subscribe(
+    //   ok => { },
+    //   error => console.log(error),
+    //   () => console.log("Finished")
+    // );
     
     //default error handler
     const onErrorHandler = error => {

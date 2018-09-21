@@ -36,7 +36,7 @@ class UserEventConsumer {
       // verifies that the actors interacting with the event are in the channel configuration
       .mergeMap(conf => Helper.validateAfccEvent$(conf, evt))
       // apply the rules and return the array with all transaction to persist      
-      .mergeMap((conf) => this.applyBusinessRules$(conf, evt))
+      .mergeMap((conf) => Helper.applyBusinessRules$(conf, evt))
       .mergeMap(result => Helper.validateFinalTransactions$(result.transactions, result.conf, evt))
       // .do(r => console.log(r))
       // insert all trsansaction to the MongoDB
@@ -123,106 +123,7 @@ class UserEventConsumer {
           return Rx.Observable.of(true);
         }
       });
-  }
-
-  /**
-   *
-   * @param {Object} configuration Business rules to create transactions
-   * @param {Object} AfccEvent AFCC event to process with the given configuration
-   * @returns {<Observable>} Observable with transaction array
-   */
-  applyBusinessRules$(configuration, afccEvent) {
-    // console.log("Applying BusinessRules...");
-    return Rx.Observable.forkJoin(
-      this.createTransactionForFareCollector$(configuration, afccEvent),
-      this.createTransactionForReloadNetWork$(configuration, afccEvent),
-      this.createTransactionForParties$(configuration, afccEvent)
-    )
-      .map(
-        ([
-          fareCollectorTransation,
-          reloadNetworkTransation,
-          partiesTransactions
-        ]) => ({
-          transactions: [
-            fareCollectorTransation,
-            reloadNetworkTransation,
-            ...partiesTransactions
-          ],
-          conf: configuration
-        })
-      )
-  }
-
-
-  /**
-   * Create all transaction for each fare collector actor
-   * @param { Object } conf Channel configuration
-   * @param { Object } afccEvent AFCC reload event 
-   */
-  createTransactionForFareCollector$(conf, afccEvent) {
-    return Helper.createTransactionObject$(
-      conf.fareCollectors[0],
-      (afccEvent.data.amount / 100) * conf.fareCollectors[0].percentage,
-      conf,
-      DEFAULT_TRANSACTION_TYPE,
-      afccEvent
-    )
-  }
-
-  /**
-   * Create all transaction for each reload network actor
-   * @param { Object } conf Channel configuration
-   * @param { Object } afccEvent AFCC reload event 
-   */
-  createTransactionForReloadNetWork$(conf, afccEvent) {
-    const reloadNetworkIndex = conf.reloadNetworks.findIndex( rn => rn.buId == afccEvent.data.businessId );
-    if ( reloadNetworkIndex == -1 ){
-      return Rx.Observable.throw(
-        new AfccReloadProcessError(
-          `${afccEvent.data.businessId} business unit id no found in reloadnetwork settings`, 
-          'ReloadNetworkTransactionError',
-           afccEvent, conf)
-      )  
-    }
-    return Helper.createTransactionObject$(
-      conf.reloadNetworks[reloadNetworkIndex],
-      (afccEvent.data.amount / 100) * conf.reloadNetworks[reloadNetworkIndex].percentage,
-      conf,
-      DEFAULT_TRANSACTION_TYPE,
-      afccEvent
-    )
-  }
-
-  /**
-   * Create all transaction for each third part actor
-   * @param { Object } conf Channel configuration
-   * @param { Object } afccEvent AFCC reload event 
-   */
-  createTransactionForParties$(conf, afccEvent) {
-    const reloadNetworkIndex = conf.reloadNetworks.findIndex(
-      rn => rn.buId == afccEvent.data.businessId
-    );
-    if(reloadNetworkIndex === -1){
-      return Rx.Observable.throw(
-        new AfccReloadProcessError(`${afccEvent.data.businessId} business unit id no found in reloadnetwork settings `, 'PartiesTransactionError', afccEvent, conf)
-      ) 
-    }
-    const surplusAsPercentage =
-      100 -
-      (conf.fareCollectors[0].percentage +
-        conf.reloadNetworks[reloadNetworkIndex].percentage);
-    const surplusAmount = (afccEvent.data.amount / 100) * surplusAsPercentage;
-    return Rx.Observable.from(conf.parties)
-        .mergeMap(p =>  Helper.createTransactionObject$(
-          p,
-          (surplusAmount / 100) * p.percentage,
-          conf,
-          DEFAULT_TRANSACTION_TYPE,
-          afccEvent
-        ) )
-      .toArray();
-  }
+  } 
 
   /**
    * 

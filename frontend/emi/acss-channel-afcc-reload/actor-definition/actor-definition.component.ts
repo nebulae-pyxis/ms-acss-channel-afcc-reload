@@ -1,9 +1,11 @@
-import { AcssChannelAfccReloadService } from '../acss-channel-afcc-reload.service';
-import { Component, OnDestroy, OnInit, Inject } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { fuseAnimations } from '../../../../core/animations';
-// tslint:disable-next-line:import-blacklist
-import * as Rx from 'rxjs/Rx';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+
+interface Content {
+  title: string;
+  content: string;
+}
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -12,24 +14,14 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
   styleUrls: ['./actor-definition.component.scss'],
   animations: fuseAnimations
 })
-
-export class ActorDefinitionComponent implements OnInit, OnDestroy {
-
-  data: { title: string, content: string } = null;
+export class ActorDefinitionComponent {
+  data: Content;
 
   constructor(
     public dialogRef: MatDialogRef<ActorDefinitionComponent>,
     public dialog: MatDialog,
-    @Inject(MAT_DIALOG_DATA) private dataInjected: {title: string, content: string},
+    @Inject(MAT_DIALOG_DATA) private dataInjected: Content
   ) {
     this.data = dataInjected;
-    console.log(this.data);
   }
-
-  ngOnInit() {
-  }
-
-  ngOnDestroy(): void {
-  }
-
 }
