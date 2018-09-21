@@ -7,13 +7,13 @@
     <div [formGroup]="settingsForm" class="widget-group" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start"
       *fuseIfOnDom [@animateStagger]="{value:'50'}">
 
-      <span fxFlex="100" style="font-size: 24px" fxLayoutAlign="center center">{{'SETTINGS.TITLE' | translate }}</span>
+      <span fxFlex="100" style="font-size: 24px; text-align: center" fxLayoutAlign="center center">{{'SETTINGS.TITLE' | translate }}</span>
 
       <!-- FARECOLLECTOR -->
       <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
         <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
           <span fxLayoutAlign="center center"> {{'SETTINGS.FARE_COLLECTOR_TITTLE' | translate}} </span>
-          <button mat-icon-button>
+          <button mat-icon-button (click)="viewDefinition('FARECOLLECTORS')" >
             <mat-icon>info</mat-icon>
           </button>
         </div>
@@ -50,13 +50,13 @@
       <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
         <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
           <span fxLayoutAlign="center center"> {{'SETTINGS.RELOADERS_TITTLE' | translate}} </span>
-          <button mat-icon-button>
+          <button mat-icon-button (click)="viewDefinition('RELOAD_NETWORKS')" >
             <mat-icon>info</mat-icon>
           </button>
         </div>
         <div fxLayout="column" fxLayoutAlign="space-around stretch"  fxFlex="100">
           <div *ngFor="let item of settingsForm.get('reloaders')['controls']; let i = index;" fxFlex="100"
-            formArrayName="reloaders">
+            formArrayName="reloaders" fxLayout="column" >
             <div [formGroupName]="i" fxFlex="100" fxLayoutWrap>
               <mat-form-field fxFlex="40" fxFlex.xs="100" class="example-full-width">
                 <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
@@ -90,12 +90,12 @@
       <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
         <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
           <span fxLayoutAlign="center center"> {{'SETTINGS.PARTIES_TITTLE' | translate}} </span>
-          <button mat-icon-button>
+          <button mat-icon-button (click)="viewDefinition('THIRD_PARTIES')">
             <mat-icon>info</mat-icon>
           </button>
         </div>
         <div fxLayout="column" fxLayoutAlign="space-around stretch" fxFlex="100">
-          <div formArrayName="parties" *ngFor="let item of settingsForm.get('parties')['controls']; let i = index;">
+          <div formArrayName="parties" *ngFor="let item of settingsForm.get('parties')['controls']; let i = index;" fxLayout="column">
             <div [formGroupName]="i" fxFlex="100" fxLayoutWrap>
               <mat-form-field fxFlex="40" fxFlex.xs="100" class="example-full-width">
                 <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
@@ -111,6 +111,11 @@
                 <mat-icon>delete</mat-icon>
               </button>
             </div>
+
+             <!-- <hr fxFlex="100" style="border-top: 2px double #8c8b8b;" > -->
+
+             <div fxFlex="100" style="background: #8c8b8b; height: 1px; margin-bottom: 10px;"></div>
+
           </div>
           <div *ngIf="settingsForm.errors && currentVersion">
             <span style="color: red" *ngIf="settingsForm.errors['percentageExceeded']">
@@ -131,7 +136,7 @@
       <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
         <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
           <span fxLayoutAlign="center center"> {{'SETTINGS.SURPLUS_COLLECTOR_TITTLE' | translate}} </span>
-          <button mat-icon-button>
+          <button mat-icon-button (click)="viewDefinition('LEFTOVER_COLLECTORS')">
             <mat-icon>info</mat-icon>
           </button>
         </div>

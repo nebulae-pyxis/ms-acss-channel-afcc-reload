@@ -11,6 +11,8 @@ import { locale as spanish } from './i18n/es';
 import { FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
 import { mergeMap, map, tap, filter } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material';
+import { ActorDefinitionComponent } from '../actor-definition/actor-definition.component';
 
 export interface Actor{
   buId: string;
@@ -33,12 +35,14 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
   subscriptions = [];
   settingsForm: FormGroup = new FormGroup({});
   currentConf: any;
+  dialogRef: any;
 
   constructor(
     private acssChannelAfccReloadService: AcssChannelAfccReloadService,
     private translationLoader: FuseTranslationLoaderService,
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public dialog: MatDialog
   ) {
     this.translationLoader.loadTranslations(english, spanish);
   }
@@ -88,7 +92,6 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
         return this.formBuilder.group({
           businessUnitFrom: new FormControl({ value: businessUnitFrom, disabled: !this.currentVersion }, [Validators.required]),
           businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }, [Validators.required]),
-          // businessUnitName: new FormControl({ value: businessUnitName, disabled: true }, [Validators.required]),
           percentage: new FormControl(
             { value: percentage, disabled: !this.currentVersion },
             [Validators.required, Validators.min(0), Validators.max(100), this.validateReloaders.bind(this)]
@@ -98,7 +101,6 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
         return this.formBuilder.group({
           businessUnitFrom: new FormControl({ value: businessUnitFrom, disabled: !this.currentVersion }, [Validators.required]),
           businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }, [Validators.required]),
-          // businessUnitName: new FormControl({ value: businessUnitName, disabled: true }, [Validators.required]),
           percentage: new FormControl(
             { value: percentage, disabled: !this.currentVersion },
             [Validators.required, Validators.min(0), Validators.max(100)])
@@ -124,6 +126,14 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     items.push(this.createItem(type));
   }
 
+  viewDefinition(type: string){
+    this.dialogRef = this.dialog.open( ActorDefinitionComponent, {
+      data: {
+        title: type,
+        content: this.translationLoader.getTranslate().instant(`DEFINITIONS.${type}`)
+      }
+    });
+  }
 
   saveConfiguration() {
     const formValue = this.settingsForm.getRawValue();

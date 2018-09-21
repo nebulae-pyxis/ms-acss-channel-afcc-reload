@@ -9,6 +9,7 @@ import { AcssChannelAfccReloadComponent } from './acss-channel-afcc-reload.compo
 import { ChannelSettingsComponent } from './channel-settings/channel-settings.component';
 import { ReloadHistoryComponent } from './reload-history/reload-history.component';
 import { ReloadDetailComponent } from './reload-detail/reload-detail.component';
+import { ActorDefinitionComponent } from './actor-definition/actor-definition.component';
 
 
 const routes: Routes = [
@@ -36,9 +37,11 @@ const routes: Routes = [
     AcssChannelAfccReloadComponent,
     ChannelSettingsComponent,
     ReloadHistoryComponent,
-    ReloadDetailComponent
+    ReloadDetailComponent,
+    ActorDefinitionComponent
   ],
-  providers: [ AcssChannelAfccReloadService, DatePipe]
+  providers: [ AcssChannelAfccReloadService, DatePipe],
+  entryComponents: [ActorDefinitionComponent]
 })
 
 export class AcssChannelAfccReloadModule {}
