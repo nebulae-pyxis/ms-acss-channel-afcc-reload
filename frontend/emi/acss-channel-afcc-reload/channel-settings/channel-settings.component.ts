@@ -58,7 +58,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
           map(params => params.conf ? params.conf : 1),
           mergeMap(conf  => this.acssChannelAfccReloadService.getChannelSettings$(conf)),
           filter(r => r !== null ),
-          tap(conf => this.currentConf = conf),
+          tap(conf => this.currentConf = conf ),
           mergeMap(dataResult =>  this.loadSettingsOnForm$(dataResult))
         )
         .subscribe(form => {
@@ -180,7 +180,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
   loadSettingsOnForm$(conf: any) {
 
     return Rx.Observable.forkJoin(
-      Rx.Observable.from(conf.fareCollectors)
+      Rx.Observable.from(conf.fareCollectors ? conf.fareCollectors : [])
       .pipe(
         map((actor: Actor) => {
           (this.settingsForm.get('fareCollectors') as FormArray).push(
@@ -188,7 +188,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
             );
         })
       ),
-      Rx.Observable.from(conf.reloadNetworks)
+      Rx.Observable.from(conf.reloadNetworks ? conf.reloadNetworks : [])
       .pipe(
         map((actor: Actor ) => {
           (this.settingsForm.get('reloaders') as FormArray).push(
@@ -196,7 +196,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
             );
         })
       ),
-      Rx.Observable.from(conf.parties)
+      Rx.Observable.from(conf.parties ? conf.parties : [])
       .pipe(
         map((actor: Actor) => {
           (this.settingsForm.get('parties') as FormArray).push(
@@ -204,7 +204,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
             );
         })
       ),
-      Rx.Observable.from(conf.surplusCollectors)
+      Rx.Observable.from(conf.surplusCollectors ? conf.surplusCollectors : [] )
         .pipe(
           map((actor: Actor) => {
             (this.settingsForm.get('surplusCollectors') as FormArray).push(
