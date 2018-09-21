@@ -5,7 +5,8 @@ export const locale = {
       TITLE: 'Configuracion de unidad de negocio',
       FARE_COLLECTOR_TITTLE: 'Fare collector',
       RELOADERS_TITTLE: 'Red de recargas',
-      PARTIES_TITTLE: 'Terceros'
+      PARTIES_TITTLE: 'Terceros',
+      SURPLUS_COLLECTOR_TITTLE: 'Recolector de residuos'
     },
     FORM: {
       BUID_PLACEHOLDER: 'ID de unidad de negocio',

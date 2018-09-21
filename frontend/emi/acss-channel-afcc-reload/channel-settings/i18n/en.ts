@@ -5,7 +5,8 @@ export const locale = {
       TITLE: 'Business unit configurations',
       FARE_COLLECTOR_TITTLE: 'Farecollector',
       RELOADERS_TITTLE: 'Reloaders network',
-      PARTIES_TITTLE: 'Third parties'
+      PARTIES_TITTLE: 'Third parties',
+      SURPLUS_COLLECTOR_TITTLE: 'Leftovers collector'
     },
     FORM: {
       BUID_PLACEHOLDER: 'Business unit ID',

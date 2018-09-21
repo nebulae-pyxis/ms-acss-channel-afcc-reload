@@ -5,10 +5,10 @@ const broker = require("../tools/broker/BrokerFactory")();
 const MATERIALIZED_VIEW_TOPIC = "materialized-view-updates";
 const AfccReloadsDA = require("../data/AfccReloadsDA");
 const AfccReloadChannelDA = require("../data/AfccReloadChannelDA");
+const Helper = require('./AfccReloadChannelHelper');
 const TransactionsErrorsDA = require('../data/TransactionsErrorsDA');
 const TransactionsDA = require("../data/TransactionsDA");
 const { CustomError, AfccReloadProcessError } = require("../tools/customError");
-const CHANNEL_ID = "ACSS_CHANNEL_AFCC_RELOAD";
 const CURRENT_RULE = 1;
 const DEFAULT_TRANSACTION_TYPE = "AFCC_RELOADED";
 
@@ -34,10 +34,10 @@ class UserEventConsumer {
     // searh the valid channel settiings
     return AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE, evt)
       // verifies that the actors interacting with the event are in the channel configuration
-      .mergeMap(conf => this.validateAfccEvent$(conf, evt))
+      .mergeMap(conf => Helper.validateAfccEvent$(conf, evt))
       // apply the rules and return the array with all transaction to persist      
       .mergeMap((conf) => this.applyBusinessRules$(conf, evt))
-      .mergeMap(result => this.validateFinalTransactions$(result.transactions, result.conf, evt))
+      .mergeMap(result => Helper.validateFinalTransactions$(result.transactions, result.conf, evt))
       // .do(r => console.log(r))
       // insert all trsansaction to the MongoDB
       .mergeMap(transactionsArray => TransactionsDA.insertTransactions$(transactionsArray))
@@ -161,7 +161,7 @@ class UserEventConsumer {
    * @param { Object } afccEvent AFCC reload event 
    */
   createTransactionForFareCollector$(conf, afccEvent) {
-    return this.createTransactionObject$(
+    return Helper.createTransactionObject$(
       conf.fareCollectors[0],
       (afccEvent.data.amount / 100) * conf.fareCollectors[0].percentage,
       conf,
@@ -185,7 +185,7 @@ class UserEventConsumer {
            afccEvent, conf)
       )  
     }
-    return this.createTransactionObject$(
+    return Helper.createTransactionObject$(
       conf.reloadNetworks[reloadNetworkIndex],
       (afccEvent.data.amount / 100) * conf.reloadNetworks[reloadNetworkIndex].percentage,
       conf,
@@ -214,7 +214,7 @@ class UserEventConsumer {
         conf.reloadNetworks[reloadNetworkIndex].percentage);
     const surplusAmount = (afccEvent.data.amount / 100) * surplusAsPercentage;
     return Rx.Observable.from(conf.parties)
-        .mergeMap(p =>  this.createTransactionObject$(
+        .mergeMap(p =>  Helper.createTransactionObject$(
           p,
           (surplusAmount / 100) * p.percentage,
           conf,
@@ -222,90 +222,6 @@ class UserEventConsumer {
           afccEvent
         ) )
       .toArray();
-  }
-
-  /**
-   * Verifies if the sumary of all transactions money match with the AFCC mount
-   * @param {any[]} transactionArray Array with all transaction as result of an AFCC reload event
-   * @param {any} conf Channel configuration
-   * @param {any} evt AFCC reload event
-   */
-  validateFinalTransactions$(transactionArray, conf, afccEvent) {
-    // console.log("################################################################");
-    // console.log("### Valor de la recarga ==>", afccEvent.data.amount)
-    return Rx.Observable.defer(() => Rx.Observable.of(transactionArray.reduce((acumulated, tr) => acumulated + Math.floor(tr.amount * 100), 0)))
-    .map(amountProcessed => Math.floor(amountProcessed)/100)
-      .mergeMap(amountProcessed => {
-        console.log("Cantida de dinero repartido en las transacciones ==> ", amountProcessed)
-        if (amountProcessed == afccEvent.data.amount) {
-          return Rx.Observable.of(transactionArray);
-        }
-        else {
-          return Rx.Observable.of(amountProcessed)
-            .map(amount => Math.round((afccEvent.data.amount - amount) * 100) / 100)
-            .do(a => console.log("#### Dinero de los sobrados ==> ", a))
-            .mergeMap((amount) => this.createTransactionObject$(
-              conf.surplusCollectors[0],
-              amount,
-              conf,
-              DEFAULT_TRANSACTION_TYPE,
-              afccEvent
-            ))
-            .map(finalTransaction => [...transactionArray, finalTransaction])
-        }
-      })
-      .do(allTransactions => {
-        allTransactions.forEach(t => {
-          console.log("Transaction_amount: ", t.amount);
-        })       
-        const total = allTransactions.reduce((acc, tr) => acc + Math.floor(tr.amount * 100), 0)/100;
-        console.log(total);
-      })
-  }
-
-  /**
-   * 
-   * @param {any} transaction transaction object
-   * @param {number} decimals decimal to truncate the amount
-   */
-  truncateAmount$(transaction, decimals = 2){
-    return Rx.Observable.of(Math.pow(10, decimals))
-    .map((n) => ({...transaction, amount: Math.floor(transaction.amount * n)/n  }));
-  }
-
-  /**
-   * 
-   * @param {string} toBu 
-   * @param {Float} amount 
-   * @param {any} channel 
-   * @param {string} type 
-   * @param {any} event 
-   */
-  createTransactionObject$(actorConf, amount, conf, type, afccEvent) {
-    console.log(conf);
-    return Rx.Observable.of({
-      fromBu: actorConf.fromBu,
-      toBu: actorConf.buId,
-      amount: amount,
-      channel: {
-        id: CHANNEL_ID,
-        v: process.env.npm_package_version,
-        c: conf.lastEdition
-      },
-      timestamp: Date.now(),
-      type: type,
-      evt: {
-        id: afccEvent._id, // missing to define
-        type: afccEvent.et, // missing to define
-        user: afccEvent.user // missing to define
-      }
-    })
-    .mergeMap(transaction => this.truncateAmount$(transaction))
-  }
-
-  validateAfccEvent$(conf, afccEvent){
-    return Rx.Observable.of({})
-    .mapTo(conf)
   }
 
   /**
