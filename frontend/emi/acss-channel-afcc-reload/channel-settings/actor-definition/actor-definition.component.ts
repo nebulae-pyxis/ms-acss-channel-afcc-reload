@@ -1,5 +1,5 @@
 import { Component, Inject, ViewEncapsulation } from '@angular/core';
-import { fuseAnimations } from '../../../../core/animations';
+import { fuseAnimations } from '../../../../../core/animations';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 interface Content {

@@ -40,22 +40,22 @@ class UserEventConsumer {
       .mergeMap(result => Helper.validateFinalTransactions$(result.transactions, result.conf, evt))
       // .do(r => console.log(r))
       // insert all trsansaction to the MongoDB
-      .mergeMap(transactionsArray => TransactionsDA.insertTransactions$(transactionsArray))
-      // gets the transactions after been inserted
-      .map(result => result.ops)
-      .mergeMap(transactions =>
-        Rx.Observable.from(transactions)
-          .map(transaction => {
-            transaction.id = transaction._id.toString();
-            delete transaction._id;  // check performance
-            return transaction;
-          })
-          .toArray()
-      )
-      // build Reload object with its transactions generated
-      .map(arrayTransactions => ({ ...evt.data, timestamp: evt.timestamp, transactions: arrayTransactions }))
+      // .mergeMap(transactionsArray => TransactionsDA.insertTransactions$(transactionsArray))
+      // // gets the transactions after been inserted
+      // .map(result => result.ops)
+      // .mergeMap(transactions =>
+      //   Rx.Observable.from(transactions)
+      //     .map(transaction => {
+      //       transaction.id = transaction._id.toString();
+      //       delete transaction._id;  // check performance
+      //       return transaction;
+      //     })
+      //     .toArray()
+      // )
+      // // build Reload object with its transactions generated
+      // .map(arrayTransactions => ({ ...evt.data, timestamp: evt.timestamp, transactions: arrayTransactions }))
       // inserts the reload object
-      .mergeMap(reload => AfccReloadsDA.insertOneReload$(reload))
+      // .mergeMap(reload => AfccReloadsDA.insertOneReload$(reload))
       .catch(error => this.errorHandler$(error, evt))
   }
 
@@ -67,7 +67,7 @@ class UserEventConsumer {
    * @param {any} channelConf channel configuration used to process the afcc event
    */
   errorHandler$(err, event) {
-    console.log("######################################################################");
+    console.log("######################################################################", err);
     // console.log(err);
     return Rx.Observable.of(err)
       .map(error => (error instanceof AfccReloadProcessError) ? error :  new AfccReloadProcessError(error.message, error.stack, event, undefined) )

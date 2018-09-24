@@ -12,7 +12,7 @@ import { FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@ang
 import { mergeMap, map, tap, filter } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material';
-import { ActorDefinitionComponent } from '../actor-definition/actor-definition.component';
+import { ActorDefinitionComponent } from './actor-definition/actor-definition.component';
 
 export interface Actor{
   buId: string;

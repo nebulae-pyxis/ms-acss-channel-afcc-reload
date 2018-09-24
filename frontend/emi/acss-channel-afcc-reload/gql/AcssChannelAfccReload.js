@@ -62,8 +62,46 @@ export const getReloads = gql`
   }
 `;
 
-// export const getReloadErrors = gql `
-// `;
+export const getReloadErrors = gql`
+  query getReloadsErrors($page: Int!, $count: Int!, $searchFilter: String) {
+    AcssChannelAfccReloadGetAfccReloadErrors(
+      page: $page
+      count: $count
+      searchFilter: $searchFilter
+    ) {
+    name
+    message
+    afccEvent{
+      data{
+        amount
+        source{
+          ip
+        }
+        businessId
+      }
+    }
+    channleConf{
+      id
+      fareCollectors{
+        name
+      }
+      reloadNetworks{
+        name
+      }
+      parties{
+        name
+      }
+      surplusCollectors{
+        name
+      }
+      lastEdition
+      editor
+    }
+    timestamp
+  }
+  
+  }
+`;
 
 export const fetchTotalReloadsCount = gql`
   query fetchTotalReloadsCount {

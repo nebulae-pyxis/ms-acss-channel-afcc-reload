@@ -127,7 +127,7 @@ export class ReloadErrorsHistoryComponent implements OnInit, OnDestroy {
     .pipe(
       mergeMap(resp => this.graphQlErrorHandler$(resp)),
       filter((resp: any) => !resp.errors || resp.errors.length === 0),
-      map(response => response.data.AcssChannelAfccReloadGetAfccReloads)
+      map(response => response.data.AcssChannelAfccReloadGetAfccReloadErrors)
     )
     .subscribe(
       (reloads: any[]) => {
@@ -201,6 +201,11 @@ export class ReloadErrorsHistoryComponent implements OnInit, OnDestroy {
     //     );
     //   });
     console.log('###############', messageKey, detailMessageKey);
+  }
+
+
+  showDetails(reloadError: any){
+    console.log(reloadError);
   }
 
 

@@ -29,6 +29,9 @@ class EventSourcing {
     
 }
 
+/**
+ * @returns {EventSourcing}
+ */
 module.exports = () => {
     if (!instance) {
         instance = new EventSourcing();

@@ -3,6 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { GatewayService } from '../../../api/gateway.service';
 import {
   getChannelSettings,
+  getReloadErrors,
   createAcssChannelSettings,
   getReloads,
   fetchTotalReloadsCount,
@@ -78,7 +79,7 @@ getBasicReloadsInfo$(pageValue, countValue, searchFilter){
 getBasicReloadErrorsInfo$(pageValue, countValue, searchFilter){
   return this.gateway.apollo
   .query<any>({
-    query: getReloads,
+    query: getReloadErrors,
     variables: {
       page: pageValue,
       count: countValue,
@@ -118,7 +119,5 @@ fetchTotalReloadErrorsCount$(){
     errorPolicy: 'all'
   });
 }
-
-
 
 }

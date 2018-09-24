@@ -1,0 +1,29 @@
+<!-- <div class="dialog-content-wrapper">
+  <div fxLayout="column">
+    <div fxLayout="row" fxLayoutAlign="space-between none">
+      <span style="font-size: 24px; margin-bottom: 10px;">{{ data.title }}</span>
+      <button mat-button class="mat-icon-button" (click)="dialogRef.close()" aria-label="Close dialog">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div>
+
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+        <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+          <button mat-icon-button disabled></button>
+          {{node.filename}} : {{node.type}}
+        </mat-tree-node>
+
+        <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
+          <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.filename">
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </button>
+          {{node.filename}} : {{node.type}}
+        </mat-tree-node>
+      </mat-tree>
+
+    </div>
+  </div>
+</div> -->

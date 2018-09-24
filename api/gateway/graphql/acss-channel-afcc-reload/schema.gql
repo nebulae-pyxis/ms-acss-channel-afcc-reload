@@ -56,10 +56,20 @@ type AcssChannelAfccReloadEvent {
   timestamp: BigInt
 }
 
+type AcssChannelAfccReloadEventFromEventStore {
+  et: String
+  av: Int
+  etv: Int
+  at: String
+  data: AcssChannelAfccReloadEvent
+  user: String
+  timestamp: BigInt
+}
+
 type AcssChannelAfccReloadError{
   name: String
   message: String
-  afccEvent: String
+  afccEvent: AcssChannelAfccReloadEventFromEventStore
   channleConf: AcssChannelAfccReloadConfigurationObject
   timestamp: BigInt
 }
@@ -69,7 +79,7 @@ type AcssChannelAfccReloadChannel{
   id: String
   "Channel softwate version"
   v: String
-  "Channel configuration version"
+  "Channel version configuration"
   c: String
 }
 
@@ -170,7 +180,7 @@ type AcssChannelAfccReloadCommandResponse{
 type Query {
   AcssChannelAfccReloadGetConfiguration(id: BigInt!): AcssChannelAfccReloadConfigurationObject
   AcssChannelAfccReloadGetAfccReloads(page: Int!, count: Int!, searchFilter: String): [AcssChannelAfccReloadEvent]
-  AcssChannelAfccReloadGetAfccReloadErrors(page: Int!, count: Int!, searchFilter: String): [AcssChannelAfccReloadEvent]
+  AcssChannelAfccReloadGetAfccReloadErrors(page: Int!, count: Int!, searchFilter: String): [AcssChannelAfccReloadError]
   AcssChannelAfccReloadGetAfccReload(id: String!): AcssChannelAfccReloadEvent
   # AcssChannelAfccReloadGetAfccReloadDetails: AcssChannelAfccReloadEventDetail
   AcssChannelAfccReloadGetTransactions(page: Int!, count: Int!, sortColumn: String, sortOrder: String): [AcssChannelAfccReloadTransaction]

@@ -125,7 +125,8 @@ class AfccReloadChannel{
       PERMISSION_DENIED_ERROR,
       ["SYSADMIN"]
     )
-    .mergeMap(() => TransactionsErrorsDA.findReloadErrors$(args) ) 
+    .mergeMap(() => TransactionsErrorsDA.findReloadErrors$(args) )
+    .do(r => console.log("Se encontraron los siguinetes erores ==> ", r))
     .mergeMap(payload => this.buildSuccessResponse$(payload))
     .catch(e => this.errorHandler$(e))
   }

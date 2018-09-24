@@ -74,8 +74,7 @@ class AfccReloadChannelHelper {
     }
     return AfccReloadChannelHelper.createTransactionObject$(
       conf.reloadNetworks[reloadNetworkIndex],
-      (afccEvent.data.amount / 100) *
-        conf.reloadNetworks[reloadNetworkIndex].percentage,
+      (afccEvent.data.amount / 100) * conf.reloadNetworks[reloadNetworkIndex].percentage,
       conf,
       DEFAULT_TRANSACTION_TYPE,
       afccEvent
@@ -132,30 +131,17 @@ class AfccReloadChannelHelper {
    * @param {any} evt AFCC reload event
    */
   static validateFinalTransactions$(transactionArray, conf, afccEvent) {
-    // console.log("################################################################");
-    // console.log("### Valor de la recarga ==>", afccEvent.data.amount)
+    console.log("### Valor de la recarga ==>", afccEvent.data.amount)
     return Rx.Observable.defer(() =>
-      Rx.Observable.of(
-        transactionArray.reduce(
-          (acumulated, tr) => acumulated + Math.floor(tr.amount * 100),
-          0
-        )
-      )
+      Rx.Observable.of( transactionArray.reduce( (acumulated, tr) => acumulated + ( tr.amount * 100 ), 0 ) )
     )
       .map(amountProcessed => Math.floor(amountProcessed) / 100)
       .mergeMap(amountProcessed => {
-        console.log(
-          "Cantida de dinero repartido en las transacciones ==> ",
-          amountProcessed
-        );
         if (amountProcessed == afccEvent.data.amount) {
           return Rx.Observable.of(transactionArray);
         } else {
           return Rx.Observable.of(amountProcessed)
-            .map(
-              amount => Math.round((afccEvent.data.amount - amount) * 100) / 100
-            )
-            .do(a => console.log("#### Dinero de los sobrados ==> ", a))
+            .map( amount => Math.round((afccEvent.data.amount - amount) * 100) / 100 )
             .mergeMap(amount =>
               AfccReloadChannelHelper.createTransactionObject$(
                 conf.surplusCollectors[0],
@@ -168,17 +154,14 @@ class AfccReloadChannelHelper {
             .map(finalTransaction => [...transactionArray, finalTransaction]);
         }
       })
-      .do(allTransactions => {
-        allTransactions.forEach(t => {
-          console.log("Transaction_amount: ", t.amount);
-        });
-        const total =
-          allTransactions.reduce(
-            (acc, tr) => acc + Math.floor(tr.amount * 100),
-            0
-          ) / 100;
-        console.log(total);
-      });
+      // .do(allTransactions => {
+      //   allTransactions.forEach(t => {
+      //     console.log("Transaction_amount: ", t.amount);
+      //   });
+      //   const total =
+      //     allTransactions.reduce( (acc, tr) => acc + (tr.amount * 100), 0 ) / 100;
+      //   // console.log(total);
+      // });
   }
 
   /**
@@ -189,7 +172,7 @@ class AfccReloadChannelHelper {
   static truncateAmount$(transaction, decimals = 2) {
     return Rx.Observable.of(Math.pow(10, decimals)).map(n => ({
       ...transaction,
-      amount: Math.floor(transaction.amount * n) / n
+      amount: Math.floor(+(transaction.amount * n)) / n
     }));
   }
 
@@ -202,7 +185,6 @@ class AfccReloadChannelHelper {
    * @param {any} event
    */
   static createTransactionObject$(actorConf, amount, conf, type, afccEvent) {
-    console.log(conf);
     return Rx.Observable.of({
       fromBu: actorConf.fromBu,
       toBu: actorConf.buId,
@@ -219,8 +201,7 @@ class AfccReloadChannelHelper {
         type: afccEvent.et, 
         user: afccEvent.user 
       }
-    }).mergeMap(transaction =>
-      AfccReloadChannelHelper.truncateAmount$(transaction)
+    }).mergeMap(transaction => AfccReloadChannelHelper.truncateAmount$(transaction)
     );
   }
 

@@ -9,8 +9,10 @@ import { AcssChannelAfccReloadComponent } from './acss-channel-afcc-reload.compo
 import { ChannelSettingsComponent } from './channel-settings/channel-settings.component';
 import { ReloadHistoryComponent } from './reload-history/reload-history.component';
 import { ReloadDetailComponent } from './reload-detail/reload-detail.component';
-import { ActorDefinitionComponent } from './actor-definition/actor-definition.component';
+
 import { ReloadErrorsHistoryComponent } from './reloads-errors-history/reloads-errors-history.component';
+import { ReloadErrorDetailsComponent } from './reloads-errors-history/reload-error-details/reload-error-details.component';
+import { ActorDefinitionComponent } from './channel-settings/actor-definition/actor-definition.component';
 
 
 const routes: Routes = [
@@ -40,10 +42,11 @@ const routes: Routes = [
     ReloadHistoryComponent,
     ReloadDetailComponent,
     ActorDefinitionComponent,
-    ReloadErrorsHistoryComponent
+    ReloadErrorsHistoryComponent,
+    ReloadErrorDetailsComponent
   ],
   providers: [ AcssChannelAfccReloadService, DatePipe],
-  entryComponents: [ActorDefinitionComponent]
+  entryComponents: [ActorDefinitionComponent, ReloadErrorDetailsComponent]
 })
 
 export class AcssChannelAfccReloadModule {}
