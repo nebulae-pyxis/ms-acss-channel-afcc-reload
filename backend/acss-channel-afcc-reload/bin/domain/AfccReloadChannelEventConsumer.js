@@ -38,24 +38,24 @@ class UserEventConsumer {
       // apply the rules and return the array with all transaction to persist      
       .mergeMap((conf) => Helper.applyBusinessRules$(conf, evt))
       .mergeMap(result => Helper.validateFinalTransactions$(result.transactions, result.conf, evt))
-      // .do(r => console.log(r))
+      //.do(r => console.log(r))
       // insert all trsansaction to the MongoDB
-      // .mergeMap(transactionsArray => TransactionsDA.insertTransactions$(transactionsArray))
-      // // gets the transactions after been inserted
-      // .map(result => result.ops)
-      // .mergeMap(transactions =>
-      //   Rx.Observable.from(transactions)
-      //     .map(transaction => {
-      //       transaction.id = transaction._id.toString();
-      //       delete transaction._id;  // check performance
-      //       return transaction;
-      //     })
-      //     .toArray()
-      // )
-      // // build Reload object with its transactions generated
-      // .map(arrayTransactions => ({ ...evt.data, timestamp: evt.timestamp, transactions: arrayTransactions }))
-      // inserts the reload object
-      // .mergeMap(reload => AfccReloadsDA.insertOneReload$(reload))
+      .mergeMap(transactionsArray => TransactionsDA.insertTransactions$(transactionsArray))
+      // gets the transactions after been inserted
+      .map(result => result.ops)
+      .mergeMap(transactions =>
+        Rx.Observable.from(transactions)
+          .map(transaction => {
+            transaction.id = transaction._id.toString();
+            delete transaction._id;  // check performance
+            return transaction;
+          })
+          .toArray()
+      )
+      // build Reload object with its transactions generated
+      .map(arrayTransactions => ({ ...evt.data, timestamp: evt.timestamp, transactions: arrayTransactions }))
+      //inserts the reload object
+      .mergeMap(reload => AfccReloadsDA.insertOneReload$(reload))
       .catch(error => this.errorHandler$(error, evt))
   }
 

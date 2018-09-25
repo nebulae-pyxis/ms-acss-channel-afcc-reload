@@ -133,9 +133,10 @@ class AfccReloadChannelHelper {
   static validateFinalTransactions$(transactionArray, conf, afccEvent) {
     console.log("### Valor de la recarga ==>", afccEvent.data.amount)
     return Rx.Observable.defer(() =>
-      Rx.Observable.of( transactionArray.reduce( (acumulated, tr) => acumulated + ( tr.amount * 100 ), 0 ) )
+      Rx.Observable.of( transactionArray.reduce( (acumulated, tr) => acumulated + ( tr.amount * 1000 ), 0 ) )
     )
-      .map(amountProcessed => Math.floor(amountProcessed) / 100)
+      .map(amountProcessed => Math.floor(amountProcessed) / 1000)
+      // .do(r => console.log("Le dinero de las transacciones es: ", r))
       .mergeMap(amountProcessed => {
         if (amountProcessed == afccEvent.data.amount) {
           return Rx.Observable.of(transactionArray);
@@ -154,25 +155,24 @@ class AfccReloadChannelHelper {
             .map(finalTransaction => [...transactionArray, finalTransaction]);
         }
       })
-      // .do(allTransactions => {
-      //   allTransactions.forEach(t => {
-      //     console.log("Transaction_amount: ", t.amount);
-      //   });
-      //   const total =
-      //     allTransactions.reduce( (acc, tr) => acc + (tr.amount * 100), 0 ) / 100;
-      //   // console.log(total);
-      // });
+      .do(allTransactions => {
+        allTransactions.forEach(t => { console.log("Transaction_amount: ", t.amount); });
+        const total = allTransactions.reduce( (acc, tr) => acc + (tr.amount * 1000), 0 ) / 1000;
+        console.log(total);
+      });
   }
 
   /**
-   *
+   * Truncates the transaction amount to two decimals
    * @param {any} transaction transaction object
    * @param {number} decimals decimal to truncate the amount
    */
   static truncateAmount$(transaction, decimals = 2) {
-    return Rx.Observable.of(Math.pow(10, decimals)).map(n => ({
+    return Rx.Observable.of(transaction.amount.toString()).map(amountAsString => ({
       ...transaction,
-      amount: Math.floor(+(transaction.amount * n)) / n
+      amount: (amountAsString.indexOf('.') !== -1 &&  ( amountAsString.length - amountAsString.indexOf('.') > decimals +1 ) )
+        ? Math.floor(transaction.amount * Math.pow(10, decimals)) / Math.pow(10, decimals)
+        : transaction.amount
     }));
   }
 

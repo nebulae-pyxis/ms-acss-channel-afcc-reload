@@ -26,9 +26,7 @@ class EventStoreService {
    *    emit value: { aggregateType, eventType, handlerName}
    */
   start$() {
-
-    Rx.Observable.interval(5000)
-.mergeMap(() => {
+   
     //default error handler
     const onErrorHandler = error => {
       console.error("Error handling  EventStore incoming event", error);
