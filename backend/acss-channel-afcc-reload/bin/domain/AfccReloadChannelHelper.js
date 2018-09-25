@@ -136,7 +136,6 @@ class AfccReloadChannelHelper {
       Rx.Observable.of( transactionArray.reduce( (acumulated, tr) => acumulated + ( tr.amount * 1000 ), 0 ) )
     )
       .map(amountProcessed => Math.floor(amountProcessed) / 1000)
-      // .do(r => console.log("Le dinero de las transacciones es: ", r))
       .mergeMap(amountProcessed => {
         if (amountProcessed == afccEvent.data.amount) {
           return Rx.Observable.of(transactionArray);
@@ -170,6 +169,9 @@ class AfccReloadChannelHelper {
   static truncateAmount$(transaction, decimals = 2) {
     return Rx.Observable.of(transaction.amount.toString()).map(amountAsString => ({
       ...transaction,
+      // this "Ternary if" is necessary in javascript due in some cases the aproximation fails and causes loss of a few cents
+      // for example 1048.85 * 100 equals to  104884.99999999999 in javascript but 104885 was expected.
+      // due this error is necessary make this "Ternary If".
       amount: (amountAsString.indexOf('.') !== -1 &&  ( amountAsString.length - amountAsString.indexOf('.') > decimals +1 ) )
         ? Math.floor(transaction.amount * Math.pow(10, decimals)) / Math.pow(10, decimals)
         : transaction.amount
@@ -243,7 +245,7 @@ class AfccReloadChannelHelper {
         ? Rx.Observable.of(true)
         : Rx.Observable.throw(
           new CustomError(
-            "value exceed",
+            "Percentage value exceed",
             "verifyFarecollectorVsReloads$",
             undefined,
             "A fareCollector and Reloaders wrong combination"
@@ -260,15 +262,14 @@ class AfccReloadChannelHelper {
   static VerifyPartiesPercentages$(parties, surplus) {
     return Rx.Observable.of(parties)
       .map(parties => parties.reduce((acc, item) => acc + item, 0))
-      .mergeMap(totalPercentageInParties => (totalPercentageInParties != 100)
-        ? Rx.Observable.throw(
+      .mergeMap(totalPercentageInParties => (totalPercentageInParties == 100)
+        ? Rx.Observable.of(true)
+        : Rx.Observable.throw(
           new CustomError(
             "name",
             "verifyBusinessRules",
             "Error with percentages in the parties percentages"
-          )
-        )
-        : Rx.Observable.of(true)
+          ) )
       )
   } 
 

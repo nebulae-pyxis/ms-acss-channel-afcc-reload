@@ -24,17 +24,8 @@ let instance;
 
 class AfccReloadChannel{
   constructor() {
-    // this.initHelloWorldEventGenerator();
   }
 
-
-  /**
-   * Handle HelloWorld Query, please remove
-   * This in an Event HAndler for Event- events
-   */
-  handleHelloWorld$(evt) {
-    return Rx.Observable.of('Some process for HelloWorld event');
-  }
 
   /**
    * search by the settings version indicated in the query params

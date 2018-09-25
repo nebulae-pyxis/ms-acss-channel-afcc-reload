@@ -152,7 +152,5 @@ export class ReloadErrorDetailsComponent {
     this.data = dataInjected;
     this.TREE_DATA = JSON.stringify(dataInjected);
     console.log(this.data);
-
-
   }
 }

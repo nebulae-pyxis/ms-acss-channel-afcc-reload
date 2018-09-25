@@ -3,12 +3,13 @@ import { Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/co
 import { fuseAnimations } from '../../../../core/animations';
 // tslint:disable-next-line:import-blacklist
 import * as Rx from 'rxjs/Rx';
-import { MatTableDataSource, MatSnackBar, MatPaginator, MatSort } from '@angular/material';
+import { MatTableDataSource, MatSnackBar, MatPaginator, MatSort, MatDialog } from '@angular/material';
 import { FuseTranslationLoaderService } from '../../../../core/services/translation-loader.service';
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
 import { mergeMap, tap, filter, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { fromEvent } from 'rxjs';
+import { ReloadErrorDetailsComponent } from './reload-error-details/reload-error-details.component';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -36,10 +37,13 @@ export class ReloadErrorsHistoryComponent implements OnInit, OnDestroy {
   sortOrder = null;
   itemPerPage = '';
 
+  dialogRef: any;
+
   constructor(
     private acssChannelAfccReloadService: AcssChannelAfccReloadService,
     private translationLoader: FuseTranslationLoaderService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog
     ) {
       this.translationLoader.loadTranslations(english, spanish);
   }
@@ -205,7 +209,12 @@ export class ReloadErrorsHistoryComponent implements OnInit, OnDestroy {
 
 
   showDetails(reloadError: any){
-    console.log(reloadError);
+    this.dialogRef = this.dialog.open( ReloadErrorDetailsComponent, {
+      data: {
+        content: reloadError
+      }
+    });
+
   }
 
 

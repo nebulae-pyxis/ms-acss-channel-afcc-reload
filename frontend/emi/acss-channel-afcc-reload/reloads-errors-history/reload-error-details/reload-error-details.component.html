@@ -27,3 +27,16 @@
     </div>
   </div>
 </div> -->
+
+
+<div class="dialog-content-wrapper">
+  <div fxLayout="column">
+    <div fxLayout="row" fxLayoutAlign="space-between none">
+      <span style="font-size: 24px; margin-bottom: 10px;">{{ data.title }}</span>
+      <button mat-button class="mat-icon-button" (click)="dialogRef.close()" aria-label="Close dialog">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div>{{ data.content }}</div>
+  </div>
+</div>

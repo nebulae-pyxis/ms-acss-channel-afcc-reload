@@ -147,12 +147,19 @@
             formArrayName="surplusCollectors">
 
             <div [formGroupName]="i"  fxFlex="100" fxLayoutWrap>
-              <mat-form-field fxFlex="46" fxFlex.xs="100" class="example-full-width">
-                <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
-              </mat-form-field>
-              <mat-form-field fxFlex="46" fxFlex.xs="100">
-                <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
-              </mat-form-field>
+              <div fxLayout="column" fxFlex="46" fxFlex.xs="100"   >
+                <mat-form-field class="example-full-width">
+                  <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
+                </mat-form-field>
+                <span>  NOMBRE DE LA UNIDAD DE NEGOCIO </span>
+              </div>
+              <div fxLayout="column" fxFlex="46" fxFlex.xs="100">
+                  <mat-form-field >
+                      <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+                  </mat-form-field>
+                  <span>  NOMBRE DE LA UNIDAD DE NEGOCIO </span>
+              </div>
+
               <button *ngIf="currentVersion" fxFlex="5" fxFlex.xs="100" mat-icon-button (click)="deleteControl( 'surplusCollectors', i)">
                 <mat-icon>delete</mat-icon>
               </button>
