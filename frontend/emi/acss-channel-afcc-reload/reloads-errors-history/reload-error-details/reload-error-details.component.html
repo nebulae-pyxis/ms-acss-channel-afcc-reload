@@ -1,42 +1,79 @@
-<!-- <div class="dialog-content-wrapper">
-  <div fxLayout="column">
-    <div fxLayout="row" fxLayoutAlign="space-between none">
-      <span style="font-size: 24px; margin-bottom: 10px;">{{ data.title }}</span>
-      <button mat-button class="mat-icon-button" (click)="dialogRef.close()" aria-label="Close dialog">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-    <div>
-
-      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-        <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
-          <button mat-icon-button disabled></button>
-          {{node.filename}} : {{node.type}}
-        </mat-tree-node>
-
-        <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
-          <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.filename">
-            <mat-icon class="mat-icon-rtl-mirror">
-              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-            </mat-icon>
-          </button>
-          {{node.filename}} : {{node.type}}
-        </mat-tree-node>
-      </mat-tree>
-
-    </div>
-  </div>
-</div> -->
-
-
 <div class="dialog-content-wrapper">
   <div fxLayout="column">
     <div fxLayout="row" fxLayoutAlign="space-between none">
-      <span style="font-size: 24px; margin-bottom: 10px;">{{ data.title }}</span>
+      <span style="font-size: 24px; margin-bottom: 10px;">{{ 'TITLE' | translate }}</span>
       <button mat-button class="mat-icon-button" (click)="dialogRef.close()" aria-label="Close dialog">
         <mat-icon>close</mat-icon>
       </button>
     </div>
-    <div>{{ data.content }}</div>
+
+    <form fxFlex="100" class="example-form" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start">
+      <mat-form-field fxFlex="50">
+        <input matInput placeholder="{{ 'ERROR.NAME' | translate }}" value="{{ reloadError.name }}">
+      </mat-form-field>
+      <mat-form-field fxFlex="50">
+        <input matInput placeholder="{{ 'ERROR.DATE' | translate }}" value="{{ reloadError.timestamp | date:'H:mm:ss d/MMM/yyyy' }}">
+      </mat-form-field>
+      <mat-form-field fxFlex="100">
+        <mat-label> {{ 'ERROR.MESSAGE' | translate }} </mat-label>
+        <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="2" cdkAutosizeMaxRows="10">
+                {{ reloadError.message }}
+              </textarea>
+      </mat-form-field>
+
+      <mat-accordion fxFlex="100" *ngIf="reloadError.afccEvent" >
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                AFCC_RELOAD_EVENT
+              </mat-panel-title>
+              <mat-panel-description>
+                AFCC_RELOAD_DETAILS
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start">
+              <mat-form-field fxFlex="50">
+                <input matInput placeholder="MONTO" value="{{ reloadError.afccEvent.data.amount }}">
+              </mat-form-field>
+
+              <mat-form-field fxFlex="50">
+                <input matInput placeholder="BUSINESS UNIT ID" value="{{ reloadError.afccEvent.data.businessId }}">
+              </mat-form-field>
+              <mat-form-field fxFlex="50">
+                <input matInput placeholder="IP" value="{{ reloadError.afccEvent.data.source.ip }}">
+              </mat-form-field>
+            </div>
+
+
+
+          </mat-expansion-panel>
+
+          <mat-expansion-panel  *ngIf="reloadError.channleConf">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                CHANNEL_CONFIGURATION
+              </mat-panel-title>
+              <mat-panel-description>
+                CLICK TO OPEN CHANNEL CONFIGURATION
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start">
+              <mat-form-field fxFlex="50">
+                <input matInput placeholder="CREATED" value="{{ reloadError.channleConf.lastEdition | date:'H:mm:ss d/MMM/yyyy' }}">
+              </mat-form-field>
+              <mat-form-field fxFlex="50">
+                  <input matInput placeholder="CREATED BY" value="{{ reloadError.channleConf.editor }}">
+                </mat-form-field>
+            </div>
+
+          </mat-expansion-panel>
+        </mat-accordion>
+
+
+
+
+
+    </form>
   </div>
 </div>
