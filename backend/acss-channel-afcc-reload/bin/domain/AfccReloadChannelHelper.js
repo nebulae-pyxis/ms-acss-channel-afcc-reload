@@ -102,16 +102,13 @@ class AfccReloadChannelHelper {
         )
       );
     }
-    const surplusAsPercentage =
-      100 -
-      (conf.fareCollectors[0].percentage +
-        conf.reloadNetworks[reloadNetworkIndex].percentage);
+    const surplusAsPercentage = (100000 - (conf.fareCollectors[0].percentage * 1000 + conf.reloadNetworks[reloadNetworkIndex].percentage * 1000))/1000 ;
     const surplusAmount = (afccEvent.data.amount / 100) * surplusAsPercentage;
+    
     return Rx.Observable.from(conf.parties)
-      .mergeMap(p =>
-        AfccReloadChannelHelper.createTransactionObject$(
+      .mergeMap(p => AfccReloadChannelHelper.createTransactionObject$(
           p,
-          (surplusAmount / 100) * p.percentage,
+          (surplusAmount / 100) * (p.percentage * 1000) / 1000,
           conf,
           DEFAULT_TRANSACTION_TYPE,
           afccEvent
@@ -131,7 +128,7 @@ class AfccReloadChannelHelper {
    * @param {any} evt AFCC reload event
    */
   static validateFinalTransactions$(transactionArray, conf, afccEvent) {
-    console.log("### Valor de la recarga ==>", afccEvent.data.amount)
+    // console.log("### Valor de la recarga ==>", afccEvent.data.amount)
     return Rx.Observable.defer(() =>
       Rx.Observable.of( transactionArray.reduce( (acumulated, tr) => acumulated + ( tr.amount * 1000 ), 0 ) )
     )
@@ -154,11 +151,11 @@ class AfccReloadChannelHelper {
             .map(finalTransaction => [...transactionArray, finalTransaction]);
         }
       })
-      .do(allTransactions => {
-        allTransactions.forEach(t => { console.log("Transaction_amount: ", t.amount); });
-        const total = allTransactions.reduce( (acc, tr) => acc + (tr.amount * 1000), 0 ) / 1000;
-        console.log(total);
-      });
+      // .do(allTransactions => {
+      //   allTransactions.forEach(t => { console.log("Transaction_amount: ", t.amount); });
+      //   const total = allTransactions.reduce( (acc, tr) => acc + (tr.amount * 1000), 0 ) / 1000;
+      //   console.log(total);
+      // });
   }
 
   /**
