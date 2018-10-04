@@ -16,7 +16,10 @@ const CURRENT_RULE = 1;
 let instance;
 
 class UserEventConsumer {
-  constructor() {}
+  constructor() {
+    this.channelSettings = undefined;
+    this.lastChannelConfFetch = undefined;
+  }
 
   handleAcssSettingsCreated$(evt){
     // console.log('handleAcssSettingsCreated$', JSON.stringify(evt));
@@ -31,10 +34,11 @@ class UserEventConsumer {
    * @param {any} evt AfccEvent  
    */
   handleAfccReloaded$(evt) {
+   // let now = Date.now();
     // searh the valid channel settiings
-    return AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE, evt)
+    return this.getChannelSettings$(evt)
       // verifies that the actors interacting with the event are in the channel configuration
-      .mergeMap(conf => Helper.validateAfccEvent$(conf, evt))
+      .mergeMap(conf => Helper.validateAfccEvent$(conf, evt)) //todo/
       // apply the rules and return the array with all transaction to persist      
       .mergeMap((conf) => Helper.applyBusinessRules$(conf, evt))
       .mergeMap(result => Helper.validateFinalTransactions$(result.transactions, result.conf, evt))
@@ -45,18 +49,26 @@ class UserEventConsumer {
       .map(result => result.ops)
       .mergeMap(transactions =>
         Rx.Observable.from(transactions)
-          .map(transaction => {
-            transaction.id = transaction._id.toString();
-            delete transaction._id;  // check performance
-            return transaction;
-          })
+          .map(transaction => ({ ...transaction, id: transaction._id.toString() }))
           .toArray()
       )
-      // build Reload object with its transactions generated
-      .map(arrayTransactions => ({ ...evt.data, timestamp: evt.timestamp, transactions: arrayTransactions }))
-      //inserts the reload object
-      .mergeMap(reload => AfccReloadsDA.insertOneReload$(reload))
+      // build Reload object with its transactions generated inserts the reload object
+      .mergeMap(arrayTransactions => AfccReloadsDA.insertOneReload$({ ...evt.data, timestamp: evt.timestamp, transactions: arrayTransactions }))
+     // .do(x => console.log( evt.data.businessId, evt.data.amount, Date.now() - now))
       .catch(error => this.errorHandler$(error, evt))
+  }
+
+  
+  getChannelSettings$(evt) {
+    // AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE, evt)
+    return (!this.channelSettings || (Date.now() - this.lastChannelConfFetch) > 60000)
+      ? AfccReloadChannelDA.searchConfiguration$(CURRENT_RULE, evt)
+        .map((settings) => {
+          this.channelSettings = settings;
+          this.lastChannelConfFetch = Date.now();
+          return settings;
+        })
+      : Rx.Observable.of(this.channelSettings)
   }
 
 

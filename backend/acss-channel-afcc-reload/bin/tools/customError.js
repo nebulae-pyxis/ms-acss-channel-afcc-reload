@@ -51,9 +51,9 @@ class DefaultError extends Error {
 
 class AfccReloadProcessError extends Error {
   /**
-   * 
-   * @param {string} errorMessage  Error message
+   *    
    * @param {string} errorName Error name
+   * @param {string} errorMessage  Error message
    * @param {any} afccEvent Afcc event that generates the error
    * @param {any} channelConf Channel configuration used in the afcc event process
    */

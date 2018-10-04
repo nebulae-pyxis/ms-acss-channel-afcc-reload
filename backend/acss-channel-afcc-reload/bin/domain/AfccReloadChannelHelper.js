@@ -103,8 +103,7 @@ class AfccReloadChannelHelper {
       );
     }
     const surplusAsPercentage = (100000 - (conf.fareCollectors[0].percentage * 1000 + conf.reloadNetworks[reloadNetworkIndex].percentage * 1000))/1000 ;
-    const surplusAmount = (afccEvent.data.amount / 100) * surplusAsPercentage;
-    
+    const surplusAmount = (afccEvent.data.amount / 100) * surplusAsPercentage;    
     return Rx.Observable.from(conf.parties)
       .mergeMap(p => AfccReloadChannelHelper.createTransactionObject$(
           p,
@@ -118,7 +117,20 @@ class AfccReloadChannelHelper {
   }
 
   static validateAfccEvent$(conf, afccEvent) {
-    return Rx.Observable.of({}).mapTo(conf);
+    return Rx.Observable.of({})
+    .map(() => {
+      if(afccEvent.amount <= 0 ){
+        return Rx.Observable.throw(
+          new AfccReloadProcessError(           
+            "ReloadNetworkTransactionError",
+            "Invalid Reload amount",
+            afccEvent,
+            conf
+          )
+        );
+      }
+    })
+    .mapTo(conf);
   }
 
   /**
@@ -129,16 +141,14 @@ class AfccReloadChannelHelper {
    */
   static validateFinalTransactions$(transactionArray, conf, afccEvent) {
     // console.log("### Valor de la recarga ==>", afccEvent.data.amount)
-    return Rx.Observable.defer(() =>
-      Rx.Observable.of( transactionArray.reduce( (acumulated, tr) => acumulated + ( tr.amount * 1000 ), 0 ) )
-    )
+    return Rx.Observable.of(transactionArray.reduce((acumulated, tr) => acumulated + (tr.amount * 1000), 0))
       .map(amountProcessed => Math.floor(amountProcessed) / 1000)
       .mergeMap(amountProcessed => {
         if (amountProcessed == afccEvent.data.amount) {
           return Rx.Observable.of(transactionArray);
         } else {
           return Rx.Observable.of(amountProcessed)
-            .map( amount => Math.round((afccEvent.data.amount - amount) * 100) / 100 )
+            .map(amount => Math.round((afccEvent.data.amount - amount) * 100) / 100)
             .mergeMap(amount =>
               AfccReloadChannelHelper.createTransactionObject$(
                 conf.surplusCollectors[0],
