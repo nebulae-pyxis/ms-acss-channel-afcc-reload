@@ -2,6 +2,7 @@
 
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').load();
+    require('appmetrics-dash').monitor();
 }
 
 const eventSourcing = require('./tools/EventSourcing')();

@@ -19,6 +19,7 @@ class UserEventConsumer {
   constructor() {
     this.channelSettings = undefined;
     this.lastChannelConfFetch = undefined;
+    this.reloadsInQueue = 0;
   }
 
   handleAcssSettingsCreated$(evt){
@@ -34,7 +35,8 @@ class UserEventConsumer {
    * @param {any} evt AfccEvent  
    */
   handleAfccReloaded$(evt) {
-   // let now = Date.now();
+    let now = Date.now();
+    this.reloadsInQueue++;
     // searh the valid channel settiings
     return this.getChannelSettings$(evt)
       // verifies that the actors interacting with the event are in the channel configuration
@@ -54,7 +56,7 @@ class UserEventConsumer {
       )
       // build Reload object with its transactions generated inserts the reload object
       .mergeMap(arrayTransactions => AfccReloadsDA.insertOneReload$({ ...evt.data, timestamp: evt.timestamp, transactions: arrayTransactions }))
-     // .do(x => console.log( evt.data.businessId, evt.data.amount, Date.now() - now))
+      .do(() => console.log( evt.data.businessId, evt.data.amount, "Time Used ==>",  Date.now() - now, " || InQueue ==> ", this.reloadsInQueue))
       .catch(error => this.errorHandler$(error, evt))
   }
 
