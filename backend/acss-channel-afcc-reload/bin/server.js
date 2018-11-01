@@ -12,7 +12,7 @@ const AfccReloadChannelDA = require('./data/AfccReloadChannelDA');
 const AfccReloadsDA = require('./data/AfccReloadsDA');
 const TransactionsDA = require('./data/TransactionsDA');
 const TransactionsErrorsDA = require('./data/TransactionsErrorsDA');
-const graphQlService = require('./services/gateway/GraphQlService')();
+const graphQlService = require('./services/emi-gateway/GraphQlService')();
 const Rx = require('rxjs');
 
 const start = () => {
