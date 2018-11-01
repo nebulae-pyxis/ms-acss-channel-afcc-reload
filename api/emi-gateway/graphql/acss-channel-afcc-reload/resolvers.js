@@ -63,7 +63,7 @@ module.exports = {
               .mergeMap(() =>
                   broker.forwardAndGetReply$(
                       "AfccChannel",
-                      "gateway.graphql.query.getConfiguration",
+                      "emigateway.graphql.query.getConfiguration",
                       { root, args, jwt: context.encodedToken },
                       2000
                   )
@@ -84,7 +84,7 @@ module.exports = {
               .mergeMap(() => broker
                   .forwardAndGetReply$(
                       "AfccChannel",
-                      "gateway.graphql.query.getAfccReload",
+                      "emigateway.graphql.query.getAfccReload",
                       { root, args, jwt: context.encodedToken },
                       2000
                   ))
@@ -106,7 +106,7 @@ module.exports = {
               .mergeMap(() =>
                   broker.forwardAndGetReply$(
                       "AfccChannel",
-                      "gateway.graphql.query.getAfccReloads",
+                      "emigateway.graphql.query.getAfccReloads",
                       { root, args, jwt: context.encodedToken },
                       2000
                   ))
@@ -126,7 +126,7 @@ module.exports = {
             .mergeMap(() =>
                 broker.forwardAndGetReply$(
                     "AfccChannel",
-                    "gateway.graphql.query.getAfccReloadErrors",
+                    "emigateway.graphql.query.getAfccReloadErrors",
                     { root, args, jwt: context.encodedToken },
                     2000
                 ))
@@ -146,7 +146,7 @@ module.exports = {
               .mergeMap(() =>
                   broker.forwardAndGetReply$(
                       "AfccChannel",
-                      "gateway.graphql.query.getTransactions",
+                      "emigateway.graphql.query.getTransactions",
                       { root, args, jwt: context.encodedToken },
                       2000
                   ))
@@ -165,7 +165,7 @@ module.exports = {
         )
         .mergeMap(() => broker.forwardAndGetReply$(
             "AfccChannel",
-            "gateway.graphql.query.getReloadsCount",
+            "emigateway.graphql.query.getReloadsCount",
             { root, args, jwt: context.encodedToken },
             2000
           ))
@@ -187,7 +187,7 @@ module.exports = {
         )
         .mergeMap(() => broker.forwardAndGetReply$(
             "AfccChannel",
-            "gateway.graphql.query.createConfiguration",
+            "emigateway.graphql.query.createConfiguration",
             { root, args, jwt: context.encodedToken },
             2000
           ))
@@ -241,7 +241,6 @@ eventDescriptors.forEach(descriptor => {
                 payload[descriptor.gqlSubscriptionName] = descriptor.dataExtractor ? descriptor.dataExtractor(evt) : evt.data
                 pubsub.publish(descriptor.gqlSubscriptionName, payload);
             },
-
             error => {
                 if (descriptor.onError) {
                     descriptor.onError(error, descriptor);

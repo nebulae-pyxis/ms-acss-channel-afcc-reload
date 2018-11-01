@@ -126,7 +126,7 @@ class PubSubBroker {
                         observer.next(topicName);
                     },
                     (err) => {
-                        console.error('Failed to obtain gateway Replies subscription', err);
+                        console.error('Failed to obtain emi-gateway Replies subscription', err);
                         observer.error(err);
                     },
                     () => {

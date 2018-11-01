@@ -112,7 +112,7 @@ class GraphQlService {
         if (replyTo) {
           return broker.send$(
             replyTo,
-            "gateway.graphql.Query.response",
+            "emigateway.graphql.Query.response",
             response,
             { correlationId }
           );
@@ -142,31 +142,31 @@ class GraphQlService {
     return [ 
       {
         aggregateType: "AfccChannel",
-        messageType: "gateway.graphql.query.getConfiguration"
+        messageType: "emigateway.graphql.query.getConfiguration"
       },
       {
         aggregateType: "AfccChannel",
-        messageType: "gateway.graphql.query.getAfccReload"
+        messageType: "emigateway.graphql.query.getAfccReload"
       },
       {
         aggregateType: "AfccChannel",
-        messageType: "gateway.graphql.query.getAfccReloads"
+        messageType: "emigateway.graphql.query.getAfccReloads"
       },
       {
         aggregateType: "AfccChannel",
-        messageType: "gateway.graphql.query.getTransactions"
+        messageType: "emigateway.graphql.query.getTransactions"
       },
       {
         aggregateType: "AfccChannel",
-        messageType: "gateway.graphql.query.createConfiguration"
+        messageType: "emigateway.graphql.query.createConfiguration"
       },   
       {
         aggregateType: "AfccChannel",
-        messageType: "gateway.graphql.query.getReloadsCount"
+        messageType: "emigateway.graphql.query.getReloadsCount"
       },
       {
         aggregateType: "AfccChannel",
-        messageType: "gateway.graphql.query.getAfccReloadErrors"
+        messageType: "emigateway.graphql.query.getAfccReloadErrors"
       }
     ];
   }
@@ -176,31 +176,31 @@ class GraphQlService {
    */
   generateFunctionMap() {    
     return {
-      "gateway.graphql.query.getConfiguration": {
+      "emigateway.graphql.query.getConfiguration": {
         fn: afccReloadChannel.getConfiguration$,
         obj: afccReloadChannel
       },
-      "gateway.graphql.query.getAfccReload": {
+      "emigateway.graphql.query.getAfccReload": {
         fn: afccReloadChannel.getAfccReload$,
         obj: afccReloadChannel
       },
-      "gateway.graphql.query.getAfccReloads": {
+      "emigateway.graphql.query.getAfccReloads": {
         fn: afccReloadChannel.getAfccReloads$,
         obj: afccReloadChannel
       },
-      "gateway.graphql.query.getTransactions": {
+      "emigateway.graphql.query.getTransactions": {
         fn: afccReloadChannel.getTransactions$,
         obj: afccReloadChannel
       },
-      "gateway.graphql.query.createConfiguration": {
+      "emigateway.graphql.query.createConfiguration": {
         fn: afccReloadChannel.createConfiguration$,
         obj: afccReloadChannel
       },
-      "gateway.graphql.query.getReloadsCount": {
+      "emigateway.graphql.query.getReloadsCount": {
         fn: afccReloadChannel.getReloadsCount$,
         obj: afccReloadChannel
       },
-      "gateway.graphql.query.getAfccReloadErrors": {
+      "emigateway.graphql.query.getAfccReloadErrors": {
         fn: afccReloadChannel.getAfccReloadErrors$,
         obj: afccReloadChannel
       }

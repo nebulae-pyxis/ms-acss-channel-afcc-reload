@@ -25,7 +25,6 @@ export class AcssChannelAfccReloadService {
 
 
   constructor(private gateway: GatewayService) {
-
   }
 
   /**
