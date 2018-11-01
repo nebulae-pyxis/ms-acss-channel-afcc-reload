@@ -4,7 +4,7 @@
   <div class="content p-24 w-100-p">
 
     <!-- WIDGET GROUP -->
-    <div [formGroup]="settingsForm" class="widget-group" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start"
+    <div [formGroup]="settingsForm" class="widget-group" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start start"
       *fuseIfOnDom [@animateStagger]="{value:'50'}">
 
       <span fxFlex="100" style="font-size: 24px; text-align: center" fxLayoutAlign="center center">{{'SETTINGS.TITLE' | translate }}</span>
@@ -20,7 +20,7 @@
         <div fxFlex="100">
           <div *ngFor="let item of settingsForm.get('fareCollectors')['controls']; let i = index;" fxFlex="100"
             formArrayName="fareCollectors">
-            <div [formGroupName]="i" fxFlex="100" fxLayoutWrap >
+            <div [formGroupName]="i" fxFlex="100" fxLayout="row wrap"  >
               <mat-form-field fxFlex="40" fxFlex.xs="100" >
                 <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
               </mat-form-field>
@@ -57,7 +57,7 @@
         <div fxLayout="column" fxLayoutAlign="space-around stretch"  fxFlex="100">
           <div *ngFor="let item of settingsForm.get('reloaders')['controls']; let i = index;" fxFlex="100"
             formArrayName="reloaders" fxLayout="column" >
-            <div [formGroupName]="i" fxFlex="100" fxLayoutWrap>
+            <div [formGroupName]="i" fxFlex="100" fxLayout="row wrap">
               <mat-form-field fxFlex="40" fxFlex.xs="100" class="example-full-width">
                 <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
               </mat-form-field>
@@ -96,7 +96,7 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="space-around stretch" fxFlex="100">
           <div formArrayName="parties" *ngFor="let item of settingsForm.get('parties')['controls']; let i = index;" fxLayout="column">
-            <div [formGroupName]="i" fxFlex="100" fxLayoutWrap>
+            <div [formGroupName]="i" fxFlex="100" fxLayout="row wrap">
               <mat-form-field fxFlex="40" fxFlex.xs="100" class="example-full-width">
                 <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
               </mat-form-field>
@@ -146,7 +146,7 @@
           <div *ngFor="let item of settingsForm.get('surplusCollectors')['controls']; let i = index;" fxFlex="100"
             formArrayName="surplusCollectors">
 
-            <div [formGroupName]="i"  fxFlex="100" fxLayoutWrap>
+            <div [formGroupName]="i"  fxFlex="100" fxLayout="row wrap">
               <div fxLayout="column" fxFlex="46" fxFlex.xs="100"   >
                 <mat-form-field class="example-full-width">
                   <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
