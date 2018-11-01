@@ -2,7 +2,7 @@
 
 set -x
 
-sleep $(( $RANDOM % 5 ))
+sleep $(($RANDOM%5))
 
 while [ 0 ]; do
 	# exec lock
