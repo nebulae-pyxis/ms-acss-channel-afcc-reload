@@ -4,7 +4,7 @@
   <div class="content p-24 w-100-p">
 
     <!-- WIDGET GROUP -->
-    <div *ngIf="selectedReload" class="widget-group" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start">
+    <div *ngIf="selectedReload" class="widget-group" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start start">
 
       <div fxFlex="5" fxLayoutAlign="start center">
         <button mat-icon-button aria-label="back" [routerLink]="['../..']">
@@ -54,7 +54,7 @@
               {{'MORE_DETAILS' | translate}}
             </mat-panel-description>
           </mat-expansion-panel-header>
-          <div id="panel-content" fxFlex="100" fxLayout="row" fxLayoutWrap fxLayoutAlign="space-evenly stretch">
+          <div id="panel-content" fxFlex="100" fxLayout="row wrap" fxLayoutAlign="space-evenly stretch">
             <div fxFlex="100" fxLayout.lt-sm="column" fxLayoutAlign="space-around">
               <mat-form-field class="example-full-width">
                 <input matInput disabled placeholder="{{'CARD_ID' | translate}}" value="{{ selectedReload.afcc.cardId }}">

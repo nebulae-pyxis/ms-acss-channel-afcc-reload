@@ -7,7 +7,7 @@
       </button>
     </div>
 
-    <form fxFlex="100" class="example-form" fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start">
+    <form fxFlex="100" class="example-form" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start start">
       <mat-form-field fxFlex="50">
         <input matInput placeholder="{{ 'ERROR.NAME' | translate }}" value="{{ reloadError.name }}">
       </mat-form-field>
@@ -31,7 +31,7 @@
                 AFCC_RELOAD_DETAILS
               </mat-panel-description>
             </mat-expansion-panel-header>
-            <div fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start">
+            <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start start">
               <mat-form-field fxFlex="50">
                 <input matInput placeholder="MONTO" value="{{ reloadError.afccEvent.data.amount }}">
               </mat-form-field>
@@ -58,7 +58,7 @@
               </mat-panel-description>
             </mat-expansion-panel-header>
 
-            <div fxLayout="row" fxFlex="100" fxLayoutWrap fxLayoutAlign="start start">
+            <div fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start start">
               <mat-form-field fxFlex="50">
                 <input matInput placeholder="CREATED" value="{{ reloadError.channleConf.lastEdition | date:'H:mm:ss d/MMM/yyyy' }}">
               </mat-form-field>
