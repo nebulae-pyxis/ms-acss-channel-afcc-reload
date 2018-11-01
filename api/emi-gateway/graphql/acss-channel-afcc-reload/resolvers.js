@@ -241,7 +241,6 @@ eventDescriptors.forEach(descriptor => {
                 payload[descriptor.gqlSubscriptionName] = descriptor.dataExtractor ? descriptor.dataExtractor(evt) : evt.data
                 pubsub.publish(descriptor.gqlSubscriptionName, payload);
             },
-
             error => {
                 if (descriptor.onError) {
                     descriptor.onError(error, descriptor);
