@@ -42,6 +42,7 @@ export class ReloadDetailComponent implements OnInit, OnDestroy {
       .subscribe(params => { })
     );
   }
+  
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
