@@ -1,7 +1,6 @@
 "Actor types"
 enum AcssChannelAfccReloadActorType{
   FARECOLLECTOR
-  RELOADNETWORK
   PARTIES
 }
 
@@ -141,8 +140,6 @@ type AcssChannelAfccReloadConfigurationObject{
   id: BigInt 
   "List of Farecollector actors in this configuration"
   fareCollectors: [AcssChannelAfccReloadActor]
-  "List of reloadNetwork Actors in this configuration"
-  reloadNetworks: [AcssChannelAfccReloadActor]
   "List of parties actors in this configuration"
   parties: [AcssChannelAfccReloadActor]
   "surplus collector"
@@ -159,8 +156,6 @@ input AcssChannelAfccReloadConfigurationInput{
   id: BigInt 
   "List of Farecollector actors in this configuration"
   fareCollectors: [AcssChannelAfccReloadActorInput]
-  "List of reloadNetwork Actors in this configuration"
-  reloadNetworks: [AcssChannelAfccReloadActorInput]
   "List of parties actors in this configuration"
   parties: [AcssChannelAfccReloadActorInput]
   "surplusCollectors"

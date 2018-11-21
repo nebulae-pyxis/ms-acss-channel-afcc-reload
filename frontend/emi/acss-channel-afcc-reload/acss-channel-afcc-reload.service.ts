@@ -13,7 +13,7 @@ import {
 export interface AcssChannelSettings{
   id: number;
   fareCollectors: {buId: string, name: string, percentage: number}[];
-  reloadNetworks: {buId: string, name: string, percentage: number}[];
+  // reloadNetworks: {buId: string, name: string, percentage: number}[];
   parties: {buId: string, name: string, percentage: number}[];
   lastEdition: number;
 }

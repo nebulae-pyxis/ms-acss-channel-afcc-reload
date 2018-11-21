@@ -15,11 +15,6 @@ export const getChannelSettings = gql`
         buId
         percentage
       }
-      reloadNetworks {
-        fromBu
-        buId
-        percentage
-      }
       parties {
         fromBu
         buId
@@ -83,9 +78,6 @@ export const getReloadErrors = gql`
     channleConf{
       id
       fareCollectors{
-        name
-      }
-      reloadNetworks{
         name
       }
       parties{
