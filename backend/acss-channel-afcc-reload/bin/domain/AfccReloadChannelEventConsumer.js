@@ -34,13 +34,13 @@ class UserEventConsumer {
    * 
    * @param {any} evt AfccEvent  
    */
-  handleAfccReloaded$(evt) {
+  handleWalletTransactionExecuted$(evt) {
     let now = Date.now();
     this.reloadsInQueue++;
     // searh the valid channel settiings
     return this.getChannelSettings$(evt)
       // verifies that the actors interacting with the event are in the channel configuration
-      .mergeMap(conf => Helper.validateAfccEvent$(conf, evt)) //todo/
+      // .mergeMap(conf => Helper.validateAfccEvent$(conf, evt))
       // apply the rules and return the array with all transaction to persist      
       .mergeMap((conf) => Helper.applyBusinessRules$(conf, evt))
       .mergeMap(result => Helper.validateFinalTransactions$(result.transactions, result.conf, evt))

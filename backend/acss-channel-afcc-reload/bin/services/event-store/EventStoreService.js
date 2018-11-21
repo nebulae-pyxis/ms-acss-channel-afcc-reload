@@ -39,7 +39,7 @@ class EventStoreService {
     console.log("EventStoreService starting ...");
 
     return Rx.Observable.from(this.aggregateEventsArray)
-      .map(aggregateEvent => { return { ...aggregateEvent, onErrorHandler, onCompleteHandler } })
+      .map(aggregateEvent =>  ({ ...aggregateEvent, onErrorHandler, onCompleteHandler }) )
       .map(params => this.subscribeEventHandler(params));
   }
 
@@ -121,8 +121,8 @@ class EventStoreService {
         fn: afccReloadChannelEventConsumer.handleAcssSettingsCreated$,
         obj: afccReloadChannelEventConsumer
       },
-      AfccReloadSold: {
-        fn: afccReloadChannelEventConsumer.handleAfccReloaded$,
+      WalletTransactionExecuted: {
+        fn: afccReloadChannelEventConsumer.handleWalletTransactionExecuted$,
         obj: afccReloadChannelEventConsumer
       }
 
@@ -139,8 +139,8 @@ class EventStoreService {
         eventType: "ACSSConfigurationCreated"
       },
       {
-        aggregateType: "Afcc",
-        eventType: "AfccReloadSold"
+        aggregateType: "Wallet",
+        eventType: "WalletTransactionExecuted"
       }
     ]
   }

@@ -4,6 +4,7 @@ const Rx = require("rxjs");
 const DEFAULT_TRANSACTION_TYPE = "AFCC_RELOAD";
 const CHANNEL_ID = "ACSS_CHANNEL_AFCC_RELOAD";
 const { CustomError, AfccReloadProcessError } = require("../tools/customError");
+const [ MAIN_POCKET, BONUS_POCKET ]  = [ 'MAIN', 'BONUS' ];
 
 class AfccReloadChannelHelper {
   constructor() {}
@@ -14,23 +15,26 @@ class AfccReloadChannelHelper {
    * @param {Object} AfccEvent AFCC event to process with the given configuration
    * @returns {<Observable>} Observable with transaction array
    */
-  static applyBusinessRules$(configuration, afccEvent) {
-    // console.log("Applying BusinessRules...");
-    return Rx.Observable.forkJoin(
-      AfccReloadChannelHelper.createTransactionForFareCollector$(configuration, afccEvent),
-      AfccReloadChannelHelper.createTransactionForReloadNetWork$(configuration, afccEvent),
-      AfccReloadChannelHelper.createTransactionForParties$(configuration, afccEvent)
-    ).map(
+  static applyBusinessRules$(configuration, afccEvent) {    
+    return Rx.Observable.of(afccEvent)
+    // get the transaction with maximun value
+    .map(({transactions}) => transactions.sort((txa, txb) => txb.value - txa.value )[0] )
+    // map object with only necessary attributes and set value transacction as positive
+    .map( ({ value, user }) => ({ amount: value * -1, _id: afccEvent._id, et: afccEvent.et, user  }) )
+    .mergeMap(afccEvent  => 
+      Rx.Observable.forkJoin(
+        AfccReloadChannelHelper.createTransactionForFareCollector$(configuration, afccEvent),
+        // AfccReloadChannelHelper.createTransactionForReloadNetWork$(configuration, afccEvent),
+        AfccReloadChannelHelper.createTransactionForParties$(configuration, afccEvent)
+      )
+    )
+    .map(
       ([
         fareCollectorTransation,
-        reloadNetworkTransation,
+        // reloadNetworkTransation,
         partiesTransactions
       ]) => ({
-        transactions: [
-          fareCollectorTransation,
-          reloadNetworkTransation,
-          ...partiesTransactions
-        ],
+        transactions: [ fareCollectorTransation, ...partiesTransactions ],
         conf: configuration
       })
     );
@@ -44,7 +48,7 @@ class AfccReloadChannelHelper {
   static createTransactionForFareCollector$(conf, afccEvent) {
     return AfccReloadChannelHelper.createTransactionObject$(
       conf.fareCollectors[0],
-      (afccEvent.data.amount / 100) * conf.fareCollectors[0].percentage,
+      (afccEvent.amount / 100) * conf.fareCollectors[0].percentage,
       conf,
       DEFAULT_TRANSACTION_TYPE,
       afccEvent
@@ -56,58 +60,43 @@ class AfccReloadChannelHelper {
    * @param { Object } conf Channel configuration
    * @param { Object } afccEvent AFCC reload event
    */
-  static createTransactionForReloadNetWork$(conf, afccEvent) {
-    const reloadNetworkIndex = conf.reloadNetworks.findIndex(
-      rn => rn.buId == afccEvent.data.businessId
-    );
-    if (reloadNetworkIndex == -1) {
-      return Rx.Observable.throw(
-        new AfccReloadProcessError(
-          `${
-            afccEvent.data.businessId
-          } business unit id no found in reloadnetwork settings`,
-          "ReloadNetworkTransactionError",
-          afccEvent,
-          conf
-        )
-      );
-    }
-    return AfccReloadChannelHelper.createTransactionObject$(
-      conf.reloadNetworks[reloadNetworkIndex],
-      (afccEvent.data.amount / 100) * conf.reloadNetworks[reloadNetworkIndex].percentage,
-      conf,
-      DEFAULT_TRANSACTION_TYPE,
-      afccEvent
-    );
-  }
+  // static createTransactionForReloadNetWork$(conf, afccEvent) {
+  //   const reloadNetworkIndex = conf.reloadNetworks.findIndex(
+  //     rn => rn.buId == afccEvent.data.businessId
+  //   );
+  //   if (reloadNetworkIndex == -1) {
+  //     return Rx.Observable.throw(
+  //       new AfccReloadProcessError(
+  //         `${
+  //           afccEvent.data.businessId
+  //         } business unit id no found in reloadnetwork settings`,
+  //         "ReloadNetworkTransactionError",
+  //         afccEvent,
+  //         conf
+  //       )
+  //     );
+  //   }
+  //   return AfccReloadChannelHelper.createTransactionObject$(
+  //     conf.reloadNetworks[reloadNetworkIndex],
+  //     (afccEvent.data.amount / 100) * conf.reloadNetworks[reloadNetworkIndex].percentage,
+  //     conf,
+  //     DEFAULT_TRANSACTION_TYPE,
+  //     afccEvent
+  //   );
+  // }
 
   /**
    * Create all transaction for each third part actor
    * @param { Object } conf Channel configuration
    * @param { Object } afccEvent AFCC reload event
    */
-  static createTransactionForParties$(conf, afccEvent) {
-    const reloadNetworkIndex = conf.reloadNetworks.findIndex(
-      rn => rn.buId == afccEvent.data.businessId
-    );
-    if (reloadNetworkIndex === -1) {
-      return Rx.Observable.throw(
-        new AfccReloadProcessError(
-          `${
-            afccEvent.data.businessId
-          } business unit id no found in reloadnetwork settings `,
-          "PartiesTransactionError",
-          afccEvent,
-          conf
-        )
-      );
-    }
-    const surplusAsPercentage = (100000 - (conf.fareCollectors[0].percentage * 1000 + conf.reloadNetworks[reloadNetworkIndex].percentage * 1000))/1000 ;
-    const surplusAmount = (afccEvent.data.amount / 100) * surplusAsPercentage;    
+  static createTransactionForParties$(conf, afccEvent) {                     
+    const surplusAsPercentage = (100000 - (conf.fareCollectors[0].percentage * 1000 )) / 1000 ;
+    const surplusAmount = (afccEvent.amount / 100) * surplusAsPercentage;    
     return Rx.Observable.from(conf.parties)
-      .mergeMap(p => AfccReloadChannelHelper.createTransactionObject$(
-          p,
-          (surplusAmount / 100) * (p.percentage * 1000) / 1000,
+      .mergeMap(thirdParty => AfccReloadChannelHelper.createTransactionObject$(
+          thirdParty,
+          (surplusAmount / 100) * (thirdParty.percentage * 1000) / 1000,
           conf,
           DEFAULT_TRANSACTION_TYPE,
           afccEvent
@@ -144,11 +133,11 @@ class AfccReloadChannelHelper {
     return Rx.Observable.of(transactionArray.reduce((acumulated, tr) => acumulated + (tr.amount * 1000), 0))
       .map(amountProcessed => Math.floor(amountProcessed) / 1000)
       .mergeMap(amountProcessed => {
-        if (amountProcessed == afccEvent.data.amount) {
+        if (amountProcessed == afccEvent.amount) {
           return Rx.Observable.of(transactionArray);
         } else {
           return Rx.Observable.of(amountProcessed)
-            .map(amount => Math.round((afccEvent.data.amount - amount) * 100) / 100)
+            .map(amount => Math.round((afccEvent.amount - amount) * 100) / 100)
             .mergeMap(amount =>
               AfccReloadChannelHelper.createTransactionObject$(
                 conf.surplusCollectors[0],
@@ -222,14 +211,12 @@ class AfccReloadChannelHelper {
   static verifyBusinessRules$(conf) {
     return Rx.Observable.forkJoin(
       Rx.Observable.defer(() => conf.fareCollectors.map(e => e.percentage)),
-      Rx.Observable.defer(() => conf.reloadNetworks.map(e => e.percentage)).toArray(),
       Rx.Observable.defer(() => conf.parties.map(e => e.percentage)).toArray(),
       Rx.Observable.defer(() => conf.surplusCollectors.map(e => e))
     )
-      .mergeMap(([fareCollector, reloadNetworks, parties, surplusCollector]) =>
+      .mergeMap(([fareCollector, parties, surplusCollector]) =>
         Rx.Observable.forkJoin(
-          Rx.Observable.merge(AfccReloadChannelHelper.verifyFarecollectorVsReloads$(fareCollector, reloadNetworks))
-            .mergeMap(surplus => AfccReloadChannelHelper.VerifyPartiesPercentages$(parties, surplus))
+          AfccReloadChannelHelper.VerifyPartiesPercentages$(parties)
         )
       )
       .mergeMap(() => Rx.Observable.of(conf))
@@ -266,7 +253,7 @@ class AfccReloadChannelHelper {
  * @param {boolean} surplus surplus money available to parties ?
  * @returns { Observable<any> }
  */
-  static VerifyPartiesPercentages$(parties, surplus) {
+  static VerifyPartiesPercentages$(parties) {
     return Rx.Observable.of(parties)
       .map(parties => parties.reduce((acc, item) => acc + item, 0))
       .mergeMap(totalPercentageInParties => (totalPercentageInParties == 100)
