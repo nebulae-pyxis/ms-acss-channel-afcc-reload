@@ -13,7 +13,7 @@ spec:
         app: acar
     spec:      
       containers:
-      - image: nebulaepyxis/acss-channel-afcc-reload.backend.acss-channel-afcc-reload:0.1.4
+      - image: nebulaepyxis/acss-channel-afcc-reload.backend.acss-channel-afcc-reload:0.1.5
         name: acss-channel-afcc-reload
         volumeMounts:
         - name: google-application-credentials

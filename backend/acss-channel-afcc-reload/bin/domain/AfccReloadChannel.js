@@ -177,7 +177,6 @@ class AfccReloadChannel{
       code: 200,
       message: "persistBasicInfoTag$"
     })
-
     .mergeMap(payload => this.buildSuccessResponse$(payload))
     .catch(e => this.errorHandler$(e))
   }
