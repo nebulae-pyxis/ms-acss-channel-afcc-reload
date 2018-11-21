@@ -109,6 +109,7 @@ class AfccReloadChannel{
   }
 
   getAfccReloadErrors$({ args, jwt }, authToken){
+    console.log("getAfccReloadErrors$");
     return RoleValidator.checkPermissions$(
       authToken.realm_access.roles,
       "AfccReloadAcssChannel",
@@ -128,6 +129,7 @@ class AfccReloadChannel{
    * @param {any} authToken JWT Authtoken decoded
    */
   getTransactions$({ args, jwt }, authToken){
+    console.log("getTransactions$");
     return RoleValidator.checkPermissions$(
       authToken.realm_access.roles,
       "AfccReloadAcssChannel",
@@ -148,7 +150,7 @@ class AfccReloadChannel{
    * @param {String} authToken  JWT Authtoken decoded
    */
   createConfiguration$({ args, jwt }, authToken) {
-    // console.log("createConfiguration$", args); 
+    console.log("createConfiguration$", args); 
 
     return RoleValidator.checkPermissions$(
       authToken.realm_access.roles,
