@@ -20,14 +20,14 @@
         <div fxFlex="100">
           <div *ngFor="let item of settingsForm.get('fareCollectors')['controls']; let i = index;" fxFlex="100"
             formArrayName="fareCollectors">
-            <div [formGroupName]="i" fxFlex="100" fxLayout="row wrap"  >
-              <mat-form-field fxFlex="40" fxFlex.xs="100" >
+            <div class="border" [formGroupName]="i" fxFlex="100" fxLayout="row wrap"  >
+              <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100" >
                 <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
               </mat-form-field>
-              <mat-form-field fxFlex="40" fxFlex.xs="100">
+              <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
                 <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
               </mat-form-field>
-              <mat-form-field fxFlex="15" fxFlex.xs="100">
+              <mat-form-field class="center-text pr-12 pl-12" fxFlex="15" fxFlex.xs="100">
                 <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}"
                 [value]="settingsForm.controls['fareCollectors']['controls'][i].controls.percentage.value" >
                 <!-- value="{{  }}" -->
@@ -37,13 +37,12 @@
               </button>
             </div>
           </div>
-          <button *ngIf="settingsForm.get('fareCollectors').value.length == 0 && currentVersion" mat-icon-button
-            (click)="addActor('fareCollectors')">
+          <button *ngIf="settingsForm.get('fareCollectors').value.length == 0 && currentVersion" mat-mini-fab
+            (click)="addActor('fareCollectors')" style="margin-top: 10px;" >
             <mat-icon>add</mat-icon>
           </button>
         </div>
       </mat-card>
-
       <!-- Chosen name: {{ orderForm.controls.items.controls[i].controls.name.value }} -->
       <!-- FARECOLLECTOR -->
 
@@ -58,15 +57,15 @@
         </div>
         <div fxLayout="column" fxLayoutAlign="space-around stretch" fxFlex="100">
           <div formArrayName="parties" *ngFor="let item of settingsForm.get('parties')['controls']; let i = index;" fxLayout="column">
-            <div [formGroupName]="i" fxFlex="100" fxLayout="row wrap">
-              <mat-form-field fxFlex="40" fxFlex.xs="100" class="example-full-width">
+            <div class="border" [formGroupName]="i" fxFlex="100" fxLayout="row wrap">
+              <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
                 <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
               </mat-form-field>
-              <mat-form-field fxFlex="40" fxFlex.xs="100" class="example-full-width">
+              <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
                 <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
               </mat-form-field>
 
-              <mat-form-field fxFlex="15" fxFlex.xs="100" class="example-full-width">
+              <mat-form-field class="center-text pr-12 pl-12" fxFlex="15" fxFlex.xs="100">
                 <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
               </mat-form-field>
               <button *ngIf="currentVersion" fxFlex="5" fxFlex.xs="100" mat-icon-button (click)="deleteControl( 'parties', i)">
@@ -87,7 +86,7 @@
               {{'ERRORS.PERCENTAGE_NOT_EXECEEDED_PARTIES' | translate}}
             </span>
           </div>
-          <button *ngIf="currentVersion" mat-icon-button (click)="addActor('parties')">
+          <button style="margin-top: 10px" *ngIf="currentVersion" mat-mini-fab (click)="addActor('parties')">
             <mat-icon>add</mat-icon>
           </button>
         </div>
@@ -108,18 +107,16 @@
           <div *ngFor="let item of settingsForm.get('surplusCollectors')['controls']; let i = index;" fxFlex="100"
             formArrayName="surplusCollectors">
 
-            <div [formGroupName]="i"  fxFlex="100" fxLayout="row wrap">
+            <div class="border" [formGroupName]="i" fxLayoutAlign="space-between center"  fxFlex="100" fxLayout="row wrap">
               <div fxLayout="column" fxFlex="46" fxFlex.xs="100"   >
-                <mat-form-field class="example-full-width">
+                <mat-form-field class="center-text pr-12 pl-12" >
                   <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
                 </mat-form-field>
-                <span>  NOMBRE DE LA UNIDAD DE NEGOCIO </span>
               </div>
               <div fxLayout="column" fxFlex="46" fxFlex.xs="100">
-                  <mat-form-field >
+                  <mat-form-field class="center-text pr-12 pl-12" >
                       <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
                   </mat-form-field>
-                  <span>  NOMBRE DE LA UNIDAD DE NEGOCIO </span>
               </div>
 
               <button *ngIf="currentVersion" fxFlex="5" fxFlex.xs="100" mat-icon-button (click)="deleteControl( 'surplusCollectors', i)">
@@ -127,7 +124,7 @@
               </button>
             </div>
           </div>
-          <button *ngIf="settingsForm.get('surplusCollectors').value.length == 0 && currentVersion" mat-icon-button
+          <button *ngIf="settingsForm.get('surplusCollectors').value.length == 0 && currentVersion" mat-mini-fab
             (click)="addActor('surplusCollectors')">
             <mat-icon>add</mat-icon>
           </button>
@@ -138,7 +135,7 @@
 
 
       <!-- ACTION BUTTONS -->
-      <div *ngIf="currentVersion" fxFlex="100" fxLayout="row" fxLayoutAlign="space-around center">
+      <div style="margin-top: 10px;" *ngIf="currentVersion" fxFlex="100" fxLayout="row" fxLayoutAlign="space-around center">
         <button mat-raised-button color="primary" [disabled]="!settingsForm.valid" (click)="saveConfiguration()">SAVE</button>
         <button mat-raised-button color="primary" (click)="restoreSettings()">CANCEL</button>
       </div>
