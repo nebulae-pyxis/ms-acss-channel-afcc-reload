@@ -17,27 +17,27 @@
       <div *ngIf="selectedReload" fxFlex="100" fxLayout.lt-sm="column" fxLayout="row" fxLayoutAlign="space-around">
         <div fxFlex="50" fxFlex.lt-sm="100" fxLayout="column" fxLayoutAlign="space-evenly">
 
-          <mat-form-field fxFlex="100" class="example-full-width">
-            <input matInput disabled placeholder="{{'RELOAD.BU_ID' | translate }}" value="{{ selectedReload.businessId }}">
+          <mat-form-field class="pr-12 pl-12" fxFlex="100">
+            <input matInput readonly="true" placeholder="{{'RELOAD.BU_ID' | translate }}" value="{{ selectedReload.businessId }}">
           </mat-form-field>
-          <mat-form-field fxFlex="100" class="example-full-width">
-            <input matInput disabled placeholder="{{'RELOAD.SOURCE_MACHINE' | translate }}" value="{{selectedReload.source.machine}}">
+          <mat-form-field fxFlex="100" class="pr-12 pl-12">
+            <input matInput readonly="true" placeholder="{{'RELOAD.SOURCE_MACHINE' | translate }}" value="{{selectedReload.source.machine}}">
           </mat-form-field>
-          <mat-form-field fxFlex="100" class="example-full-width">
-            <input matInput disabled placeholder="{{'RELOAD.AMOUNT' | translate }}" value="{{selectedReload.amount}}">
+          <mat-form-field fxFlex="100" class="pr-12 pl-12">
+            <input matInput readonly="true" placeholder="{{'RELOAD.AMOUNT' | translate }}" value="{{selectedReload.amount}}">
           </mat-form-field>
 
         </div>
         <div fxFlex="50" fxFlex.lt-sm="100" fxLayout="column" fxLayoutAlign="space-evenly">
 
-          <mat-form-field class="example-full-width">
-            <input matInput disabled placeholder="{{'RELOAD.BU_NAME' | translate }}" value="{{selectedReload.businessName}}">
+          <mat-form-field class="pr-12 pl-12">
+            <input matInput readonly="true" placeholder="{{'RELOAD.BU_NAME' | translate }}" value="{{selectedReload.businessName}}">
           </mat-form-field>
-          <mat-form-field class="example-full-width">
-            <input matInput disabled placeholder="{{'RELOAD.SOURCE_IP' | translate }}" value="{{selectedReload.source.ip}}">
+          <mat-form-field class="pr-12 pl-12">
+            <input matInput readonly="true" placeholder="{{'RELOAD.SOURCE_IP' | translate }}" value="{{selectedReload.source.ip}}">
           </mat-form-field>
-          <mat-form-field class="example-full-width">
-            <input matInput disabled placeholder="{{'RELOAD.TRCNS_QTY' | translate }}" value="{{selectedReload.transactions.length}}">
+          <mat-form-field class="pr-12 pl-12">
+            <input matInput readonly="true" placeholder="{{'RELOAD.TRCNS_QTY' | translate }}" value="{{selectedReload.transactions.length}}">
           </mat-form-field>
         </div>
       </div>
@@ -127,7 +127,7 @@
             </div>
             <div fxLayoutAlign="space-evenly center">
               <span>{{'CHANNEL_CONF_VERSION' | translate}}</span>
-              <span [routerLink]="['../../configuration', transaction.channel.conf ]">{{transaction.channel.c}}</span>
+              <span style="cursor: pointer" [routerLink]="['../../configuration', transaction.channel.c ]">{{transaction.channel.c  | date}}</span>
             </div>
           </div>
         </div>

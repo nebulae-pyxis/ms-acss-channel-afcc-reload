@@ -22,13 +22,13 @@
             formArrayName="fareCollectors">
             <div class="border" [formGroupName]="i" fxFlex="100" fxLayout="row wrap"  >
               <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100" >
-                <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
+                <input matInput readonly="!currentVersion" formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
               </mat-form-field>
               <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
-                <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+                <input matInput readonly="!currentVersion" formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
               </mat-form-field>
               <mat-form-field class="center-text pr-12 pl-12" fxFlex="15" fxFlex.xs="100">
-                <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}"
+                <input type="number" readonly="!currentVersion" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}"
                 [value]="settingsForm.controls['fareCollectors']['controls'][i].controls.percentage.value" >
                 <!-- value="{{  }}" -->
               </mat-form-field>
@@ -59,14 +59,14 @@
           <div formArrayName="parties" *ngFor="let item of settingsForm.get('parties')['controls']; let i = index;" fxLayout="column">
             <div class="border" [formGroupName]="i" fxFlex="100" fxLayout="row wrap">
               <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
-                <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
+                <input matInput readonly="!currentVersion" formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
               </mat-form-field>
               <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
-                <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+                <input matInput readonly="!currentVersion" formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
               </mat-form-field>
 
               <mat-form-field class="center-text pr-12 pl-12" fxFlex="15" fxFlex.xs="100">
-                <input type="number" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
+                <input type="number" readonly="!currentVersion" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
               </mat-form-field>
               <button *ngIf="currentVersion" fxFlex="5" fxFlex.xs="100" mat-icon-button (click)="deleteControl( 'parties', i)">
                 <mat-icon>delete</mat-icon>
@@ -110,12 +110,12 @@
             <div class="border" [formGroupName]="i" fxLayoutAlign="space-between center"  fxFlex="100" fxLayout="row wrap">
               <div fxLayout="column" fxFlex="46" fxFlex.xs="100"   >
                 <mat-form-field class="center-text pr-12 pl-12" >
-                  <input matInput formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
+                  <input matInput readonly="!currentVersion" formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
                 </mat-form-field>
               </div>
               <div fxLayout="column" fxFlex="46" fxFlex.xs="100">
                   <mat-form-field class="center-text pr-12 pl-12" >
-                      <input matInput formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+                      <input matInput readonly="!currentVersion" formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
                   </mat-form-field>
               </div>
 

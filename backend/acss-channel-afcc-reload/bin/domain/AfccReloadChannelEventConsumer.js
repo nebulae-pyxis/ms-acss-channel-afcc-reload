@@ -54,8 +54,34 @@ class UserEventConsumer {
           .map(transaction => ({ ...transaction, id: transaction._id.toString() }))
           .toArray()
       )
+      .mergeMap(arrayTransactions => Rx.Observable.forkJoin(
+        Rx.Observable.of(arrayTransactions),
+        Helper.getSignificantTransaction$(evt.data.transactions, evt)
+      ))
       // build Reload object with its transactions generated inserts the reload object
-      .mergeMap(arrayTransactions => AfccReloadsDA.insertOneReload$({ ...evt.data, timestamp: evt.timestamp, transactions: arrayTransactions }))
+      .mergeMap( ([arrayTransactions, mainTransaction]) => AfccReloadsDA.insertOneReload$({
+        ...evt.data,
+        amount: mainTransaction.amount,
+        timestamp: evt.timestamp,
+        transactions: arrayTransactions,
+        afcc: {
+          data: {
+            before: {},
+            after: {}
+          },
+          uId: "no provided",
+          cardId: "no provided",
+          balance: {
+            before: 0,
+            after: 0
+          }
+        },
+        source: {
+          machine: "no provided",
+          ip: "no provided"
+        }
+      }))
+
       .do(() => console.log( evt.data.businessId, evt.data.amount, "Time Used ==>",  Date.now() - now, " || InQueue ==> ", this.reloadsInQueue))
       .catch(error => this.errorHandler$(error, evt))
   }

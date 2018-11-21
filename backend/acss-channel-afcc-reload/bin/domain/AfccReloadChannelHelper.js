@@ -16,11 +16,8 @@ class AfccReloadChannelHelper {
    * @returns {<Observable>} Observable with transaction array
    */
   static applyBusinessRules$(configuration, afccEvent) {    
-    return Rx.Observable.of(afccEvent)
-    // get the transaction with maximun value
-    .map(({transactions}) => transactions.sort((txa, txb) => txb.value - txa.value )[0] )
-    // map object with only necessary attributes and set value transacction as positive
-    .map( ({ value, user }) => ({ amount: value * -1, _id: afccEvent._id, et: afccEvent.et, user  }) )
+    return Rx.Observable.of(afccEvent.data.transactions)
+    .mergeMap(txs => this.getSignificantTransaction$(txs, afccEvent))
     .mergeMap(afccEvent  => 
       Rx.Observable.forkJoin(
         AfccReloadChannelHelper.createTransactionForFareCollector$(configuration, afccEvent),
@@ -38,6 +35,18 @@ class AfccReloadChannelHelper {
         conf: configuration
       })
     );
+  }
+
+  /**
+   * returns the more significant transaction
+   * @param {Array} transactionArray 
+   */
+  static getSignificantTransaction$(transactionArray, afccEvent){
+    return Rx.Observable.of(transactionArray)
+    // get the transaction with maximun value
+    .map(transactions => transactions.sort((txa, txb) => txb.value - txa.value )[0] )
+    // map object with only necessary attributes and set value transacction as positive
+    .map( ({ value, user }) => ({ amount: value * -1, _id: afccEvent._id, et: afccEvent.et, user  }) )
   }
 
   /**
@@ -129,32 +138,36 @@ class AfccReloadChannelHelper {
    * @param {any} evt AFCC reload event
    */
   static validateFinalTransactions$(transactionArray, conf, afccEvent) {
-    // console.log("### Valor de la recarga ==>", afccEvent.data.amount)
+    console.log("### Valor de la recarga ==>", afccEvent)
     return Rx.Observable.of(transactionArray.reduce((acumulated, tr) => acumulated + (tr.amount * 1000), 0))
       .map(amountProcessed => Math.floor(amountProcessed) / 1000)
-      .mergeMap(amountProcessed => {
-        if (amountProcessed == afccEvent.amount) {
+      .mergeMap(amountProcessed => Rx.Observable.forkJoin(
+        Rx.Observable.of(amountProcessed),
+        this.getSignificantTransaction$(afccEvent.data.transactions, afccEvent)
+      )) 
+      .mergeMap(([amountProcessed, significantTransaction]) => {
+        if (amountProcessed == significantTransaction.amount) {
           return Rx.Observable.of(transactionArray);
         } else {
           return Rx.Observable.of(amountProcessed)
-            .map(amount => Math.round((afccEvent.amount - amount) * 100) / 100)
+            .map(amount => Math.round((significantTransaction.amount - amount) * 100) / 100)
             .mergeMap(amount =>
               AfccReloadChannelHelper.createTransactionObject$(
                 conf.surplusCollectors[0],
                 amount,
                 conf,
                 DEFAULT_TRANSACTION_TYPE,
-                afccEvent
+                significantTransaction
               )
             )
             .map(finalTransaction => [...transactionArray, finalTransaction]);
         }
       })
-      // .do(allTransactions => {
-      //   allTransactions.forEach(t => { console.log("Transaction_amount: ", t.amount); });
-      //   const total = allTransactions.reduce( (acc, tr) => acc + (tr.amount * 1000), 0 ) / 1000;
-      //   console.log(total);
-      // });
+      .do(allTransactions => {
+        allTransactions.forEach(t => { console.log("Transaction_amount: ", t.amount); });
+        const total = allTransactions.reduce( (acc, tr) => acc + (tr.amount * 1000), 0 ) / 1000;
+        console.log(total);
+      });
   }
 
   /**

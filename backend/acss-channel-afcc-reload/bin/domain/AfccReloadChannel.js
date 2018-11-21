@@ -52,7 +52,6 @@ class AfccReloadChannel{
    * @param {any} authToken JWT Authtoken decoded
    */
   getAfccReload$({ args, jwt }, authToken){
-    console.log("getAfccReload$", args);
     return RoleValidator.checkPermissions$(
       authToken.realm_access.roles,
       "AfccReloadAcssChannel",
@@ -63,8 +62,8 @@ class AfccReloadChannel{
     .mergeMap(() =>  AfccReloadsDA.searchReload$(args.id) )
     .map(reload => {
       reload.id = reload._id.toString();
-      reload.afcc.data.before = JSON.stringify(reload.afcc.data.before);
-      reload.afcc.data.after = JSON.stringify(reload.afcc.data.after)
+      reload.afcc.data.before = JSON.stringify("reload.afcc.data.before");
+      reload.afcc.data.after = JSON.stringify("reload.afcc.data.after")
       return reload;
     })
     .mergeMap(payload => this.buildSuccessResponse$(payload))
@@ -197,7 +196,7 @@ class AfccReloadChannel{
   }
 
   errorHandler$(err) {
-    console.log(" =>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Se ha generado un error en el api resolver");
+    console.log(" =>> Se ha generado un error en el api resolver", err.stack);
     return Rx.Observable.of(err)
       .map(err => {
         const exception = { data: null, result: {} };

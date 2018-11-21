@@ -6,7 +6,7 @@ const Rx = require('rxjs');
 const CollectionName = "AfccReloadEvents";
 const ObjectID = require("mongodb").ObjectID;
 const { CustomError } = require('../tools/customError');
-
+const NumberDecimal = require('mongodb').Decimal128;
 
 class AfccReloadsDA {
 
@@ -39,7 +39,14 @@ class AfccReloadsDA {
     return Rx.Observable.defer(() => collection.findOne(
       { _id: new ObjectID.createFromHexString(id) }
       )
-    )    
+    )
+    .mergeMap(reloadObj => Rx.Observable.forkJoin(
+      Rx.Observable.of(reloadObj),
+      Rx.Observable.from(reloadObj.transactions)
+      .map(tx => ({ ...tx, amount: parseFloat(new NumberDecimal(tx.amount.bytes).toString()) }) )
+      .toArray()
+    ))
+    .map(([reloadObj, transactions]) => ({...reloadObj, transactions: transactions}))
   }
 
   /**

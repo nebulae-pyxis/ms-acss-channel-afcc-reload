@@ -79,9 +79,9 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     switch (type){
       case 'fareCollectors':
         return this.formBuilder.group({
-          businessUnitFrom: new FormControl( { value: businessUnitFrom, disabled: !this.currentVersion }, [Validators.required]),
-          businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }, [Validators.required]),
-          percentage: new FormControl({ value: percentage, disabled: !this.currentVersion }, [
+          businessUnitFrom: new FormControl( businessUnitFrom, [Validators.required]),
+          businessUnitId: new FormControl(businessUnitId, [Validators.required]),
+          percentage: new FormControl(percentage, [
               Validators.required,
               Validators.min(0),
               Validators.max(100)
@@ -99,21 +99,19 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
       //   });
       case 'parties':
         return this.formBuilder.group({
-          businessUnitFrom: new FormControl({ value: businessUnitFrom, disabled: !this.currentVersion }, [Validators.required]),
-          businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }, [Validators.required]),
-          percentage: new FormControl(
-            { value: percentage, disabled: !this.currentVersion },
-            [Validators.required, Validators.min(0), Validators.max(100)])
+          businessUnitFrom: new FormControl(businessUnitFrom, [Validators.required]),
+          businessUnitId: new FormControl(businessUnitId, [Validators.required]),
+          percentage: new FormControl(percentage, [Validators.required, Validators.min(0), Validators.max(100)])
         });
         case 'surplusCollectors':
           return this.formBuilder.group({
-            businessUnitFrom: new FormControl({ value: businessUnitFrom, disabled: !this.currentVersion }, [Validators.required]),
-            businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }, [Validators.required])
+            businessUnitFrom: new FormControl(businessUnitFrom, [Validators.required]),
+            businessUnitId: new FormControl(businessUnitId, [Validators.required])
           });
       default: {
         return this.formBuilder.group({
-          businessUnitFrom: new FormControl({ value: businessUnitFrom, disabled: !this.currentVersion }, [Validators.required]),
-          businessUnitId: new FormControl({ value: businessUnitId, disabled: !this.currentVersion }),
+          businessUnitFrom: new FormControl(businessUnitFrom, [Validators.required]),
+          businessUnitId: new FormControl(businessUnitId),
           // businessUnitName: new FormControl({ value: businessUnitName, disabled: true }),
           percentage: new FormControl(percentage)
         });

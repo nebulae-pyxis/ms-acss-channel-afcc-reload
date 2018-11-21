@@ -5,6 +5,7 @@ let mongoDB = undefined;
 const Rx = require('rxjs');
 const CollectionName = "Transactions";
 const ACSS_DB_NAME = process.env.MONGODB_ACSS_DB_NAME;
+const NumberDecimal = require('mongodb').Decimal128;
 const { CustomError } = require('../tools/customError');
 
 
@@ -24,7 +25,7 @@ class TransactionsDA {
   }
 
   /**
-   * 
+   * todo
    * @param {string} afccEvtId AFCC evtn id
    * @returns {Observable<Object[]>} Array with each transaction that was made as a consequence of processing the AFCC event to which afccEvtId refers.
    */
@@ -61,12 +62,19 @@ class TransactionsDA {
         .skip(count * page)
         .limit(count)
         .toArray()
-    );
+    )
+    .mergeMap(transactions => Rx.Observable.from(transactions))
+    .map(tx => ({ ...tx, amount: parseFloat(new NumberDecimal(tx.amount.bytes).toString()) }) )
+    .toArray()
   }
 
-  static insertTransactions$(documents){
+  static insertTransactions$(transactions){
     const collection = mongoDB.client.db(ACSS_DB_NAME).collection(CollectionName);
-    return Rx.Observable.defer(() => collection.insertMany(documents));    
+    return Rx.Observable.from(transactions)
+    .map(transaction => ({ ...transaction, amount: NumberDecimal.fromString( transaction.amount.toString() )  }))
+    .toArray()
+    .mergeMap(transactionsArray => Rx.Observable.defer(() => collection.insertMany(transactionsArray) ))
+    // return Rx.Observable.defer(() => collection.insertMany(documents));    
   }
 }
 /**
