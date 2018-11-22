@@ -34,7 +34,6 @@ class AfccReloadChannelDA {
   }
 
   static insertConfiguration$(conf) {
-    // console.log("insertConfiguration$", doc);
     const collection = mongoDB.db.collection(CollectionName);
 
     return Rx.Observable.forkJoin(

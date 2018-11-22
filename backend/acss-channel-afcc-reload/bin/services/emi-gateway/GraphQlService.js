@@ -86,9 +86,7 @@ class GraphQlService {
         return Rx.Observable.of(null) // Custom error missing
       })
       .subscribe(
-        msg => {
-          // console.log(`GraphQlService: ${messageType} process: ${msg}`);
-        },
+        msg => { },
         onErrorHandler,
         onCompleteHandler
       );
@@ -138,7 +136,6 @@ class GraphQlService {
    * returns an array of broker subscriptions for listening to GraphQL requests
    */
   getSubscriptionDescriptors() {
-    console.log("GraphQl Service starting ...");
     return [ 
       {
         aggregateType: "AfccChannel",

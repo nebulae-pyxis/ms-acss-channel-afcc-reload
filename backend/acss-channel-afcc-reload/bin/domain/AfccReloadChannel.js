@@ -33,7 +33,6 @@ class AfccReloadChannel{
    * @param {any} authToken JWT Authtoken decoded
    */
   getConfiguration$({ args, jwt }, authToken) {
-    console.log('getConfiguration$', args);
     return RoleValidator.checkPermissions$(
       authToken.realm_access.roles,
       "AfccReloadAcssChannel",
@@ -76,7 +75,6 @@ class AfccReloadChannel{
    * @param {any} authToken JWT Authtoken decoded
    */
   getAfccReloads$({ args, jwt }, authToken){
-    console.log("getAfccReloads$", args);
     return RoleValidator.checkPermissions$(
       authToken.realm_access.roles,
       "AfccReloadAcssChannel",
@@ -108,7 +106,6 @@ class AfccReloadChannel{
   }
 
   getAfccReloadErrors$({ args, jwt }, authToken){
-    console.log("getAfccReloadErrors$");
     return RoleValidator.checkPermissions$(
       authToken.realm_access.roles,
       "AfccReloadAcssChannel",
@@ -117,7 +114,6 @@ class AfccReloadChannel{
       ["SYSADMIN"]
     )
     .mergeMap(() => TransactionsErrorsDA.findReloadErrors$(args) )
-    .do(r => console.log("Se encontraron los siguinetes erores ==> ", r))
     .mergeMap(payload => this.buildSuccessResponse$(payload))
     .catch(e => this.errorHandler$(e))
   }
@@ -128,7 +124,6 @@ class AfccReloadChannel{
    * @param {any} authToken JWT Authtoken decoded
    */
   getTransactions$({ args, jwt }, authToken){
-    console.log("getTransactions$");
     return RoleValidator.checkPermissions$(
       authToken.realm_access.roles,
       "AfccReloadAcssChannel",
@@ -149,8 +144,6 @@ class AfccReloadChannel{
    * @param {String} authToken  JWT Authtoken decoded
    */
   createConfiguration$({ args, jwt }, authToken) {
-    console.log("createConfiguration$", args); 
-
     return RoleValidator.checkPermissions$(
       authToken.realm_access.roles,
       "AfccReloadAcssChannel",
@@ -159,7 +152,6 @@ class AfccReloadChannel{
       ["SYSADMIN"]
     )
     .mergeMap(() => Helper.verifyBusinessRules$(args.input))
-    .do(() => console.log('PASA POR EL MAPPER'))  
     .mergeMap(() => 
       eventSourcing.eventStore.emitEvent$(
         new Event({

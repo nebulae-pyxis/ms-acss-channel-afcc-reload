@@ -9,6 +9,10 @@ const TransactionsErrorsDA = require('../data/TransactionsErrorsDA');
 const TransactionsDA = require("../data/TransactionsDA");
 const { CustomError, AfccReloadProcessError } = require("../tools/customError");
 const CURRENT_RULE = 1;
+const TRANSACTION_TYPES = ["SALE"];
+const TRANSACTION_CONCEPTS = ["RECARGA_CIVICA"];
+const [MAIN_POCKET, BONUS_POCKET] = ["MAIN", "BONUS"];
+
 
 /**
  * Singleton instance
@@ -23,9 +27,7 @@ class UserEventConsumer {
   }
 
   handleAcssSettingsCreated$(evt){
-    // console.log('handleAcssSettingsCreated$', JSON.stringify(evt));
     return Rx.Observable.of({...evt.data, editor: evt.user })
-    .do(r => console.log(r))
     .mergeMap(conf => AfccReloadChannelDA.insertConfiguration$(conf))
     // .catch(error => this.errorHandler$(error, evt))
   }
@@ -38,7 +40,10 @@ class UserEventConsumer {
     let now = Date.now();
     this.reloadsInQueue++;
     // searh the valid channel settiings
-    return this.getChannelSettings$(evt)
+    return  Rx.Observable.of(evt.data)
+      .filter(({transactionType, transactionConcept}) => ( TRANSACTION_TYPES.includes(transactionType) &&  TRANSACTION_CONCEPTS.includes(transactionConcept)  ))
+      .filter(() =>  !(evt.data.transactions.length == 1 && evt.data.transactions[0].pocket == BONUS_POCKET) )
+      .mergeMap(() => this.getChannelSettings$(evt) )    
       // verifies that the actors interacting with the event are in the channel configuration
       // .mergeMap(conf => Helper.validateAfccEvent$(conf, evt))
       // apply the rules and return the array with all transaction to persist      
@@ -106,8 +111,7 @@ class UserEventConsumer {
    * @param {any} channelConf channel configuration used to process the afcc event
    */
   errorHandler$(err, event) {
-    console.log("######################################################################", err);
-    // console.log(err);
+    console.log("EventConsumer error ", err.stack);
     return Rx.Observable.of(err)
       .map(error => (error instanceof AfccReloadProcessError) ? error :  new AfccReloadProcessError(error.message, error.stack, event, undefined) )
       .mergeMap(error => TransactionsErrorsDA.insertError$(error.getContent()))

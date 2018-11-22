@@ -158,11 +158,11 @@ class AfccReloadChannelHelper {
             )
             .map(finalTransaction => [...transactionArray, finalTransaction])
       )
-      .do(allTransactions => {
-        allTransactions.forEach(t => { console.log("Transaction_amount: ", t.amount); });
-        const total = allTransactions.reduce( (acc, tr) => acc + (tr.amount * 1000), 0 ) / 1000;
-        console.log(total);
-      });
+      // .do(allTransactions => {
+      //   allTransactions.forEach(t => { console.log("Transaction_amount: ", t.amount); });
+      //   const total = allTransactions.reduce( (acc, tr) => acc + (tr.amount * 1000), 0 ) / 1000;
+      //   console.log(total);
+      // });
   }
 
   /**

@@ -47,9 +47,7 @@ class TransactionsDA {
         ]
       };
       filterObject = Object.assign(filterObject, filterWithRegex);
-    }
-    console.log(filterObject);
-    
+    }    
     if (sortColumn && order) {
       let column = sortColumn;      
       orderObject[column] = order == 'asc' ? 1 : -1;
