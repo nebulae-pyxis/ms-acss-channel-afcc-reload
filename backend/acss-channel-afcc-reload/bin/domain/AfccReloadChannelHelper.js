@@ -44,9 +44,14 @@ class AfccReloadChannelHelper {
   static getSignificantTransaction$(transactionArray, afccEvent){
     return Rx.Observable.of(transactionArray)
     // get the transaction with maximun value
-    .map(transactions => transactions.sort((txa, txb) => txb.value - txa.value )[0] )
+    .map(transactions => transactions.sort((txa, txb) => txa.value - txb.value )[0] )
     // map object with only necessary attributes and set value transacction as positive
     .map( ({ value, user }) => ({ amount: value * -1, _id: afccEvent._id, et: afccEvent.et, user  }) )
+    .map(summary =>  
+        transactionArray.length > 1 
+            ? ({ ...summary, discounted: transactionArray.sort((txa, txb) => txa.value - txb.value )[1].value  }) 
+            : ({ ...summary, discounted: 0  })  
+    )
   }
 
   /**
@@ -99,9 +104,11 @@ class AfccReloadChannelHelper {
    * @param { Object } conf Channel configuration
    * @param { Object } afccEvent AFCC reload event
    */
-  static createTransactionForParties$(conf, afccEvent) {                     
-    const surplusAsPercentage = (100000 - (conf.fareCollectors[0].percentage * 1000 )) / 1000 ;
-    const surplusAmount = (afccEvent.amount / 100) * surplusAsPercentage;    
+  static createTransactionForParties$(conf, afccEvent) {   
+    console.log("............ createTransactionForParties ==> ", afccEvent);
+    const fareCollectorAmount = (afccEvent.amount / 100) * conf.fareCollectors[0].percentage;
+    const surplusAmount = ( (afccEvent.amount * 100) - ( (afccEvent.discounted * 100) + (fareCollectorAmount * 100)  ) ) / 100;     
+    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ SE DEJO PARA REPARTIR ==> ", surplusAmount);
     return Rx.Observable.from(conf.parties)
       .mergeMap(thirdParty => AfccReloadChannelHelper.createTransactionObject$(
           thirdParty,
