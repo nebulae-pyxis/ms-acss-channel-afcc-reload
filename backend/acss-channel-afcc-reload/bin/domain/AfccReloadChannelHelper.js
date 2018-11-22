@@ -60,44 +60,15 @@ class AfccReloadChannelHelper {
    * @param { Object } afccEvent AFCC reload event
    */
   static createTransactionForFareCollector$(conf, afccEvent) {
-    return AfccReloadChannelHelper.createTransactionObject$(
+    return this.getPercentage$(conf.fareCollectors[0].percentage, afccEvent.amount)
+    .mergeMap(value => AfccReloadChannelHelper.createTransactionObject$(
       conf.fareCollectors[0],
-      (afccEvent.amount / 100) * conf.fareCollectors[0].percentage,
+      value,
       conf,
       DEFAULT_TRANSACTION_TYPE,
       afccEvent
-    );
+    ) )
   }
-
-  /**
-   * Create all transaction for each reload network actor
-   * @param { Object } conf Channel configuration
-   * @param { Object } afccEvent AFCC reload event
-   */
-  // static createTransactionForReloadNetWork$(conf, afccEvent) {
-  //   const reloadNetworkIndex = conf.reloadNetworks.findIndex(
-  //     rn => rn.buId == afccEvent.data.businessId
-  //   );
-  //   if (reloadNetworkIndex == -1) {
-  //     return Rx.Observable.throw(
-  //       new AfccReloadProcessError(
-  //         `${
-  //           afccEvent.data.businessId
-  //         } business unit id no found in reloadnetwork settings`,
-  //         "ReloadNetworkTransactionError",
-  //         afccEvent,
-  //         conf
-  //       )
-  //     );
-  //   }
-  //   return AfccReloadChannelHelper.createTransactionObject$(
-  //     conf.reloadNetworks[reloadNetworkIndex],
-  //     (afccEvent.data.amount / 100) * conf.reloadNetworks[reloadNetworkIndex].percentage,
-  //     conf,
-  //     DEFAULT_TRANSACTION_TYPE,
-  //     afccEvent
-  //   );
-  // }
 
   /**
    * Create all transaction for each third part actor
@@ -105,18 +76,38 @@ class AfccReloadChannelHelper {
    * @param { Object } afccEvent AFCC reload event
    */
   static createTransactionForParties$(conf, afccEvent) {   
-    console.log("............ createTransactionForParties ==> ", afccEvent);
-    const fareCollectorAmount = (afccEvent.amount / 100) * conf.fareCollectors[0].percentage;
-    const surplusAmount = ( (afccEvent.amount * 100) - ( (afccEvent.discounted * 100) + (fareCollectorAmount * 100)  ) ) / 100;     
-    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ SE DEJO PARA REPARTIR ==> ", surplusAmount);
-    return Rx.Observable.from(conf.parties)
-      .mergeMap(thirdParty => AfccReloadChannelHelper.createTransactionObject$(
-          thirdParty,
-          (surplusAmount / 100) * (thirdParty.percentage * 1000) / 1000,
-          conf,
-          DEFAULT_TRANSACTION_TYPE,
-          afccEvent
-        )
+    // console.log("............ createTransactionForParties ==> ", afccEvent);
+    // const fareCollectorAmount = (afccEvent.amount / 100) * conf.fareCollectors[0].percentage;
+    // const surplusAmount = ( (afccEvent.amount * 100) - ( (afccEvent.discounted * 100) + (fareCollectorAmount * 100)  ) ) / 100;     
+    // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ SE DEJO PARA REPARTIR ==> ", surplusAmount);
+    // return Rx.Observable.from(conf.parties)
+    //   .mergeMap(thirdParty => AfccReloadChannelHelper.createTransactionObject$(
+    //       thirdParty,
+    //       (surplusAmount / 100) * (thirdParty.percentage * 1000) / 1000,
+    //       conf,
+    //       DEFAULT_TRANSACTION_TYPE,
+    //       afccEvent
+    //     )
+    //   )
+    //   .toArray();
+    return this.getPercentage$(conf.fareCollectors[0].percentage, afccEvent.amount )
+    .mergeMap(fareCollectorAmount => 
+      Rx.Observable.of(( (afccEvent.amount * 100) - ( ( afccEvent.discounted * 100) + (fareCollectorAmount * 100)  ) ) / 100) 
+    )
+    .mergeMap(surplusAmount => 
+      Rx.Observable.from(conf.parties)
+      .mergeMap(thirdParty => Rx.Observable.forkJoin(
+        Rx.Observable.of(thirdParty),
+        this.getPercentage$(thirdParty.percentage, surplusAmount)
+      ))
+      .mergeMap( ([thirdParty, amount]) => AfccReloadChannelHelper.createTransactionObject$(
+              thirdParty,
+              amount,
+              conf,
+              DEFAULT_TRANSACTION_TYPE,
+              afccEvent
+            )
+          )
       )
       .toArray();
   }
@@ -145,18 +136,16 @@ class AfccReloadChannelHelper {
    * @param {any} evt AFCC reload event
    */
   static validateFinalTransactions$(transactionArray, conf, afccEvent) {
-    console.log("### Valor de la recarga ==>", afccEvent)
     return Rx.Observable.of(transactionArray.reduce((acumulated, tr) => acumulated + (tr.amount * 1000), 0))
       .map(amountProcessed => Math.floor(amountProcessed) / 1000)
       .mergeMap(amountProcessed => Rx.Observable.forkJoin(
         Rx.Observable.of(amountProcessed),
         this.getSignificantTransaction$(afccEvent.data.transactions, afccEvent)
       )) 
-      .mergeMap(([amountProcessed, significantTransaction]) => {
-        if (amountProcessed == significantTransaction.amount) {
-          return Rx.Observable.of(transactionArray);
-        } else {
-          return Rx.Observable.of(amountProcessed)
+      .mergeMap(([amountProcessed, significantTransaction]) => 
+        (amountProcessed + significantTransaction.discounted) == significantTransaction.amount 
+          ? Rx.Observable.of(transactionArray)
+          : Rx.Observable.of(amountProcessed  + significantTransaction.discounted )
             .map(amount => Math.round((significantTransaction.amount - amount) * 100) / 100)
             .mergeMap(amount =>
               AfccReloadChannelHelper.createTransactionObject$(
@@ -167,9 +156,8 @@ class AfccReloadChannelHelper {
                 significantTransaction
               )
             )
-            .map(finalTransaction => [...transactionArray, finalTransaction]);
-        }
-      })
+            .map(finalTransaction => [...transactionArray, finalTransaction])
+      )
       .do(allTransactions => {
         allTransactions.forEach(t => { console.log("Transaction_amount: ", t.amount); });
         const total = allTransactions.reduce( (acc, tr) => acc + (tr.amount * 1000), 0 ) / 1000;
@@ -185,9 +173,10 @@ class AfccReloadChannelHelper {
   static truncateAmount$(transaction, decimals = 2) {
     return Rx.Observable.of(transaction.amount.toString()).map(amountAsString => ({
       ...transaction,
-      // this "Ternary if" is necessary in javascript due in some cases the aproximation fails and causes loss of a few cents
-      // for example 1048.85 * 100 equals to  104884.99999999999 in javascript but 104885 was expected.
-      // due this error is necessary make this "Ternary If".
+      /* this "Ternary if" is necessary in javascript due in some cases the aproximation fails and causes loss of a few cents
+      for example 1048.85 * 100 equals to  104884.99999999999 in javascript but 104885 was expected.
+      due this error is necessary make this "Ternary If".
+      */
       amount: (amountAsString.indexOf('.') !== -1 &&  ( amountAsString.length - amountAsString.indexOf('.') > decimals +1 ) )
         ? Math.floor(transaction.amount * Math.pow(10, decimals)) / Math.pow(10, decimals)
         : transaction.amount
@@ -243,31 +232,6 @@ class AfccReloadChannelHelper {
   }
 
   /**
- *
- * @param {*} fareCollectors
- * @param {*} reloadNetworks
- * @return {Observable<boolean>} surplus available for the third parties
- */
-  static verifyFarecollectorVsReloads$(fareCollector, reloadNetworks) {
-    console.log("VAlidando verifyFarecollectorVsReloads", fareCollector, reloadNetworks)
-    return Rx.Observable.from(reloadNetworks)
-      .map(reloadNetwork => fareCollector + reloadNetwork <= 100) // validate that the combination don't  exceed 100%
-      .toArray()
-      .do(r => console.log("Validaciones", ...r))
-      .map(array => array.findIndex(r => r == false))
-      .mergeMap(index => (index === -1)
-        ? Rx.Observable.of(true)
-        : Rx.Observable.throw(
-          new CustomError(
-            "Percentage value exceed",
-            "verifyFarecollectorVsReloads$",
-            undefined,
-            "A fareCollector and Reloaders wrong combination"
-          )
-        ));
-  }
-
-  /**
  * Verify if the percentage Configuration for the parties is correct
  * @param {number[]} parties Array numbers
  * @param {boolean} surplus surplus money available to parties ?
@@ -285,8 +249,27 @@ class AfccReloadChannelHelper {
             "Error with percentages in the parties percentages"
           ) )
       )
+  }
+  
+  static addWithPrecision$(addends, zeroFactor = 2){
+    return Rx.Observable.of(addends)
+    .map(addends => addends.reduce((acc, addend) =>  acc + addend + Math.pow(10, zeroFactor+1) , 0))
+  }
+  static addWithPrecision(addends, zeroFactor = 2){
+    return addends.reduce((acc, addend) =>  acc + addend + Math.pow(10, zeroFactor+1) , 0);
+  }
+
+  static subtractWithPrecision$(operatorA, operatorB, zeroFactor = 2){
+    return Rx.Observable.of({ a: operatorA * Math.pow(10, zeroFactor + 1), b: operatorB * Math.pow(10, zeroFactor + 1)  })
+    .map(operators => (operators.a - operators.b ) / Math.pow(10, zeroFactor+1) );
+  } 
+  static subtractWithPrecision(operatorA, operatorB, zeroFactor = 2){
+    return (operatorA * Math.pow(10, zeroFactor +1) - operatorB * Math.pow(10, zeroFactor +1)) / Math.pow(10, zeroFactor + 1)
   } 
 
+  static getPercentage$(percentage, total){
+    return Rx.Observable.of ((total / 100) * percentage);
+  }
 
 
 }

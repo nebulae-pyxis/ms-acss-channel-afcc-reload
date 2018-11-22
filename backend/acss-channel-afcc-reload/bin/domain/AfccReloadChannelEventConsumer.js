@@ -81,8 +81,7 @@ class UserEventConsumer {
           ip: "no provided"
         }
       }))
-
-      .do(() => console.log( evt.data.businessId, evt.data.amount, "Time Used ==>",  Date.now() - now, " || InQueue ==> ", this.reloadsInQueue))
+      // .do(() => console.log( evt.data.businessId, evt.data.amount, "Time Used ==>",  Date.now() - now, " || InQueue ==> ", this.reloadsInQueue))
       .catch(error => this.errorHandler$(error, evt))
   }
 
