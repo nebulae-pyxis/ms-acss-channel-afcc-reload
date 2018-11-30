@@ -11,9 +11,9 @@ const MongoDB = require("../bin/data/MongoDB").MongoDB;
 let mongoDB = undefined;
 let broker = undefined;
 
-const dbName = `test-${uuidv4()
-  .toString()
-  .slice(0, 5)}-acss-channel`;
+const dbName = `test-${uuidv4().toString().slice(0, 5)}-acss-channel`;
+// const dbName = `acss`;
+
 
 const environment = {
   BROKER_TYPE: "MQTT",

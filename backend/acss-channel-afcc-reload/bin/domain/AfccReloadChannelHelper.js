@@ -5,9 +5,19 @@ const DEFAULT_TRANSACTION_TYPE = "AFCC_RELOAD";
 const CHANNEL_ID = "ACSS_CHANNEL_AFCC_RELOAD";
 const { CustomError, AfccReloadProcessError } = require("../tools/customError");
 const [ MAIN_POCKET, BONUS_POCKET ]  = [ 'MAIN', 'BONUS' ];
+const BusinessDA = require('../data/businessUnitDA'); 
 
 class AfccReloadChannelHelper {
   constructor() {}
+
+  static fillWithPosOwner$(conf, evt){
+    return BusinessDA.searchPosOwner$(evt.data.businessId)
+    .mergeMap(posOwner => 
+      posOwner
+       ? Rx.Observable.of({ ...conf, posOwner: posOwner})
+       : Rx.Observable.of(conf)
+    )
+  }
 
   /**
    *
@@ -21,17 +31,17 @@ class AfccReloadChannelHelper {
     .mergeMap(afccEvent  => 
       Rx.Observable.forkJoin(
         AfccReloadChannelHelper.createTransactionForFareCollector$(configuration, afccEvent),
-        // AfccReloadChannelHelper.createTransactionForReloadNetWork$(configuration, afccEvent),
+        AfccReloadChannelHelper.createTransactionForPosOwner$(configuration, afccEvent),
         AfccReloadChannelHelper.createTransactionForParties$(configuration, afccEvent)
       )
     )
     .map(
       ([
         fareCollectorTransation,
-        // reloadNetworkTransation,
+        posOwnerTransation,
         partiesTransactions
       ]) => ({
-        transactions: [ fareCollectorTransation, ...partiesTransactions ],
+        transactions: [ fareCollectorTransation, ...posOwnerTransation, ...partiesTransactions ],
         conf: configuration
       })
     );
@@ -70,6 +80,26 @@ class AfccReloadChannelHelper {
     ) )
   }
 
+
+
+
+  static createTransactionForPosOwner$(conf, afccEvent) {
+    return Rx.Observable.of(conf.posOwner)
+      .mergeMap(posOwner =>
+        !posOwner
+          ? Rx.Observable.of([])
+          : this.getPercentage$(posOwner.afccChannelPercentage, afccEvent.amount)
+            .mergeMap(value => AfccReloadChannelHelper.createTransactionObject$(
+              { fromBu: conf.fareCollectors[0].fromBu, buId: posOwner._id },
+              value,
+              conf,
+              DEFAULT_TRANSACTION_TYPE,
+              afccEvent
+            )
+            )
+      )
+  }
+
   /**
    * Create all transaction for each third part actor
    * @param { Object } conf Channel configuration
@@ -90,9 +120,16 @@ class AfccReloadChannelHelper {
     //     )
     //   )
     //   .toArray();
-    return this.getPercentage$(conf.fareCollectors[0].percentage, afccEvent.amount )
-    .mergeMap(fareCollectorAmount => 
-      Rx.Observable.of(( (afccEvent.amount * 100) - ( ( afccEvent.discounted * 100) + (fareCollectorAmount * 100)  ) ) / 100) 
+    return Rx.Observable.forkJoin(
+      this.getPercentage$(conf.fareCollectors[0].percentage, afccEvent.amount ),
+      Rx.Observable.of( conf.posOwner )
+        .mergeMap(posOwner => posOwner
+          ? this.getPercentage$(posOwner.afccChannelPercentage, afccEvent.amount )
+          : Rx.Observable.of(0)  )
+    )
+    .mergeMap(([fareCollectorAmount, posOwnerAmount])  =>  this.addWithPrecision$([fareCollectorAmount, posOwnerAmount], 2) )
+    .mergeMap(debitedAmount => 
+      Rx.Observable.of(( (afccEvent.amount * 100) - ( ( afccEvent.discounted * 100) + (debitedAmount * 100)  ) ) / 100) 
     )
     .mergeMap(surplusAmount => 
       Rx.Observable.from(conf.parties)
@@ -185,11 +222,11 @@ class AfccReloadChannelHelper {
 
   /**
    *
-   * @param {string} toBu
+   * @param {string} actorConf
    * @param {Float} amount
-   * @param {any} channel
+   * @param {any} conf
    * @param {string} type
-   * @param {any} event
+   * @param {any} afccEvent
    */
   static createTransactionObject$(actorConf, amount, conf, type, afccEvent) {
     return Rx.Observable.of({
@@ -253,7 +290,9 @@ class AfccReloadChannelHelper {
   
   static addWithPrecision$(addends, zeroFactor = 2){
     return Rx.Observable.of(addends)
-    .map(addends => addends.reduce((acc, addend) =>  acc + addend + Math.pow(10, zeroFactor+1) , 0))
+    .map(addends => addends.reduce((acc, addend) =>  (acc + addend * Math.pow(10, zeroFactor+1)) , 0))
+    .map(addResult => addResult /  Math.pow(10, zeroFactor + 1))
+    .mergeMap(result => Rx.Observable.of(result))
   }
   static addWithPrecision(addends, zeroFactor = 2){
     return addends.reduce((acc, addend) =>  acc + addend + Math.pow(10, zeroFactor+1) , 0);

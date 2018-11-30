@@ -122,6 +122,10 @@ class EventStoreService {
       WalletTransactionExecuted: {
         fn: afccReloadChannelEventConsumer.handleWalletTransactionExecuted$,
         obj: afccReloadChannelEventConsumer
+      },
+      BusinessAttributesUpdated: {
+        fn: afccReloadChannelEventConsumer.handleBusinessAttributesUpdated$,
+        obj: afccReloadChannelEventConsumer
       }
 
     };
@@ -139,6 +143,10 @@ class EventStoreService {
       {
         aggregateType: "Wallet",
         eventType: "WalletTransactionExecuted"
+      },
+      {
+        aggregateType: "Business",
+        eventType: "BusinessAttributesUpdated"
       }
     ]
   }
