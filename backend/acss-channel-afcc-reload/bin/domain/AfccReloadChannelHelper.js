@@ -41,7 +41,7 @@ class AfccReloadChannelHelper {
         posOwnerTransation,
         partiesTransactions
       ]) => ({
-        transactions: [ fareCollectorTransation, ...posOwnerTransation, ...partiesTransactions ],
+        transactions: [ fareCollectorTransation, posOwnerTransation, ...partiesTransactions ],
         conf: configuration
       })
     );

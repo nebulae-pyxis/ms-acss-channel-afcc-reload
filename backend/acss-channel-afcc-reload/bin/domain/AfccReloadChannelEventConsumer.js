@@ -111,18 +111,18 @@ class UserEventConsumer {
    */
   handleBusinessAttributesUpdated$(evt) {
     return Rx.Observable.of(evt.data.attributes)
-      .map(attributes => ({ attributes, keys: attributes.reduce((acc, atr => [...acc, atr.key], [])) }))
+      .map(attributes => ({ attributes, keys: attributes.reduce((acc, atr) => [...acc, atr.key], []) }))
       .mergeMap(({ attributes, keys }) =>
         (keys.includes('AFCC_CHANNEL_PERCENTAGE') && keys.includes('CHILDREN_BUIDS'))
           ? Rx.Observable.forkJoin(
             Rx.Observable.of(attributes.find(atr => atr.key == "AFCC_CHANNEL_PERCENTAGE")),
             Rx.Observable.of(attributes.find(atr => atr.key == "CHILDREN_BUIDS"))
-          )
+          )            
             .map(([percentage, childrenBuids]) => ({
-              percentage: parseFloat(percentage),
-              childrenBuids: childrenBuids.replace(/ /g, '').split(",")
+              percentage: parseFloat(percentage.value),
+              childrenBuids: childrenBuids.value.replace(/ /g, '').split(",")
             }))
-            .mergeMap(({ percentage, childrenBuids }) => BusinessDA.updateAfccPercentageAttributes$(evt.data.aid, percentage, childrenBuids))
+            .mergeMap(({ percentage, childrenBuids }) => BusinessDA.updateAfccPercentageAttributes$(evt.aid, percentage, childrenBuids))
           : BusinessDA.removeAfccPercentageAttributes$(evt.data.aid)
       )
   }

@@ -3,7 +3,7 @@
 let mongoDB = undefined;
 //const mongoDB = require('./MongoDB')();
 const Rx = require('rxjs');
-const CollectionName = "Transactions";
+const CollectionName = "Business";
 const ACSS_DB_NAME = process.env.MONGODB_ACSS_DB_NAME;
 const ObjectID = require("mongodb").ObjectID;
 
@@ -11,7 +11,6 @@ const ObjectID = require("mongodb").ObjectID;
 class BusinessUnitDA {
 
   static start$(mongoDbInstance) {
-    console.log("################################################################# BusinessUnitDA.start$", ACSS_DB_NAME);
     return Rx.Observable.create((observer) => {
       if (mongoDbInstance) {
         mongoDB = mongoDbInstance;
@@ -40,14 +39,11 @@ class BusinessUnitDA {
    */
   static updateAfccPercentageAttributes$(businessId, afccChannelPercentage, childrenBuIds) {
     const collection = mongoDB.client.db(ACSS_DB_NAME).collection(CollectionName);
-    return this.searchPosOwner$(businessId)
-      .do(posOwner => posOwner ? console.log("########### WARNING !!! A POS OWNER ALREADY EXIST!!!!") : {} )
-      .mergeMap(() => Rx.Observable.defer(() =>
-        collection.findOneAndUpdate(
+    return Rx.Observable.defer(() => collection.findOneAndUpdate(
           { _id: businessId },
           { $set: { afccChannelPercentage: afccChannelPercentage, childrenBuIds: childrenBuIds } }
         )
-      ))
+      );
   }
 
   /**
