@@ -4,36 +4,36 @@
         "src": "frontend/emi/acss-channel-afcc-reload",
         "groups": [
             {
-              "id": "SYSTEM",
+              "id": "CLEARING_AND_SETTLEMENT",
               "icon": "location_searching",
               "translate": {
-                "en": "System",
-                "es": "Sistema"
+                "en": "clearing and settlement",
+                "es": "Liquidación y compensación"
               },
-              "priority": 100
+              "priority": 180
             }
-          ],
+        ],
         "subgroups": [
             {
-                "groupId": "SYSTEM",
-                "id": "processor-channels",
+                "groupId": "CLEARING_AND_SETTLEMENT",
+                "id": "CHANNELS_PROCESSORS",
                 "icon": "dashboard",
                 "translate": {
-                    "en": "Processor channels",
-                    "es": "Canales procesadores"
+                    "en": "Channels",
+                    "es": "Canales"
                 },
-                "priority": 2000
+                "priority": 800
             }
         ],
         "contents": [
             {
-                "groupId": "SYSTEM",
-                "subgroupId": "processor-channels",
+                "groupId": "CLEARING_AND_SETTLEMENT",
+                "subgroupId": "CHANNELS_PROCESSORS",
                 "id": "acss-channel-afcc-reload",
                 "icon": "dashboard",
                 "translate": {
-                    "en": "ACSS channel",
-                    "es": "Canal ACSS"
+                    "en": "Civica reload",
+                    "es": "Recarga cívica"
                 },
                 "navURL": "/acss-channel-afcc-reload",
                 "path": "acss-channel-afcc-reload",
