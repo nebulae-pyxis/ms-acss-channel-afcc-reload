@@ -106,20 +106,6 @@ class AfccReloadChannelHelper {
    * @param { Object } afccEvent AFCC reload event
    */
   static createTransactionForParties$(conf, afccEvent) {   
-    // console.log("............ createTransactionForParties ==> ", afccEvent);
-    // const fareCollectorAmount = (afccEvent.amount / 100) * conf.fareCollectors[0].percentage;
-    // const surplusAmount = ( (afccEvent.amount * 100) - ( (afccEvent.discounted * 100) + (fareCollectorAmount * 100)  ) ) / 100;     
-    // console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ SE DEJO PARA REPARTIR ==> ", surplusAmount);
-    // return Rx.Observable.from(conf.parties)
-    //   .mergeMap(thirdParty => AfccReloadChannelHelper.createTransactionObject$(
-    //       thirdParty,
-    //       (surplusAmount / 100) * (thirdParty.percentage * 1000) / 1000,
-    //       conf,
-    //       DEFAULT_TRANSACTION_TYPE,
-    //       afccEvent
-    //     )
-    //   )
-    //   .toArray();
     return Rx.Observable.forkJoin(
       this.getPercentage$(conf.fareCollectors[0].percentage, afccEvent.amount ),
       Rx.Observable.of( conf.posOwner )

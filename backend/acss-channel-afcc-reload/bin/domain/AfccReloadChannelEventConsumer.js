@@ -51,7 +51,6 @@ class UserEventConsumer {
       // apply the rules and return the array with all transaction to persist      
       .mergeMap((conf) => Helper.applyBusinessRules$(conf, evt))
       .mergeMap(result => Helper.validateFinalTransactions$(result.transactions, result.conf, evt))
-      //.do(r => console.log(r))
       // insert all trsansaction to the MongoDB
       .mergeMap(transactionsArray => TransactionsDA.insertTransactions$(transactionsArray))
       // gets the transactions after been inserted
