@@ -18,26 +18,26 @@
         <div fxFlex="50" fxFlex.lt-sm="100" fxLayout="column" fxLayoutAlign="space-evenly">
 
           <mat-form-field class="pr-12 pl-12" fxFlex="100">
-            <input matInput readonly="true" placeholder="{{'RELOAD.BU_ID' | translate }}" value="{{ selectedReload.businessId }}">
+            <input matInput [readonly]="true" placeholder="{{'RELOAD.BU_ID' | translate }}" value="{{ selectedReload.businessId }}">
           </mat-form-field>
           <mat-form-field fxFlex="100" class="pr-12 pl-12">
-            <input matInput readonly="true" placeholder="{{'RELOAD.SOURCE_MACHINE' | translate }}" value="{{selectedReload.source.machine}}">
+            <input matInput [readonly]="true" placeholder="{{'RELOAD.SOURCE_MACHINE' | translate }}" value="{{selectedReload.source.machine}}">
           </mat-form-field>
           <mat-form-field fxFlex="100" class="pr-12 pl-12">
-            <input matInput readonly="true" placeholder="{{'RELOAD.AMOUNT' | translate }}" value="{{selectedReload.amount}}">
+            <input matInput [readonly]="true" placeholder="{{'RELOAD.AMOUNT' | translate }}" value="{{selectedReload.amount}}">
           </mat-form-field>
 
         </div>
         <div fxFlex="50" fxFlex.lt-sm="100" fxLayout="column" fxLayoutAlign="space-evenly">
 
           <mat-form-field class="pr-12 pl-12">
-            <input matInput readonly="true" placeholder="{{'RELOAD.BU_NAME' | translate }}" value="{{selectedReload.businessName}}">
+            <input matInput [readonly]="true" placeholder="{{'RELOAD.BU_NAME' | translate }}" value="{{selectedReload.businessName}}">
           </mat-form-field>
           <mat-form-field class="pr-12 pl-12">
-            <input matInput readonly="true" placeholder="{{'RELOAD.SOURCE_IP' | translate }}" value="{{selectedReload.source.ip}}">
+            <input matInput [readonly]="true" placeholder="{{'RELOAD.SOURCE_IP' | translate }}" value="{{selectedReload.source.ip}}">
           </mat-form-field>
           <mat-form-field class="pr-12 pl-12">
-            <input matInput readonly="true" placeholder="{{'RELOAD.TRCNS_QTY' | translate }}" value="{{selectedReload.transactions.length}}">
+            <input matInput [readonly]="true" placeholder="{{'RELOAD.TRCNS_QTY' | translate }}" value="{{selectedReload.transactions.length}}">
           </mat-form-field>
         </div>
       </div>
