@@ -59,7 +59,7 @@ module.exports = {
               "AcssChannelAfccReloadGetConfiguration",
               BUSINESS_PERMISSION_DENIED_ERROR_CODE,
               "Permission denied",
-              ["SYSADMIN"]
+              ["PLATFORM-ADMIN"]
           )
               .mergeMap(() =>
                   broker.forwardAndGetReply$(
@@ -80,7 +80,7 @@ module.exports = {
               "AcssChannelAfccReloadGetAfccReload",
               BUSINESS_PERMISSION_DENIED_ERROR_CODE,
               "Permission denied",
-              ["SYSADMIN"]
+              ["PLATFORM-ADMIN"]
           )
               .mergeMap(() => broker
                   .forwardAndGetReply$(
@@ -102,7 +102,7 @@ module.exports = {
               "AcssChannelAfccReloadGetAfccReloads",
               BUSINESS_PERMISSION_DENIED_ERROR_CODE,
               "Permission denied",
-              ["SYSADMIN"]
+              ["PLATFORM-ADMIN"]
           )
               .mergeMap(() =>
                   broker.forwardAndGetReply$(
@@ -122,7 +122,7 @@ module.exports = {
             "AcssChannelAfccReloadGetAfccReloadErrors",
             BUSINESS_PERMISSION_DENIED_ERROR_CODE,
             "Permission denied",
-            ["SYSADMIN"]
+            ["PLATFORM-ADMIN"]
         )
             .mergeMap(() =>
                 broker.forwardAndGetReply$(
@@ -142,7 +142,7 @@ module.exports = {
               "AcssChannelAfccReloadGetTransactions",
               BUSINESS_PERMISSION_DENIED_ERROR_CODE,
               "Permission denied",
-              ["SYSADMIN"]
+              ["PLATFORM-ADMIN"]
           )
               .mergeMap(() =>
                   broker.forwardAndGetReply$(
@@ -162,7 +162,7 @@ module.exports = {
             "AcssChannelAfccReloadGetReloadsCount",
             BUSINESS_PERMISSION_DENIED_ERROR_CODE,
             "Permission denied",
-            ["SYSADMIN"]
+            ["PLATFORM-ADMIN"]
         )
         .mergeMap(() => broker.forwardAndGetReply$(
             "AfccChannel",
@@ -184,7 +184,7 @@ module.exports = {
             "AcssChannelAfccReloadCreateConfiguration",
             BUSINESS_PERMISSION_DENIED_ERROR_CODE,
             "Permission denied",
-            ["SYSADMIN"]
+            ["PLATFORM-ADMIN"]
         )
         .mergeMap(() => broker.forwardAndGetReply$(
             "AfccChannel",

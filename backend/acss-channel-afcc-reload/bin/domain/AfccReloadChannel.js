@@ -38,7 +38,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getConfiguration$",
       PERMISSION_DENIED_ERROR,
-      ["SYSADMIN"]
+      ["PLATFORM-ADMIN"]
     )
     .mergeMap(() => AfccReloadChannelDA.searchConfiguration$(args.id) )    
     .mergeMap(payload => this.buildSuccessResponse$(payload))
@@ -56,7 +56,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getAfccReload$",
       PERMISSION_DENIED_ERROR,
-      ["SYSADMIN"]
+      ["PLATFORM-ADMIN"]
     )
     .mergeMap(() =>  AfccReloadsDA.searchReload$(args.id) )
     .map(reload => {
@@ -80,7 +80,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getAfccReload$",
       PERMISSION_DENIED_ERROR,
-      ["SYSADMIN"]
+      ["PLATFORM-ADMIN"]
     )
     .mergeMap(() => AfccReloadsDA.searchReloads$(args) )     
     .mergeMap(payload => this.buildSuccessResponse$(payload))
@@ -98,7 +98,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getAfccReload$",
       PERMISSION_DENIED_ERROR,
-      ["SYSADMIN"]
+      ["PLATFORM-ADMIN"]
     )
     .mergeMap(() => AfccReloadsDA.getReloadsCount$() ) 
     .mergeMap(payload => this.buildSuccessResponse$(payload))
@@ -111,7 +111,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getAfccReload$",
       PERMISSION_DENIED_ERROR,
-      ["SYSADMIN"]
+      ["PLATFORM-ADMIN"]
     )
     .mergeMap(() => TransactionsErrorsDA.findReloadErrors$(args) )
     .mergeMap(payload => this.buildSuccessResponse$(payload))
@@ -129,7 +129,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getAfccReload$",
       PERMISSION_DENIED_ERROR,
-      ["SYSADMIN"]
+      ["PLATFORM-ADMIN"]
     )
     .mergeMap(() => TransactionDA.searchTransactions$(args) )     
     .mergeMap(payload => this.buildSuccessResponse$(payload))
@@ -149,7 +149,7 @@ class AfccReloadChannel{
       "AfccReloadAcssChannel",
       "getAfccReload$",
       PERMISSION_DENIED_ERROR,
-      ["SYSADMIN"]
+      ["PLATFORM-ADMIN"]
     )
     .mergeMap(() => Helper.verifyBusinessRules$(args.input))
     .mergeMap(() => 
