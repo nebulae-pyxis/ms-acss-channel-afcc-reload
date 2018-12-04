@@ -88,7 +88,7 @@ class AfccReloadsDA {
     return Rx.Observable.defer(() =>
       collection
         .find(filterObject)
-        .sort(orderObject)
+        .sort({ timestamp: -1 })
         .skip(count * page)
         .limit(count)
         .toArray()
