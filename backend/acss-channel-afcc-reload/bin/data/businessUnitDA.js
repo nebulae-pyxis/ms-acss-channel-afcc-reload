@@ -53,6 +53,7 @@ class BusinessUnitDA {
    * @param {string[]} childrenBuIds
    */
   static removeAfccPercentageAttributes$(businessId) {
+    console.log("removeAfccPercentageAttributes$", businessId);
     const collection = mongoDB.client.db(ACSS_DB_NAME).collection(CollectionName);
     return Rx.Observable.defer(() =>
       collection.findOneAndUpdate(

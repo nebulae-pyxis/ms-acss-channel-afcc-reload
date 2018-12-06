@@ -51,11 +51,11 @@ class UserEventConsumer {
       // search the pos manager of the business unit who made the reload
       .mergeMap(conf => Helper.fillWithPosOwner$(conf, evt) )
       // apply the rules and return the array with all transaction to persist
-      .do(r => console.log("AFTER fillWithPosOwner$ ==>", JSON.stringify(r)))      
+      // .do(r => console.log("AFTER fillWithPosOwner$ ==>", JSON.stringify(r)))      
       .mergeMap((conf) => Helper.applyBusinessRules$(conf, evt))
       .mergeMap(result => Helper.validateFinalTransactions$(result.transactions, result.conf, evt))
       // insert all trsansaction to the MongoDB
-      .do(txs => console.log("Transaction to insert ==> ", JSON.stringify(txs)))
+      // .do(txs => console.log("Transaction to insert ==> ", JSON.stringify(txs)))
       .mergeMap(transactionsArray => TransactionsDA.insertTransactions$(transactionsArray))
       // gets the transactions after been inserted
       .map(result => result.ops)
@@ -127,7 +127,7 @@ class UserEventConsumer {
               childrenBuids: childrenBuids.value.replace(/ /g, '').split(",")
             }))
             .mergeMap(({ percentage, childrenBuids }) => BusinessDA.updateAfccPercentageAttributes$(evt.aid, percentage, childrenBuids))
-          : BusinessDA.removeAfccPercentageAttributes$(evt.data.aid)
+          : BusinessDA.removeAfccPercentageAttributes$(evt.aid)
       )
   }
 
