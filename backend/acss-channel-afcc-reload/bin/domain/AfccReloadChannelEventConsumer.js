@@ -45,11 +45,13 @@ class UserEventConsumer {
       // todo: combination 
       .filter(({transactionType, transactionConcept}) => ( TRANSACTION_TYPES.includes(transactionType) &&  TRANSACTION_CONCEPTS.includes(transactionConcept)  ))
       // if the transaction was made with Bonus pocket it must to be ignored because sale with bonuspocket does not affect clearing
+      // todo: is necesary create the transaction only for metro
       .filter(() =>  !(evt.data.transactions.length == 1 && evt.data.transactions[0].pocket == BONUS_POCKET) )
       .mergeMap(() => this.getChannelSettings$(evt) )    
       // search the pos manager of the business unit who made the reload
       .mergeMap(conf => Helper.fillWithPosOwner$(conf, evt) )
-      // apply the rules and return the array with all transaction to persist      
+      // apply the rules and return the array with all transaction to persist
+      .do(r => console.log("AFTER fillWithPosOwner$ ==>", JSON.stringify(r)))      
       .mergeMap((conf) => Helper.applyBusinessRules$(conf, evt))
       .mergeMap(result => Helper.validateFinalTransactions$(result.transactions, result.conf, evt))
       // insert all trsansaction to the MongoDB
