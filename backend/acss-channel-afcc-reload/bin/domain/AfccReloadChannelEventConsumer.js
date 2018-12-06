@@ -42,16 +42,18 @@ class UserEventConsumer {
     // this.reloadsInQueue++;
     // searh the valid channel settiings
     return  Rx.Observable.of(evt.data)
+      // todo: combination 
       .filter(({transactionType, transactionConcept}) => ( TRANSACTION_TYPES.includes(transactionType) &&  TRANSACTION_CONCEPTS.includes(transactionConcept)  ))
+      // if the transaction was made with Bonus pocket it must to be ignored because sale with bonuspocket does not affect clearing
       .filter(() =>  !(evt.data.transactions.length == 1 && evt.data.transactions[0].pocket == BONUS_POCKET) )
       .mergeMap(() => this.getChannelSettings$(evt) )    
-      // verifies that the actors interacting with the event are in the channel configuration
-      // .mergeMap(conf => Helper.validateAfccEvent$(conf, evt))
+      // search the pos manager of the business unit who made the reload
       .mergeMap(conf => Helper.fillWithPosOwner$(conf, evt) )
       // apply the rules and return the array with all transaction to persist      
       .mergeMap((conf) => Helper.applyBusinessRules$(conf, evt))
       .mergeMap(result => Helper.validateFinalTransactions$(result.transactions, result.conf, evt))
       // insert all trsansaction to the MongoDB
+      .do(txs => console.log("Transaction to insert ==> ", JSON.stringify(txs)))
       .mergeMap(transactionsArray => TransactionsDA.insertTransactions$(transactionsArray))
       // gets the transactions after been inserted
       .map(result => result.ops)
@@ -65,7 +67,7 @@ class UserEventConsumer {
         Helper.getSignificantTransaction$(evt.data.transactions, evt)
       ))
       // build Reload object with its transactions generated inserts the reload object
-      .mergeMap( ([arrayTransactions, mainTransaction]) => AfccReloadsDA.insertOneReload$({
+      .map( ([arrayTransactions, mainTransaction]) => ({
         ...evt.data,
         amount: mainTransaction.amount,
         timestamp: evt.timestamp,
@@ -87,6 +89,7 @@ class UserEventConsumer {
           ip: "no provided"
         }
       }))
+      .mergeMap( evt  => AfccReloadsDA.insertOneReload$(evt))
       // .do(() => console.log( evt.data.businessId, evt.data.amount, "Time Used ==>",  Date.now() - now, " || InQueue ==> ", this.reloadsInQueue))
       .catch(error => this.errorHandler$(error, evt))
   }

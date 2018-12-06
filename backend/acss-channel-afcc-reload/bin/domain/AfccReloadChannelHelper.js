@@ -53,15 +53,14 @@ class AfccReloadChannelHelper {
    */
   static getSignificantTransaction$(transactionArray, afccEvent){
     return Rx.Observable.of(transactionArray)
-    // get the transaction with maximun value
+    // get the transaction with minumin value (transaction made with MAIN pocket)
     .map(transactions => transactions.sort((txa, txb) => txa.value - txb.value )[0] )
     // map object with only necessary attributes and set value transacction as positive
     .map( ({ value, user }) => ({ amount: value * -1, _id: afccEvent._id, et: afccEvent.et, user  }) )
-    .map(summary =>  
-        transactionArray.length > 1 
-            ? ({ ...summary, discounted: transactionArray.sort((txa, txb) => txa.value - txb.value )[1].value  }) 
-            : ({ ...summary, discounted: 0  })  
-    )
+      .map(summary => transactionArray.length > 1
+        ? ({ ...summary, discounted: transactionArray.sort((txa, txb) => txa.value - txb.value)[1].value })
+        : ({ ...summary, discounted: 0 })
+      )
   }
 
   /**
