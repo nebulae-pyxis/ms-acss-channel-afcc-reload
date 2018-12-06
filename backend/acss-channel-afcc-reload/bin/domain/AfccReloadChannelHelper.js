@@ -28,7 +28,11 @@ class AfccReloadChannelHelper {
   static applyBusinessRules$(configuration, afccEvent) {    
     return Rx.Observable.of(afccEvent.data.transactions)
     .mergeMap(txs => this.getSignificantTransaction$(txs, afccEvent))
-    .do(r => console.log("applyBusinessRules$ ==> ", JSON.stringify(configuration), JSON.stringify(afccEvent)) )
+    .do(r => {
+      console.log("====== ApplyBusinessRules$ ======= ");
+      console.log("====== CONFIGURATION ==> ", JSON.stringify(configuration), );
+      console.log("====== AfccEvent ==> ", JSON.stringify(afccEvent));
+    } )
     .mergeMap(afccEvent  => 
       Rx.Observable.forkJoin(
         AfccReloadChannelHelper.createTransactionForFareCollector$(configuration, afccEvent),
@@ -42,7 +46,7 @@ class AfccReloadChannelHelper {
         posOwnerTransation,
         partiesTransactions
       ]) => ({
-        transactions: [ fareCollectorTransation, posOwnerTransation, ...partiesTransactions ],
+        transactions: [ fareCollectorTransation, ...posOwnerTransation, ...partiesTransactions ],
         conf: configuration
       })
     );
@@ -97,6 +101,7 @@ class AfccReloadChannelHelper {
               afccEvent
             )
             )
+            .map( tx => ([tx]))
       )
   }
 
