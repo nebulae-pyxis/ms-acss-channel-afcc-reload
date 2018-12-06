@@ -180,9 +180,7 @@ class AfccReloadChannel{
       .map(resp => {
         return {
           data: resp,
-          result: {
-            code: 200
-          }
+          result: { code: 200 }
         }
       });
   }
