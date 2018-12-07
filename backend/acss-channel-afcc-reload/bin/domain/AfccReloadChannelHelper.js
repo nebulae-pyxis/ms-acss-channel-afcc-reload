@@ -111,22 +111,18 @@ class AfccReloadChannelHelper {
    * @param { Object } afccEvent AFCC reload event
    */
   static createTransactionForParties$(conf, afccEvent) {   
-    return Rx.Observable.forkJoin(
-      this.getPercentage$(conf.fareCollectors[0].percentage, afccEvent.amount ),
-      Rx.Observable.of( conf.posOwner )
-        .mergeMap(posOwner => posOwner
-          ? this.getPercentage$(posOwner.afccChannelPercentage, afccEvent.amount )
-          : Rx.Observable.of(0)  )
+    return Rx.Observable.of(conf.posOwner)
+    .map(posOwner => posOwner
+      ? (posOwner.afccChannelPercentage * 100) + ( conf.fareCollectors[0].percentage * 100 )
+      : conf.fareCollectors[0].percentage * 100
     )
-    .mergeMap(([fareCollectorAmount, posOwnerAmount])  =>  this.addWithPrecision$([fareCollectorAmount, posOwnerAmount], 2) )
-    .mergeMap(debitedAmount => 
-      Rx.Observable.of(( (afccEvent.amount * 100) - ( ( afccEvent.discounted * 100) + (debitedAmount * 100)  ) ) / 100) 
-    )
-    .mergeMap(surplusAmount => 
+    .mergeMap(percentageUsed => this.getPercentage$(percentageUsed/100, afccEvent.amount ))    
+    .mergeMap( moneyUsed => this.subtractWithPrecision$(afccEvent.amount, ( ((moneyUsed*100)  + (afccEvent.discounted*100) )/100  ) ) )
+    .mergeMap(amountForThirdPArties => 
       Rx.Observable.from(conf.parties)
       .mergeMap(thirdParty => Rx.Observable.forkJoin(
         Rx.Observable.of(thirdParty),
-        this.getPercentage$(thirdParty.percentage, surplusAmount)
+        this.getPercentage$(thirdParty.percentage, amountForThirdPArties)
       ))
       .mergeMap( ([thirdParty, amount]) => AfccReloadChannelHelper.createTransactionObject$(
               thirdParty,
@@ -288,8 +284,11 @@ class AfccReloadChannelHelper {
   
 
   static subtractWithPrecision$(operatorA, operatorB, zeroFactor = 2){
-    return Rx.Observable.of({ a: operatorA * Math.pow(10, zeroFactor + 1), b: operatorB * Math.pow(10, zeroFactor + 1)  })
-    .map(operators => (operators.a - operators.b ) / Math.pow(10, zeroFactor+1) );
+    return Rx.Observable.of({
+      a: Math.round(operatorA * Math.pow(10, zeroFactor + 1)),
+      b: Math.round(operatorB * Math.pow(10, zeroFactor + 1))
+    })
+    .map(operators => (operators.a - operators.b ) / Math.pow(10, zeroFactor+1) )
   } 
 
   static getPercentage$(percentage, total){
