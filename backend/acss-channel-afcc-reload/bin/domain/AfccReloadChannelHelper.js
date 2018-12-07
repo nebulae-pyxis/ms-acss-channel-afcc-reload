@@ -285,20 +285,15 @@ class AfccReloadChannelHelper {
     .map(addResult => addResult /  Math.pow(10, zeroFactor + 1))
     .mergeMap(result => Rx.Observable.of(result))
   }
-  static addWithPrecision(addends, zeroFactor = 2){
-    return addends.reduce((acc, addend) =>  acc + addend + Math.pow(10, zeroFactor+1) , 0);
-  }
+  
 
   static subtractWithPrecision$(operatorA, operatorB, zeroFactor = 2){
     return Rx.Observable.of({ a: operatorA * Math.pow(10, zeroFactor + 1), b: operatorB * Math.pow(10, zeroFactor + 1)  })
     .map(operators => (operators.a - operators.b ) / Math.pow(10, zeroFactor+1) );
   } 
-  static subtractWithPrecision(operatorA, operatorB, zeroFactor = 2){
-    return (operatorA * Math.pow(10, zeroFactor +1) - operatorB * Math.pow(10, zeroFactor +1)) / Math.pow(10, zeroFactor + 1)
-  } 
 
   static getPercentage$(percentage, total){
-    return Rx.Observable.of ((total / 100) * percentage);
+    return Rx.Observable.of ((total * percentage * 100 )  / 10000 );
   }
 
 
