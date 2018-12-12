@@ -167,8 +167,9 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
   }
 
   addActor(type: string): void {
-    const items = this.settingsForm.get(type) as FormArray;
-    items.push(this.createItem(type));
+    console.log(type);
+    const items = this.settingsForm.get(type)['controls']['actors'] as FormArray;
+    items.push(this.createItem('actor'));
   }
 
   viewDefinition(type: string){
@@ -193,20 +194,34 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
       id: 1,
       lastEdition: Date.now(),
       salesWithMainPocket: {
-        actors: [...formValue.salesWithMainPocket.actors.map(e => ({ buId: e.businessUnitId, percentage: e.percentage, fromBu: e.businessUnitFrom }))],
-        surplusCollector: [formValue.salesWithMainPocket.surplusCollector].map(e => ({ buId: e.businessUnitId, fromBu: e.businessUnitFrom }))[0],
-        bonusCollector: [formValue.salesWithMainPocket.bonusCollector].map(e => ({ buId: e.businessUnitId, fromBu: e.businessUnitFrom }))[0]
+        actors: [...formValue.salesWithMainPocket.actors.map(e => ({ 
+          buId: e.businessUnitId,
+          percentage: e.percentage,
+          fromBu: e.businessUnitFrom
+        }))],
+        surplusCollector: [formValue.salesWithMainPocket.surplusCollector].map(e => ({ 
+          fromBu: e.businessUnitFrom.id,
+          buId: e.businessUnitId.id
+        }))[0],
+        bonusCollector: [formValue.salesWithMainPocket.bonusCollector].map(e => ({
+          buId: e.businessUnitId.id,
+          fromBu: e.businessUnitFrom.id }))[0]
       },
       salesWithBonusPocket: {
         actors: [...formValue.salesWithBonusPocket.actors.map(e => ({ buId: e.businessUnitId, percentage: e.percentage, fromBu: e.businessUnitFrom }))],
         investmentCollector: [formValue.salesWithBonusPocket.investmentCollector].map(e => ({ buId: e.businessUnitId, fromBu: e.businessUnitFrom }))[0],
       },
       salesWithCreditPocket: {
-        actors: [...formValue.salesWithCreditPocket.actors.map(e => ({ buId: e.businessUnitId, percentage: e.percentage, fromBu: e.businessUnitFrom }))],
+        actors: [...formValue.salesWithCreditPocket.actors.map(e => ({ 
+          buId: e.businessUnitId,
+          percentage: e.percentage,
+          fromBu: e.businessUnitFrom 
+        }))],
       }
     })
       .pipe(
-        mergeMap((settings: AcssChannelSettings) => this.acssChannelAfccReloadService.saveChannelSettings(settings))
+        tap(r => console.log('RESULT ==> ', r))
+        // mergeMap((settings: AcssChannelSettings) => this.acssChannelAfccReloadService.saveChannelSettings(settings))
       )
       .subscribe(
         ok => { console.log(ok); },
@@ -216,6 +231,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
   }
 
   restoreSettings(i){
+    console.log(this.settingsForm.getRawValue());
     Rx.Observable.of({})
     .pipe(
       tap(() => this.initializeForm$() ),

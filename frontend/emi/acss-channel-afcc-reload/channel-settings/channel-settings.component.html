@@ -24,89 +24,105 @@
           <div *ngIf="formInitialized" class="widget-group" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start start">
 
             <!-- BONUSCOLLECTOR -->
-              <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
-                <span fxLayoutAlign="center center"> {{'SETTINGS.FARE_COLLECTOR_TITTLE' | translate}} </span>
+            <div fxFlex="100" fxLayout="row" fxLayoutAlign="start center">
+              <span fxLayoutAlign="center center"> {{'SETTINGS.BONUS_COLLECTOR_TITTLE' | translate}} </span>
+              <button mat-icon-button (click)="viewDefinition('FARECOLLECTORS')">
+                <mat-icon>info</mat-icon>
+              </button>
+            </div>
+            <div fxFlex="100">
+              <div class="border" fxFlex="100" fxLayout="row wrap">
+                <!-- business pays the money -->
+                <business-autocomplete class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100"
+                  [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['bonusCollector']"
+                  [controlName]="'businessUnitFrom'" [editable]="currentVersion">
+                </business-autocomplete>
+                <!-- business pays the money -->
+                <!-- business receives the money -->
+                <business-autocomplete class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100"
+                  [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['bonusCollector']"
+                  [controlName]="'businessUnitId'" [editable]="currentVersion">
+                </business-autocomplete>
+                <!-- business receives the money -->
+              </div>
+            </div>
+            <!-- BONUSCOLLECTOR -->
+
+
+              <!-- SURPLUSCOLLECTOR -->
+              <div fxFlex="100" fxLayout="row" fxLayoutAlign="start center">
+                <span fxLayoutAlign="center center"> {{'SETTINGS.SURPLUS_COLLECTOR_TITTLE' | translate}} </span>
                 <button mat-icon-button (click)="viewDefinition('FARECOLLECTORS')">
                   <mat-icon>info</mat-icon>
                 </button>
               </div>
-
-
-
+              
               <div fxFlex="100">
-                <div class="border" [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['bonusCollector']"
-                  fxFlex="100" fxLayout="row wrap">
+                <div class="border" fxFlex="100" fxLayout="row wrap">
+                  <business-autocomplete class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100" 
+                    [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['surplusCollector']"
+                    [controlName]="'businessUnitFrom'" [editable]="currentVersion">
+                  </business-autocomplete>
+                  <business-autocomplete class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100" 
+                    [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['surplusCollector']"
+                    [controlName]="'businessUnitId'" [editable]="currentVersion">
+                  </business-autocomplete>
+                </div>
+              </div>
+              
+              <!-- SURPLUSCOLLECTOR -->
 
-                  <!-- business pays the money -->
-                  <!-- <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
-                    <input matInput [readonly]="!currentVersion" formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
-                  </mat-form-field> -->
 
-                      <business-autocomplete class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100"
-                        [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['bonusCollector']"
-                        [controlName]="'businessUnitFrom'" [placeHolder]="'place holder de prueba'"
-                        [editable]="currentVersion">
-                      </business-autocomplete>
+              <!-- ACTORS -->
 
-                  <!-- <div [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['bonusCollector']" >
-                      <mat-form-field >
-                          <input matInput [readonly]="currentVersion" formControlName="businessUnitFrom"
-                            placeholder="placeHolder">
-                        </mat-form-field>
+              <div fxFlex="100" fxLayout="row" fxLayoutAlign="start center">
+                <span fxLayoutAlign="center center"> {{'SETTINGS.PARTIES_TITTLE' | translate}} </span>
+                <button mat-icon-button (click)="viewDefinition('THIRD_PARTIES')">
+                  <mat-icon>info</mat-icon>
+                </button>
+              </div>
 
+                <div [formGroup]="settingsForm.get('salesWithMainPocket')" fxLayout="column" fxLayoutAlign="space-around stretch" fxFlex="100">
+                  <div formArrayName="actors" *ngFor="let item of settingsForm.get('salesWithMainPocket')['controls']['actors']['controls']; let i = index;"
+                    fxLayout="column">
+                    <div class="border" [formGroupName]="i" fxFlex="100" fxLayout="row wrap">
+                      <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
+                        <input matInput [readonly]="!currentVersion" formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
+                      </mat-form-field>
+                      <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
+                        <input matInput [readonly]="!currentVersion" formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+                      </mat-form-field>
+  
+                      <mat-form-field class="center-text pr-12 pl-12" fxFlex="15" fxFlex.xs="100">
+                        <input type="number" [readonly]="!currentVersion" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
+                      </mat-form-field>
+                      <button *ngIf="currentVersion" fxFlex="5" fxFlex.xs="100" mat-icon-button (click)="salesWithMainPocket( 'parties', i)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+  
+  
+                  </div>
+                  <!-- <div *ngIf="settingsForm.errors && currentVersion">
+                    <span style="color: red" *ngIf="settingsForm.errors['percentageExceeded']">
+                      {{'ERRORS.PERCENTAGE_EXECEEDED_PARTIES' | translate}}
+                    </span>
+                    <span style="color: red" *ngIf="settingsForm.errors['percentageNotReached']">
+                      {{'ERRORS.PERCENTAGE_NOT_EXECEEDED_PARTIES' | translate}}
+                    </span>
                   </div> -->
-
-                  <!-- business pays the money -->
-
-
-
-
-
-                  <!-- business receives the money -->
-                  <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
-                    <input matInput [readonly]="!currentVersion" formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
-                  </mat-form-field>
-
+                  <button style="margin-top: 10px" *ngIf="currentVersion" mat-mini-fab (click)="addActor('salesWithMainPocket')">
+                    <mat-icon>add</mat-icon>
+                  </button>
                 </div>
-              </div>
-              <!-- BONUSCOLLECTOR -->
-
-
-              <!-- SURPLUSCOLLECTOR -->
-              <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
-                <span fxLayoutAlign="center center"> {{'SETTINGS.FARE_COLLECTOR_TITTLE' | translate}} </span>
-                <button mat-icon-button (click)="viewDefinition('FARECOLLECTORS')">
-                  <mat-icon>info</mat-icon>
-                </button>
-              </div>
-
-              <div fxFlex="100">
-                <div class="border" [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['surplusCollector']" fxFlex="100"
-                  fxLayout="row wrap">
-                  <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
-                    <input matInput [readonly]="!currentVersion" formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
-                  </mat-form-field>
-                  <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
-                    <input matInput [readonly]="!currentVersion" formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
-                  </mat-form-field>
-                </div>
-              </div>
-              <!-- SURPLUSCOLLECTOR -->
 
 
 
 
-
-
-
-
-
-
+              <!-- ACTORS -->
 
 
             <!-- Chosen name: {{ orderForm.controls.items.controls[i].controls.name.value }} -->
-
-
 
             <!-- THIRD PARTIES -->
             <!-- <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
@@ -151,42 +167,6 @@
               </div>
             </mat-card> -->
             <!-- THIRD PARTIES -->
-
-            <!-- BUSINESS UNIT WHERE SURPLUS WILL BE APPLIED  -->
-            <!-- <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
-              <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
-                <span fxLayoutAlign="center center"> {{'SETTINGS.SURPLUS_COLLECTOR_TITTLE' | translate}} </span>
-                <button mat-icon-button aria-label="Button that shows a red tooltip" (click)="viewDefinition('LEFTOVER_COLLECTORS')">
-                  <mat-icon>info</mat-icon>
-                </button>
-              </div>
-              <div fxLayout="column" fxLayoutAlign="space-around stretch" fxFlex="100">
-                <div *ngFor="let item of settingsForm.get('surplusCollectors')['controls']; let i = index;" fxFlex="100"
-                  formArrayName="surplusCollectors">
-
-                  <div class="border" [formGroupName]="i" fxLayoutAlign="space-between center" fxFlex="100" fxLayout="row wrap">
-                    <div fxLayout="column" fxFlex="46" fxFlex.xs="100">
-                      <mat-form-field class="center-text pr-12 pl-12">
-                        <input matInput [readonly]="!currentVersion" formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
-                      </mat-form-field>
-                    </div>
-                    <div fxLayout="column" fxFlex="46" fxFlex.xs="100">
-                      <mat-form-field class="center-text pr-12 pl-12">
-                        <input matInput [readonly]="!currentVersion" formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
-                      </mat-form-field>
-                    </div>
-
-                    <button *ngIf="currentVersion" fxFlex="5" fxFlex.xs="100" mat-icon-button (click)="deleteControl( 'surplusCollectors', i)">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </div>
-                </div>
-                <button *ngIf="settingsForm.get('surplusCollectors').value.length == 0 && currentVersion" mat-mini-fab (click)="addActor('surplusCollectors')">
-                  <mat-icon>add</mat-icon>
-                </button>
-              </div>
-            </mat-card> -->
-            <!-- BUSINESS UNIT WHERE SURPLUS WILL BE APPLIED  -->
           </div>
 
 

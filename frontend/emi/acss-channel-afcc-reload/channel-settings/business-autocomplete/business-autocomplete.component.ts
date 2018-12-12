@@ -58,18 +58,16 @@ export class BusinessAutocompleteComponent implements OnInit, OnDestroy {
     public dialog: MatDialog
   ) {
     this.translationLoader.loadTranslations(english, spanish);
-    console.log();
   }
 
   ngOnInit() {
-    this.formGroup.get(this.controlName).valueChanges
-    .pipe(
-      // startWith(undefined),
-      debounceTime(500),
-      distinctUntilChanged(),
-      mergeMap((filterText: string) => this.getBusinessFiltered$(filterText, 10))
-
-    );
+    this.businessQueryFiltered$ = this.formGroup.get(this.controlName).valueChanges
+      .pipe(
+        startWith(undefined),
+        debounceTime(500),
+        distinctUntilChanged(),
+        mergeMap((filterText: string) => this.getBusinessFiltered$(filterText, 10))        
+      )
   }
 
   ngOnDestroy() {
@@ -79,19 +77,23 @@ export class BusinessAutocompleteComponent implements OnInit, OnDestroy {
 
 
   onSelectBusinessEvent(business){
-    console.log('business selected', business);
+    // this.formGroup.get(this.controlName).setValue(business.id)
     this.onSelected.emit(business);
   }
 
 
   getBusinessFiltered$(filterText: string, limit: number): Observable<any[]> {
     return this.acssChannelAfccReloadService.getFilteredBuinessList$(filterText, limit).pipe(
-      tap(r => console.log('################################################################', r)),
       // mergeMap(resp => this.graphQlAlarmsErrorHandler$(resp)),
-      // filter(resp => !resp.errors),
+      filter(resp => !resp.errors),
+      map(result => result.data.AcssChannelAfccReloadGetBusinessByFilter),
       // mergeMap(result => from(result.data.getBusinessByFilterText)),
-      toArray(),
+      // toArray(),
       takeUntil(this.ngUnsubscribe)
     );
+  }
+
+  displayFn(business) {
+    return business ?  business.name : '';
   }
 }

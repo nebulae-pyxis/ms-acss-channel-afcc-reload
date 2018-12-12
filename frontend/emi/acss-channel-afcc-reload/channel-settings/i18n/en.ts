@@ -9,7 +9,8 @@ export const locale = {
       FARE_COLLECTOR_TITTLE: 'Farecollector',
       RELOADERS_TITTLE: 'Reloaders network',
       PARTIES_TITTLE: 'Third parties',
-      SURPLUS_COLLECTOR_TITTLE: 'Leftovers collector'
+      SURPLUS_COLLECTOR_TITTLE: 'Leftovers collector',
+      BONUS_COLLECTOR_TITTLE: 'Bonus Collector'
     },
     FORM: {
       BUID_PLACEHOLDER: 'Business unit ID',

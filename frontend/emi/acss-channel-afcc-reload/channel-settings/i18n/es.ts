@@ -9,7 +9,8 @@ export const locale = {
       FARE_COLLECTOR_TITTLE: 'Fare collector',
       RELOADERS_TITTLE: 'Red de recargas',
       PARTIES_TITTLE: 'Terceros',
-      SURPLUS_COLLECTOR_TITTLE: 'Recolector de residuos'
+      SURPLUS_COLLECTOR_TITTLE: 'Recolector de residuos',
+      BONUS_COLLECTOR_TITTLE: 'Recollector de comisiones'
     },
     FORM: {
       BUID_PLACEHOLDER: 'ID de unidad de negocio',
