@@ -3,6 +3,7 @@
 const afccReloadChannel = require("../../domain/AfccReloadChannel")();
 const broker = require("../../tools/broker/BrokerFactory")();
 const Rx = require("rxjs");
+const Business = require('../../domain/Business');
 const jsonwebtoken = require("jsonwebtoken");
 const jwtPublicKey = process.env.JWT_PUBLIC_KEY.replace(/\\n/g, "\n");
 
@@ -164,6 +165,10 @@ class GraphQlService {
       {
         aggregateType: "AfccChannel",
         messageType: "emigateway.graphql.query.getAfccReloadErrors"
+      },
+      {
+        aggregateType: "Business",
+        messageType: "emigateway.graphql.query.getAcssChannelBusinessByFilter"
       }
     ];
   }
@@ -200,6 +205,10 @@ class GraphQlService {
       "emigateway.graphql.query.getAfccReloadErrors": {
         fn: afccReloadChannel.getAfccReloadErrors$,
         obj: afccReloadChannel
+      },
+      "emigateway.graphql.query.getAcssChannelBusinessByFilter": {
+        fn: Business.cqrs.getBusinessUnits$,
+        obj: Business.cqrs
       }
     };
   }

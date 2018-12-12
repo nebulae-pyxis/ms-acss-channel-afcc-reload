@@ -143,3 +143,15 @@ export const getCompleteReloadInfo = gql`
   }
 }
 `;
+
+export const getBusinessFiltered = gql`
+  query BusinessList($filter: String, $limit: Int) {
+    AcssChannelAfccReloadGetBusinessByFilter(
+      filter: $filter
+      limit: $limit
+    ) {
+      id
+      name
+    }
+  }
+`;

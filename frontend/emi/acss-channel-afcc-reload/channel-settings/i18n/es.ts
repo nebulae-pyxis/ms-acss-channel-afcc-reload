@@ -1,6 +1,9 @@
 export const locale = {
   lang: 'es',
   data: {
+    SALES_WITH_MAIN: 'Ventas Realizadas con la bolsa de Saldo',
+    SALES_WITH_BONUS: 'Ventas realizadas con la bolsa de comisión',
+    SALES_WITH_CREDIT: 'ventas realizadas con la bolsa de crédito',
     SETTINGS: {
       TITLE: 'Configuracion de unidad de negocio',
       FARE_COLLECTOR_TITTLE: 'Fare collector',

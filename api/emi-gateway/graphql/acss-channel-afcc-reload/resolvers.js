@@ -174,6 +174,29 @@ module.exports = {
         .catch(err => errorHandler$(err, "AcssChannelAfccReloadGetReloadsCount"))          
         .mergeMap(response => getResponseFromBackEnd$(response))
         .toPromise();
+    },
+    AcssChannelAfccReloadGetBusinessByFilter(root, args, context){
+        console.log("AcssChannelAfccReloadGetBusinessByFilter");
+        return RoleValidator.checkPermissions$(
+            context.authToken.realm_access.roles,
+            contextName,
+            "AcssChannelAfccReloadGetBusinessByFilter",
+            BUSINESS_PERMISSION_DENIED_ERROR_CODE,
+            "Permission denied",
+            ["PLATFORM-ADMIN"]
+        )
+        .mergeMap((r) => {
+            console.log("after check permisions ==> ", r );
+            return broker.forwardAndGetReply$(
+                "Business",
+                "emigateway.graphql.query.getAcssChannelBusinessByFilter",
+                { root, args, jwt: context.encodedToken },
+                2000
+              )
+        })
+        .catch(err => errorHandler$(err, "AcssChannelAfccReloadGetBusinessByFilter"))          
+        .mergeMap(response => getResponseFromBackEnd$(response))
+        .toPromise();
     }
   },
   //// MUTATIONS ///////

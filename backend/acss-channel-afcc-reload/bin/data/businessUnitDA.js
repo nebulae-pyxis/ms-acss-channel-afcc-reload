@@ -76,6 +76,46 @@ class BusinessUnitDA {
     );
   }
 
+  static searchBusinessUnits$(filterText, limit = 20){
+    let filter = {};
+    if (filterText) {
+      filter['$or'] = [
+        { '_id': { $regex: filterText, $options: 'i' } },
+        { 'name': { $regex: filterText, $options: 'i' } }
+      ];
+    }
+
+    return Rx.Observable.create(async observer => {
+      const collection = mongoDB.client.db(ACSS_DB_NAME).collection(CollectionName);
+      const cursor = collection.find(filter);
+      if (limit) {
+        cursor.limit(limit);
+      }
+
+      let obj = await this.extractNextFromMongoCursor(cursor);
+      while (obj) {
+        observer.next({...obj, id: obj._id});
+        obj = await this.extractNextFromMongoCursor(cursor);
+      }
+      observer.complete();
+    })
+    .toArray()
+
+  }
+
+  /**
+   * Extracts the next value from a mongo cursor if available, returns undefined otherwise
+   * @param {*} cursor
+   */
+  static async extractNextFromMongoCursor(cursor) {
+    const hasNext = await cursor.hasNext();
+    if (hasNext) {
+      const obj = await cursor.next();
+      return obj;
+    }
+    return undefined;
+  }
+
 
 
 }

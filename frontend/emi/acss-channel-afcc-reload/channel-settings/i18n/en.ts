@@ -1,6 +1,9 @@
 export const locale = {
   lang: 'en',
   data: {
+    SALES_WITH_MAIN: 'Sales made with main pocket',
+    SALES_WITH_BONUS: 'Sales made with bonus pocket',
+    SALES_WITH_CREDIT: 'Sales made with credit pocket',
     SETTINGS: {
       TITLE: 'Business unit configurations',
       FARE_COLLECTOR_TITTLE: 'Farecollector',

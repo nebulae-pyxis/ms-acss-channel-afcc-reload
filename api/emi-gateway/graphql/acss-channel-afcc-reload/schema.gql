@@ -54,6 +54,13 @@ type AcssChannelAfccReloadEvent {
   "When transaction was processed"
   timestamp: BigInt
 }
+"Business object with id and name"
+type AcssChannelAfccReloadBusiness {
+  "Business Id"
+  id: String
+  "business name"
+  name: String
+}
 
 type AcssChannelAfccReloadEventFromEventStore {
   et: String
@@ -180,6 +187,7 @@ type Query {
   # AcssChannelAfccReloadGetAfccReloadDetails: AcssChannelAfccReloadEventDetail
   AcssChannelAfccReloadGetTransactions(page: Int!, count: Int!, sortColumn: String, sortOrder: String): [AcssChannelAfccReloadTransaction]
   AcssChannelAfccReloadGetReloadsCount: Int!
+  AcssChannelAfccReloadGetBusinessByFilter(filter: String, limit: Int): [AcssChannelAfccReloadBusiness] 
 
 }
 

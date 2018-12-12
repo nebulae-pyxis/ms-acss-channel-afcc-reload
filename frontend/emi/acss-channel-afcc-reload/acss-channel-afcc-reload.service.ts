@@ -7,7 +7,8 @@ import {
   createAcssChannelSettings,
   getReloads,
   fetchTotalReloadsCount,
-  getCompleteReloadInfo
+  getCompleteReloadInfo,
+  getBusinessFiltered
 } from './gql/AcssChannelAfccReload';
 
 export interface AcssChannelSettings{
@@ -69,6 +70,20 @@ getBasicReloadsInfo$(pageValue, countValue, searchFilter){
       page: pageValue,
       count: countValue,
       searchFilter: searchFilter
+    },
+    fetchPolicy: 'network-only',
+    errorPolicy: 'all'
+  });
+}
+
+
+getFilteredBuinessList$(filterText: string, limit?: number){
+  return this.gateway.apollo
+  .query<any>({
+    query: getBusinessFiltered,
+    variables: {
+      filter: filterText,
+      limit: limit
     },
     fetchPolicy: 'network-only',
     errorPolicy: 'all'
