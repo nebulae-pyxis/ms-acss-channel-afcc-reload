@@ -29,6 +29,7 @@ class UserEventConsumer {
 
   handleAcssSettingsCreated$(evt){
     return Rx.Observable.of({...evt.data, editor: evt.user })
+    .do(toInsert => console.log("configuration to inser is ==> ", toInsert))
     .mergeMap(conf => AfccReloadChannelDA.insertConfiguration$(conf))
     // .catch(error => this.errorHandler$(error, evt))
   }

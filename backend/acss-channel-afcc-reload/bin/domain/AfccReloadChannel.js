@@ -151,7 +151,7 @@ class AfccReloadChannel{
       PERMISSION_DENIED_ERROR,
       ["PLATFORM-ADMIN"]
     )
-    .mergeMap(() => Helper.verifyBusinessRules$(args.input))
+    // .mergeMap(() => Helper.verifyBusinessRules$(args.input))
     .mergeMap(() => 
       eventSourcing.eventStore.emitEvent$(
         new Event({

@@ -20,17 +20,21 @@
               Type your name and age
             </mat-panel-description> -->
           </mat-expansion-panel-header>
-      
+
           <div class="widget-group" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start start">
             <!-- FARECOLLECTOR -->
-            <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
+
+             <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
               <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
                 <span fxLayoutAlign="center center"> {{'SETTINGS.FARE_COLLECTOR_TITTLE' | translate}} </span>
                 <button mat-icon-button (click)="viewDefinition('FARECOLLECTORS')">
                   <mat-icon>info</mat-icon>
                 </button>
               </div>
-              <div fxFlex="100">
+              <!-- <div [formGroup]="settingsForm.get('salesWithMainPocket')">
+
+              </div> -->
+            <!--  <div fxFlex="100">
                 <div *ngFor="let item of settingsForm.get('fareCollectors')['controls']; let i = index;" fxFlex="100"
                   formArrayName="fareCollectors">
                   <div class="border" [formGroupName]="i" fxFlex="100" fxLayout="row wrap">
@@ -43,7 +47,7 @@
                     <mat-form-field class="center-text pr-12 pl-12" fxFlex="15" fxFlex.xs="100">
                       <input type="number" [readonly]="!currentVersion" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}"
                         [value]="settingsForm.controls['fareCollectors']['controls'][i].controls.percentage.value">
-                      <!-- value="{{  }}" -->
+
                     </mat-form-field>
                     <button *ngIf="currentVersion" fxFlex="5" fxFlex.xs="100" mat-icon-button (click)="deleteControl( 'fareCollectors', i)">
                       <mat-icon>delete</mat-icon>
@@ -54,14 +58,14 @@
                   style="margin-top: 10px;">
                   <mat-icon>add</mat-icon>
                 </button>
-              </div>
+              </div> -->
             </mat-card>
             <!-- Chosen name: {{ orderForm.controls.items.controls[i].controls.name.value }} -->
             <!-- FARECOLLECTOR -->
-          
-          
+
+
             <!-- THIRD PARTIES -->
-            <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
+            <!-- <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
               <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
                 <span fxLayoutAlign="center center"> {{'SETTINGS.PARTIES_TITTLE' | translate}} </span>
                 <button mat-icon-button (click)="viewDefinition('THIRD_PARTIES')">
@@ -78,7 +82,7 @@
                     <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
                       <input matInput [readonly]="!currentVersion" formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
                     </mat-form-field>
-          
+
                     <mat-form-field class="center-text pr-12 pl-12" fxFlex="15" fxFlex.xs="100">
                       <input type="number" [readonly]="!currentVersion" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
                     </mat-form-field>
@@ -86,11 +90,8 @@
                       <mat-icon>delete</mat-icon>
                     </button>
                   </div>
-          
-                  <!-- <hr fxFlex="100" style="border-top: 2px double #8c8b8b;" > -->
-          
-                  <!-- <div fxFlex="100" style="background: #8c8b8b; height: 1px; margin-bottom: 10px;"></div> -->
-          
+
+
                 </div>
                 <div *ngIf="settingsForm.errors && currentVersion">
                   <span style="color: red" *ngIf="settingsForm.errors['percentageExceeded']">
@@ -104,11 +105,11 @@
                   <mat-icon>add</mat-icon>
                 </button>
               </div>
-            </mat-card>
+            </mat-card> -->
             <!-- THIRD PARTIES -->
-          
+
             <!-- BUSINESS UNIT WHERE SURPLUS WILL BE APPLIED  -->
-            <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
+            <!-- <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
               <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
                 <span fxLayoutAlign="center center"> {{'SETTINGS.SURPLUS_COLLECTOR_TITTLE' | translate}} </span>
                 <button mat-icon-button aria-label="Button that shows a red tooltip" (click)="viewDefinition('LEFTOVER_COLLECTORS')">
@@ -118,7 +119,7 @@
               <div fxLayout="column" fxLayoutAlign="space-around stretch" fxFlex="100">
                 <div *ngFor="let item of settingsForm.get('surplusCollectors')['controls']; let i = index;" fxFlex="100"
                   formArrayName="surplusCollectors">
-          
+
                   <div class="border" [formGroupName]="i" fxLayoutAlign="space-between center" fxFlex="100" fxLayout="row wrap">
                     <div fxLayout="column" fxFlex="46" fxFlex.xs="100">
                       <mat-form-field class="center-text pr-12 pl-12">
@@ -130,7 +131,7 @@
                         <input matInput [readonly]="!currentVersion" formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
                       </mat-form-field>
                     </div>
-          
+
                     <button *ngIf="currentVersion" fxFlex="5" fxFlex.xs="100" mat-icon-button (click)="deleteControl( 'surplusCollectors', i)">
                       <mat-icon>delete</mat-icon>
                     </button>
@@ -140,7 +141,7 @@
                   <mat-icon>add</mat-icon>
                 </button>
               </div>
-            </mat-card>
+            </mat-card> -->
             <!-- BUSINESS UNIT WHERE SURPLUS WILL BE APPLIED  -->
           </div>
 
@@ -152,7 +153,7 @@
 
 
 
-      
+
         </mat-expansion-panel>
         <!-- CONFIGURATION FOR SALES MADE WITH MAIN POCKET -->
 
@@ -163,11 +164,11 @@
                 {{ 'SALES_WITH_BONUS' | translate }}
             </mat-panel-title>
           </mat-expansion-panel-header>
-      
+
           <div>
             content here
           </div>
-      
+
         </mat-expansion-panel>
         <!-- CONFIGURATION FOR SALES MADE WITH BALANCE POCKET -->
 
@@ -178,16 +179,16 @@
                 {{ 'SALES_WITH_CREDIT' | translate }}
             </mat-panel-title>
           </mat-expansion-panel-header>
-      
+
           <div>
             content here
           </div>
-      
+
         </mat-expansion-panel>
         <!-- CONFIGURATION FOR SALES MADE WITH CREDIT POCKET -->
       <!-- </mat-accordion> -->
 
-      
+
 
 
 

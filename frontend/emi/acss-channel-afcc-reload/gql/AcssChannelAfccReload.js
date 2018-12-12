@@ -2,28 +2,23 @@ import gql from "graphql-tag";
 
 // We use the gql tag to parse our query string into a query document
 
-//Hello world sample, please remove
 export const getChannelSettings = gql`
   query getChannelSettings($id: BigInt!) {
     AcssChannelAfccReloadGetConfiguration(id: $id) {
       id
       editor
       lastEdition
-      editor
-      fareCollectors {
-        fromBu
-        buId
-        percentage
+      salesWithMainPocket {
+        actors { buId, fromBu, name, percentage }
+        surplusCollector { buId, fromBu, percentage }
+        bonusCollector { buId, fromBu, name, percentage }
       }
-      parties {
-        fromBu
-        buId
-        percentage
+      salesWithBonusPocket {
+        actors { buId, fromBu, name, percentage }
+        investmentCollector { buId, fromBu, name, percentage }
       }
-      surplusCollectors{
-        fromBu
-        buId
-        percentage
+      salesWithCreditPocket {
+        actors { buId, fromBu, name, percentage }
       }
     }
   }
@@ -77,21 +72,12 @@ export const getReloadErrors = gql`
     }
     channleConf{
       id
-      fareCollectors{
-        name
-      }
-      parties{
-        name
-      }
-      surplusCollectors{
-        name
-      }
       lastEdition
       editor
     }
     timestamp
   }
-  
+
   }
 `;
 

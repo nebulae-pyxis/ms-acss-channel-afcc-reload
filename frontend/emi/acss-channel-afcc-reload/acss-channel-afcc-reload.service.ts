@@ -11,12 +11,28 @@ import {
   getBusinessFiltered
 } from './gql/AcssChannelAfccReload';
 
+export interface AcssChannelActorConf {
+  buId: string;
+  fromBu: string;
+  percentage?: number;
+}
+
 export interface AcssChannelSettings{
   id: number;
-  fareCollectors: {buId: string, name: string, percentage: number}[];
-  // reloadNetworks: {buId: string, name: string, percentage: number}[];
-  parties: {buId: string, name: string, percentage: number}[];
   lastEdition: number;
+  salesWithMainPocket: {
+    actors: AcssChannelActorConf[],
+    surplusCollector: AcssChannelActorConf,
+    bonusCollector: AcssChannelActorConf
+   };
+   salesWithBonusPocket: {
+    actors: AcssChannelActorConf[]
+    investmentCollector: AcssChannelActorConf
+   };
+   salesWithCreditPocket: {
+    actors: AcssChannelActorConf[]
+   };
+
 }
 
 @Injectable()

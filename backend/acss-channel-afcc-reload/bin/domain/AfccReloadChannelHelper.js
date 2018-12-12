@@ -285,19 +285,19 @@ class AfccReloadChannelHelper {
  * Verifies if the new settings 
  * @param {Object} conf Business rules where
  */
-  static verifyBusinessRules$(conf) {
-    return Rx.Observable.forkJoin(
-      Rx.Observable.defer(() => conf.fareCollectors.map(e => e.percentage)),
-      Rx.Observable.defer(() => conf.parties.map(e => e.percentage)).toArray(),
-      Rx.Observable.defer(() => conf.surplusCollectors.map(e => e))
-    )
-      .mergeMap(([fareCollector, parties, surplusCollector]) =>
-        Rx.Observable.forkJoin(
-          this.VerifyPartiesPercentages$(parties)
-        )
-      )
-      .mergeMap(() => Rx.Observable.of(conf))
-  }
+  // static verifyBusinessRules$(conf) {
+  //   return Rx.Observable.forkJoin(
+  //     Rx.Observable.defer(() => conf.fareCollectors.map(e => e.percentage)),
+  //     Rx.Observable.defer(() => conf.parties.map(e => e.percentage)).toArray(),
+  //     Rx.Observable.defer(() => conf.surplusCollectors.map(e => e))
+  //   )
+  //     .mergeMap(([fareCollector, parties, surplusCollector]) =>
+  //       Rx.Observable.forkJoin(
+  //         this.VerifyPartiesPercentages$(parties)
+  //       )
+  //     )
+  //     .mergeMap(() => Rx.Observable.of(conf))
+  // }
 
   /**
  * Verify if the percentage Configuration for the parties is correct

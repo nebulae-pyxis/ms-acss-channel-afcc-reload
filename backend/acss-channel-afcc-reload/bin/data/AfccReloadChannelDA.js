@@ -21,18 +21,6 @@ class AfccReloadChannelDA {
     });
   }
 
-  /**
-   * get hello world data
-   * @param {string} type
-   */
-  static getHelloWorld$(evt) {
-    return Rx.Observable.of(`{sn: Hello World ${Date.now()}}`).map(val => {
-      const result = {};
-      result["sn"] = val;
-      return result;
-    });
-  }
-
   static insertConfiguration$(conf) {
     const collection = mongoDB.db.collection(CollectionName);
 

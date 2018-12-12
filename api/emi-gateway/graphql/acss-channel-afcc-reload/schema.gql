@@ -130,6 +130,34 @@ type AcssChannelAfccReloadActor{
   percentage: Float
 }
 
+type AcssChannelAfccReloadConfigurationWithMainPocket{
+  actors: [AcssChannelAfccReloadActor]
+  surplusCollector: AcssChannelAfccReloadActor
+  bonusCollector: AcssChannelAfccReloadActor
+}
+
+type AcssChannelAfccReloadConfigurationWithBonusPocket{
+  actors: [AcssChannelAfccReloadActor]
+  investmentCollector: AcssChannelAfccReloadActor
+}
+
+type AcssChannelAfccReloadConfigurationWithCreditPocket{
+  actors: [AcssChannelAfccReloadActor]
+}
+
+"Object that represent the rules to create transactions from AFCC event"
+type AcssChannelAfccReloadConfigurationObject{
+  "configuration id"
+  id: BigInt
+  "Last edition for this configuation"
+  lastEdition: BigInt
+  "user who Created this configuration"
+  editor: String
+  salesWithMainPocket: AcssChannelAfccReloadConfigurationWithMainPocket
+  salesWithBonusPocket: AcssChannelAfccReloadConfigurationWithBonusPocket
+  salesWithCreditPocket: AcssChannelAfccReloadConfigurationWithCreditPocket
+}
+
 input AcssChannelAfccReloadActorInput{
   "Actor's business unit Id"
   buId: String
@@ -141,34 +169,34 @@ input AcssChannelAfccReloadActorInput{
   percentage: Float
 }
 
-"Object that represent the rules to create transactions from AFCC event"
-type AcssChannelAfccReloadConfigurationObject{
-  "configuration id"
-  id: BigInt 
-  "List of Farecollector actors in this configuration"
-  fareCollectors: [AcssChannelAfccReloadActor]
-  "List of parties actors in this configuration"
-  parties: [AcssChannelAfccReloadActor]
-  "surplus collector"
-  surplusCollectors: [AcssChannelAfccReloadActor]
-  "Last edition for this configuation"
-  lastEdition: BigInt
-  "user who Created this configuration"
-  editor: String
+input AcssChannelAfccReloadConfigurationWithMainPocketInput{
+  actors: [AcssChannelAfccReloadActorInput]
+  surplusCollector: AcssChannelAfccReloadActorInput
+  bonusCollector: AcssChannelAfccReloadActorInput
 }
+
+input AcssChannelAfccReloadConfigurationWithBonusPocketInput{
+  actors: [AcssChannelAfccReloadActorInput]
+  investmentCollector: AcssChannelAfccReloadActorInput
+}
+
+input AcssChannelAfccReloadConfigurationWithCreditPocketInput{
+  actors: [AcssChannelAfccReloadActorInput]
+}
+
 
 "Object that represent the rules to create transactions from AFCC event"
 input AcssChannelAfccReloadConfigurationInput{
   "configuration id"
   id: BigInt 
-  "List of Farecollector actors in this configuration"
-  fareCollectors: [AcssChannelAfccReloadActorInput]
-  "List of parties actors in this configuration"
-  parties: [AcssChannelAfccReloadActorInput]
-  "surplusCollectors"
-  surplusCollectors: [AcssChannelAfccReloadActorInput]
-  "Last edition for this configuation"
+  "Last time when configuration where modified"
   lastEdition: BigInt
+  "Clearin configuration to use when a sale is done with Main pocket"
+  salesWithMainPocket: AcssChannelAfccReloadConfigurationWithMainPocketInput
+  "Clearin configuration to use when a sale is done with Bonus pocket"
+  salesWithBonusPocket: AcssChannelAfccReloadConfigurationWithBonusPocketInput
+  "Clearin configuration to use when a sale is done with Credit pocket"
+  salesWithCreditPocket: AcssChannelAfccReloadConfigurationWithCreditPocketInput
 }
 
 type AcssChannelAfccReloadCommandResponse{
