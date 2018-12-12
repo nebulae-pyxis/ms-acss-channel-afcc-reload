@@ -38,6 +38,8 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
   currentConf: any;
   dialogRef: any;
 
+  formInitialized = false;
+
   constructor(
     private acssChannelAfccReloadService: AcssChannelAfccReloadService,
     private translationLoader: FuseTranslationLoaderService,
@@ -103,8 +105,8 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
               actors: new FormArray([])
             })
           });
-
-        })
+        }),
+        // tap(() => this.formInitialized = true)
       );
   }
 
@@ -292,6 +294,8 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
             )
           ))
         )
+    ).pipe(
+      tap(() => { this.formInitialized = true; })
     );
   }
 

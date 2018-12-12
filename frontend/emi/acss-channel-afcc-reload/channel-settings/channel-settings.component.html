@@ -21,47 +21,91 @@
             </mat-panel-description> -->
           </mat-expansion-panel-header>
 
-          <div class="widget-group" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start start">
-            <!-- FARECOLLECTOR -->
+          <div *ngIf="formInitialized" class="widget-group" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start start">
 
-             <mat-card class="marging-b-t-5" fxFlex="100" fxLayout="column">
+            <!-- BONUSCOLLECTOR -->
               <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
                 <span fxLayoutAlign="center center"> {{'SETTINGS.FARE_COLLECTOR_TITTLE' | translate}} </span>
                 <button mat-icon-button (click)="viewDefinition('FARECOLLECTORS')">
                   <mat-icon>info</mat-icon>
                 </button>
               </div>
-              <!-- <div [formGroup]="settingsForm.get('salesWithMainPocket')">
 
-              </div> -->
-            <!--  <div fxFlex="100">
-                <div *ngFor="let item of settingsForm.get('fareCollectors')['controls']; let i = index;" fxFlex="100"
-                  formArrayName="fareCollectors">
-                  <div class="border" [formGroupName]="i" fxFlex="100" fxLayout="row wrap">
-                    <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
-                      <input matInput [readonly]="!currentVersion" formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
-                    </mat-form-field>
-                    <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
-                      <input matInput [readonly]="!currentVersion" formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
-                    </mat-form-field>
-                    <mat-form-field class="center-text pr-12 pl-12" fxFlex="15" fxFlex.xs="100">
-                      <input type="number" [readonly]="!currentVersion" matInput formControlName="percentage" placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}"
-                        [value]="settingsForm.controls['fareCollectors']['controls'][i].controls.percentage.value">
 
-                    </mat-form-field>
-                    <button *ngIf="currentVersion" fxFlex="5" fxFlex.xs="100" mat-icon-button (click)="deleteControl( 'fareCollectors', i)">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </div>
+
+              <div fxFlex="100">
+                <div class="border" [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['bonusCollector']"
+                  fxFlex="100" fxLayout="row wrap">
+
+                  <!-- business pays the money -->
+                  <!-- <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
+                    <input matInput [readonly]="!currentVersion" formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
+                  </mat-form-field> -->
+
+                      <business-autocomplete class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100"
+                        [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['bonusCollector']"
+                        [controlName]="'businessUnitFrom'" [placeHolder]="'place holder de prueba'"
+                        [editable]="currentVersion">
+                      </business-autocomplete>
+
+                  <!-- <div [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['bonusCollector']" >
+                      <mat-form-field >
+                          <input matInput [readonly]="currentVersion" formControlName="businessUnitFrom"
+                            placeholder="placeHolder">
+                        </mat-form-field>
+
+                  </div> -->
+
+                  <!-- business pays the money -->
+
+
+
+
+
+                  <!-- business receives the money -->
+                  <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
+                    <input matInput [readonly]="!currentVersion" formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+                  </mat-form-field>
+
                 </div>
-                <button *ngIf="settingsForm.get('fareCollectors').value.length == 0 && currentVersion" mat-mini-fab (click)="addActor('fareCollectors')"
-                  style="margin-top: 10px;">
-                  <mat-icon>add</mat-icon>
+              </div>
+              <!-- BONUSCOLLECTOR -->
+
+
+              <!-- SURPLUSCOLLECTOR -->
+              <div fxFlex="100" fxLayout="row" fxLayoutAlign="center center">
+                <span fxLayoutAlign="center center"> {{'SETTINGS.FARE_COLLECTOR_TITTLE' | translate}} </span>
+                <button mat-icon-button (click)="viewDefinition('FARECOLLECTORS')">
+                  <mat-icon>info</mat-icon>
                 </button>
-              </div> -->
-            </mat-card>
+              </div>
+
+              <div fxFlex="100">
+                <div class="border" [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['surplusCollector']" fxFlex="100"
+                  fxLayout="row wrap">
+                  <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
+                    <input matInput [readonly]="!currentVersion" formControlName="businessUnitFrom" placeholder="{{'FORM.BU_FROM' | translate}}">
+                  </mat-form-field>
+                  <mat-form-field class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100">
+                    <input matInput [readonly]="!currentVersion" formControlName="businessUnitId" placeholder="{{'FORM.BUID_PLACEHOLDER' | translate}}">
+                  </mat-form-field>
+                </div>
+              </div>
+              <!-- SURPLUSCOLLECTOR -->
+
+
+
+
+
+
+
+
+
+
+
+
             <!-- Chosen name: {{ orderForm.controls.items.controls[i].controls.name.value }} -->
-            <!-- FARECOLLECTOR -->
+
 
 
             <!-- THIRD PARTIES -->

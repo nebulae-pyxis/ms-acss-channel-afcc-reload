@@ -13,6 +13,7 @@ import { ReloadDetailComponent } from './reload-detail/reload-detail.component';
 import { ReloadErrorsHistoryComponent } from './reloads-errors-history/reloads-errors-history.component';
 import { ReloadErrorDetailsComponent } from './reloads-errors-history/reload-error-details/reload-error-details.component';
 import { ActorDefinitionComponent } from './channel-settings/actor-definition/actor-definition.component';
+import { BusinessAutocompleteComponent } from './channel-settings/business-autocomplete/business-autocomplete.component';
 
 
 const routes: Routes = [
@@ -43,7 +44,8 @@ const routes: Routes = [
     ReloadDetailComponent,
     ActorDefinitionComponent,
     ReloadErrorsHistoryComponent,
-    ReloadErrorDetailsComponent
+    ReloadErrorDetailsComponent,
+    BusinessAutocompleteComponent
   ],
   providers: [ AcssChannelAfccReloadService, DatePipe],
   entryComponents: [ActorDefinitionComponent, ReloadErrorDetailsComponent]
