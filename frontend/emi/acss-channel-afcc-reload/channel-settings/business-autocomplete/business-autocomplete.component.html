@@ -1,10 +1,9 @@
-<div [formGroup]="formGroup">
+<div fxFlex="100" [formGroup]="formGroup"  >
 
-  <mat-form-field>
+  <mat-form-field fxFlex="100" >
     <input matInput [readonly]="!editable" [formControlName]="controlName"
     placeholder="{{'FORM.BU_FROM' | translate}}" [matAutocomplete]="auto"   >
   </mat-form-field>
-
   <mat-autocomplete #auto="matAutocomplete"
     (optionSelected)='onSelectBusinessEvent($event.option.value)' [displayWith]="displayFn" >
     <mat-option *ngFor="let business of businessQueryFiltered$ | async" [value]="business"  >

@@ -51,8 +51,6 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
-
       this.subscriptions.push(
         this.route.params
         .pipe(
@@ -166,7 +164,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  addActor(type: string): void {
+  addActorFormGroup(type: string): void {
     console.log(type);
     const items = this.settingsForm.get(type)['controls']['actors'] as FormArray;
     items.push(this.createItem('actor'));
@@ -195,9 +193,9 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
       lastEdition: Date.now(),
       salesWithMainPocket: {
         actors: [...formValue.salesWithMainPocket.actors.map(e => ({ 
-          buId: e.businessUnitId,
+          buId: e.businessUnitId.id,
           percentage: e.percentage,
-          fromBu: e.businessUnitFrom
+          fromBu: e.businessUnitFrom.id
         }))],
         surplusCollector: [formValue.salesWithMainPocket.surplusCollector].map(e => ({ 
           fromBu: e.businessUnitFrom.id,
@@ -224,7 +222,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
         // mergeMap((settings: AcssChannelSettings) => this.acssChannelAfccReloadService.saveChannelSettings(settings))
       )
       .subscribe(
-        ok => { console.log(ok); },
+        ok => { },
         error => { console.log('', error); },
         () => { console.log('Stream finished!!'); }
       );
@@ -245,7 +243,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
    * @param confType string: salesWithMainPocket | salesWithBonusPocket | salesWithCreditPocket
    * @param index number
    */
-  deleteControl( confType: string, index: number){
+  deleteActorFormGroup( confType: string, index: number){
     const formGroup = ( this.settingsForm.controls[confType]['controls']['actors'] as FormArray );
     formGroup.removeAt(index);
   }
