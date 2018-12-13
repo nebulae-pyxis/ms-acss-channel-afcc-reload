@@ -5,7 +5,7 @@ export const locale = {
     SALES_WITH_BONUS: 'Ventas realizadas con la bolsa de comisión',
     SALES_WITH_CREDIT: 'ventas realizadas con la bolsa de crédito',
     SETTINGS: {
-      TITLE: 'Configuracion de unidad de negocio',
+      TITLE: 'Configuracion Del Canal',
       FARE_COLLECTOR_TITTLE: 'Fare collector',
       RELOADERS_TITTLE: 'Red de recargas',
       PARTIES_TITTLE: 'Terceros',

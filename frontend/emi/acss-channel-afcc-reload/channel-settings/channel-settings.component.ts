@@ -56,17 +56,45 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
         .pipe(
           map(params => params.conf ? params.conf : 1),
           mergeMap(confId  => this.acssChannelAfccReloadService.getChannelSettings$(confId)),
-          filter(r => r !== null ),
+          mergeMap(response  => this.errorHandler$(response, 'AcssChannelAfccReloadGetConfiguration')),
           mergeMap((conf) => this.initializeForm$().pipe( mergeMap(() => Rx.Observable.of(conf) ) )),
+          map(queryResult => queryResult 
+            ? queryResult
+            : ({
+              id: 1,
+              lastEdition: Date.now(),
+              salesWithMainPocket: {
+                actors: [{buId: null, fromBu: null, percentage: 0}],
+                surplusCollector: {buId: null, fromBu: null, percentage: null},
+                bonusCollector: {buId: null, fromBu: null, percentage: null},
+               },
+              salesWithBonusPocket: {
+                actors: [{buId: null, fromBu: null, percentage: 0}],
+                investmentCollector: { buId: null, fromBu: null, percentage: null },
+              },
+              salesWithCreditPocket: {
+                actors: [{buId: null, fromBu: null, percentage: 0}],
+              }
+            })
+          ),
           tap(conf => this.currentConf = conf ),
           // mergeMap(dataResult =>  this.loadSettingsOnForm$(dataResult))
-          mergeMap(dataResult =>  this.loadSettingsOnForm$(dataResult))
+          mergeMap(dataResult =>  this.loadSettingsOnForm$(dataResult)
+          )
         )
         .subscribe(done => console.log('COMPLETED FORM ==> ', this.settingsForm), error => console.log(error), () => {} )
       );
   }
 
   ngOnDestroy() {
+  }
+
+  errorHandler$(response:any, queryName: string) {
+    return Rx.Observable.of(response)
+      .pipe(
+        filter(() => !response.errors),
+        map(() => response.data[queryName])
+      )
   }
 
   initializeForm$() {
@@ -235,7 +263,6 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
    * @param conf AFCC channel configuration
    */
   loadSettingsOnForm$(conf: any) {
-    console.log(conf);
     return Rx.Observable.forkJoin(
       Rx.Observable.of(conf.salesWithMainPocket)
         .pipe(

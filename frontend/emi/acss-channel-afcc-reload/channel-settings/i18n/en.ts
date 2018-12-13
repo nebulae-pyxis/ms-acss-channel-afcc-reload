@@ -5,7 +5,7 @@ export const locale = {
     SALES_WITH_BONUS: 'Sales made with bonus pocket',
     SALES_WITH_CREDIT: 'Sales made with credit pocket',
     SETTINGS: {
-      TITLE: 'Business unit configurations',
+      TITLE: 'Channel Configurations',
       FARE_COLLECTOR_TITTLE: 'Farecollector',
       RELOADERS_TITTLE: 'Reloaders network',
       PARTIES_TITTLE: 'Third parties',

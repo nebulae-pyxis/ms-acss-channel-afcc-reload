@@ -49,16 +49,13 @@ export class AcssChannelAfccReloadService {
    */
   getChannelSettings$(id: number) {
     return this.gateway.apollo
-      .watchQuery<any>({
+      .query<any>({
         query: getChannelSettings,
         fetchPolicy: 'network-only',
         variables: {
           id: id
         }
-      })
-      .valueChanges.map(
-        resp => resp.data.AcssChannelAfccReloadGetConfiguration
-      );
+      });
   }
 
   saveChannelSettings(settings: AcssChannelSettings ){

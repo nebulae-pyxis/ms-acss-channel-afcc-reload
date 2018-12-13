@@ -40,18 +40,18 @@ class AfccReloadChannelDA {
   static searchConfiguration$(id, afccEvent) {
     const collection = mongoDB.db.collection(CollectionName);
     return Rx.Observable.defer(() => collection.findOne({ id: id }))
-    .mergeMap(config => 
-      config
-      ? Rx.Observable.of(config)
-      : Rx.Observable.throw(
-        new AfccReloadProcessError(
-          'ChannelConfigurationNoFound',
-          'Channel configuration no found',
-          afccEvent,
-          undefined
-        )
-      )
-    )
+    // .mergeMap(config => 
+    //   config
+    //   ? Rx.Observable.of(config)
+    //   : Rx.Observable.throw(
+    //     new AfccReloadProcessError(
+    //       'ChannelConfigurationNoFound',
+    //       'Channel configuration no found',
+    //       afccEvent,
+    //       undefined
+    //     )
+    //   )
+    // )
   }
 }
 
