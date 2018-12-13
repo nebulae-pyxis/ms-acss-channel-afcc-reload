@@ -10,9 +10,7 @@ const BusinessDA = require('../data/businessUnitDA');
 const TransactionsDA = require("../data/TransactionsDA");
 const { CustomError, AfccReloadProcessError } = require("../tools/customError");
 const CURRENT_RULE = 1;
-const TRANSACTION_TYPES = ["SALE"];
-const TRANSACTION_CONCEPTS = ["RECARGA_CIVICA"];
-const [MAIN_POCKET, BONUS_POCKET] = ["MAIN", "BONUS"];
+const TRANSACTION_TYPES_AND_CONCEPTS = JSON.parse(process.env.CHANNEL_TRANSACTION_TYPES_CONCEPTS);
 
 
 /**
@@ -44,7 +42,10 @@ class UserEventConsumer {
     // searh the valid channel settiings
     return  Rx.Observable.of(evt.data)
       // todo: combination 
-      .filter(({transactionType, transactionConcept}) => ( TRANSACTION_TYPES.includes(transactionType) &&  TRANSACTION_CONCEPTS.includes(transactionConcept)  ))
+      .filter(({ transactionType, transactionConcept }) => (
+        Object.keys(TRANSACTION_TYPES_AND_CONCEPTS).includes(transactionType)
+        && TRANSACTION_TYPES_AND_CONCEPTS[transactionType].includes(transactionConcept))
+      )
       // if the transaction was made with Bonus pocket it must to be ignored because sale with bonuspocket does not affect clearing
       // todo: is necesary create the transaction only for metro
       // .filter(() =>  !(evt.data.transactions.length == 1 && evt.data.transactions[0].pocket == BONUS_POCKET) )     

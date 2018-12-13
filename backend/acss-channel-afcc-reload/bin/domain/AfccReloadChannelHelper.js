@@ -12,10 +12,10 @@ class AfccReloadChannelHelper {
 
   static generateTransactions$(conf, evt){
     switch(evt.data.pocketAlias){
-      case BONUS_POCKET: return this.generateTransactionsForBonusPocketCase$(conf, evt);
       case MAIN_POCKET: return this.generateTransactionsForMainPocketCase$(conf, evt);
+      case BONUS_POCKET: return this.generateTransactionsForBonusPocketCase$(conf, evt);      
       case CREDIT_POCKET: return this.generateTransactionsForBonusPocketCase$(conf, evt);
-      default: return Rx.Observable.throw("Pocket alias no allowed");
+      default: return Rx.Observable.throw("POCKET ALIAS NOT ALLOWED");
     }
   }
 
@@ -25,10 +25,29 @@ class AfccReloadChannelHelper {
   }
 
   static generateTransactionsForMainPocketCase$(conf, evt) {
-    // apply the rules and return the array with all transaction to persist
-    // .do(r => console.log("AFTER fillWithPosOwner$ ==>", JSON.stringify(r)))  
-    return this.applyBusinessRules$(conf, evt)
-      .mergeMap(result => this.validateTransactionForSurplus$(result.transactions, result.conf, evt))
+
+    return Rx.Observable.of(afccEvent.data.transactions)
+    .mergeMap(txs => this.getSignificantTransaction$(txs, afccEvent))
+    .mergeMap(afccEvent  => 
+      Rx.Observable.forkJoin(
+        // create transactions for actors
+        this.generateTransactionsForActors$(conf.salesWithMainPocket.actors, afccEvent),
+        // create transaction for bonus collector
+        this.createTransactionsForBonus$(conf.salesWithMainPocket.bonusCollector, afccEvent),
+        // create transaction for pos manager
+        this.createTransactionForPosOwner$(configuration, afccEvent)
+      )
+    )
+    .map(
+      ([
+        fareCollectorTransation,
+        posOwnerTransation,
+        partiesTransactions
+      ]) => ({
+        transactions: [ fareCollectorTransation, ...posOwnerTransation, ...partiesTransactions ],
+        conf: configuration
+      })
+    );
   }
 
   static generateTransactionsForBonusPocketCase$(conf, evt){
@@ -66,7 +85,7 @@ class AfccReloadChannelHelper {
     // } )
     .mergeMap(afccEvent  => 
       Rx.Observable.forkJoin(
-        this.createTransactionForFareCollector$(configuration, afccEvent),
+        this.createTransactionsForActors$(configuration, afccEvent),
         this.createTransactionForPosOwner$(configuration, afccEvent),
         this.createTransactionForParties$(configuration, afccEvent)
       )
