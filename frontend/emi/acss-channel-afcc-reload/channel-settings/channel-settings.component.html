@@ -216,7 +216,32 @@
           </mat-expansion-panel-header>
 
           <div *ngIf="formInitialized" class="widget-group" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start start">
-          
+            
+            <!-- BONUSCOLLECTOR -->
+            <div fxFlex="100" fxLayout="row" fxLayoutAlign="start center">
+                <span fxLayoutAlign="center center"> {{'SETTINGS.BONUS_COLLECTOR_TITTLE' | translate}} </span>
+                <button mat-icon-button (click)="viewDefinition('FARECOLLECTORS')">
+                  <mat-icon>info</mat-icon>
+                </button>
+              </div>
+              <div fxFlex="100">
+                <div class="border" fxFlex="100" fxLayout="row wrap">
+                  <!-- business pays the money -->
+                  <business-autocomplete class="center-text pr-12 pl-12" fxFlex="50" fxFlex.xs="100"
+                    [formGroup]="settingsForm.get('salesWithCreditPocket')['controls']['bonusCollector']"
+                    [controlName]="'businessUnitFrom'" [editable]="currentVersion">
+                  </business-autocomplete>
+                  <!-- business pays the money -->
+                  <!-- business receives the money -->
+                  <business-autocomplete class="center-text pr-12 pl-12" fxFlex="50" fxFlex.xs="100"
+                    [formGroup]="settingsForm.get('salesWithCreditPocket')['controls']['bonusCollector']"
+                    [controlName]="'businessUnitId'" [editable]="currentVersion">
+                  </business-autocomplete>
+                  <!-- business receives the money -->
+                </div>
+              </div>
+              <!-- BONUSCOLLECTOR -->
+            
             <!-- ACTORS -->
             <div fxFlex="100" fxLayout="row" fxLayoutAlign="start center">
               <span fxLayoutAlign="center center"> {{'SETTINGS.PARTIES_TITTLE' | translate}} </span>

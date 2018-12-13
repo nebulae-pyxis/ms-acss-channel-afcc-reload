@@ -57,6 +57,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
           mergeMap(confId  => this.acssChannelAfccReloadService.getChannelSettings$(confId)),
           mergeMap(response  => this.errorHandler$(response, 'AcssChannelAfccReloadGetConfiguration')),
           mergeMap((conf) => this.initializeForm$().pipe( mergeMap(() => Rx.Observable.of(conf) ) )),
+          tap(result => console.log('####################', result)),
           map(queryResult => queryResult 
             ? queryResult
             : ({
@@ -73,6 +74,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
               },
               salesWithCreditPocket: {
                 actors: [{buId: null, fromBu: null, percentage: 0}],
+                bonusCollector: { buId: null, fromBu: null, percentage: null }
               }
             })
           ),
@@ -110,7 +112,8 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
               investmentCollector: new FormGroup({})
             }),
             salesWithCreditPocket: new FormGroup({
-              actors: new FormArray([])
+              actors: new FormArray([]),
+              bonusCollector: new FormGroup({})
             })
           }, [ this.validateActorsArrays.bind(this)] );
 
@@ -206,6 +209,9 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
           percentage: e.percentage,
           fromBu: e.businessUnitFrom.id 
         }))],
+        bonusCollector: [formValue.salesWithCreditPocket.bonusCollector].map(e => ({
+          buId: e.businessUnitId.id,
+          fromBu: e.businessUnitFrom.id }))[0]
       }
     })
       .pipe(
@@ -289,6 +295,11 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
       Rx.Observable.of(conf.salesWithCreditPocket)
         .pipe(
           mergeMap(configWithCreditPocket => Rx.Observable.forkJoin(
+            Rx.Observable.of(configWithCreditPocket.bonusCollector)
+            .pipe(
+              map((sc: Actor) => this.createItem('bonusCollector', sc.fromBu, sc.buId) ),
+              map( formControl =>  { this.settingsForm.controls['salesWithCreditPocket']['controls']['bonusCollector'] = formControl; } )
+            ),
             Rx.Observable.from(configWithCreditPocket.actors)
             .pipe(
               map((actor: Actor) => this.createItem('actor', actor.fromBu, actor.buId, actor.percentage)),

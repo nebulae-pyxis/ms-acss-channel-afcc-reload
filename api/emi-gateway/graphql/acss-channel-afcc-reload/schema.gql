@@ -143,6 +143,7 @@ type AcssChannelAfccReloadConfigurationWithBonusPocket{
 
 type AcssChannelAfccReloadConfigurationWithCreditPocket{
   actors: [AcssChannelAfccReloadActor]
+  bonusCollector: AcssChannelAfccReloadActor
 }
 
 "Object that represent the rules to create transactions from AFCC event"
@@ -182,6 +183,7 @@ input AcssChannelAfccReloadConfigurationWithBonusPocketInput{
 
 input AcssChannelAfccReloadConfigurationWithCreditPocketInput{
   actors: [AcssChannelAfccReloadActorInput]
+  bonusCollector: AcssChannelAfccReloadActorInput
 }
 
 

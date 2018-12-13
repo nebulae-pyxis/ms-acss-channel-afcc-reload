@@ -19,6 +19,7 @@ export const getChannelSettings = gql`
       }
       salesWithCreditPocket {
         actors { buId, fromBu, name, percentage }
+        bonusCollector { buId, fromBu, name, percentage }
       }
     }
   }
