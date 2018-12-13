@@ -2,14 +2,13 @@ import { Observable } from 'rxjs/Observable';
 import { AcssChannelAfccReloadService, AcssChannelSettings } from '../acss-channel-afcc-reload.service';
 import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { fuseAnimations } from '../../../../core/animations';
-import { Subscription } from 'rxjs/Subscription';
 // tslint:disable-next-line:import-blacklist
 import * as Rx from 'rxjs/Rx';
 import { FuseTranslationLoaderService } from '../../../../core/services/translation-loader.service';
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
 import { FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
-import { mergeMap, map, tap, filter, mapTo } from 'rxjs/operators';
+import { mergeMap, map, tap, filter } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { ActorDefinitionComponent } from './actor-definition/actor-definition.component';
@@ -78,7 +77,6 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
             })
           ),
           tap(conf => this.currentConf = conf ),
-          // mergeMap(dataResult =>  this.loadSettingsOnForm$(dataResult))
           mergeMap(dataResult =>  this.loadSettingsOnForm$(dataResult)
           )
         )
@@ -114,7 +112,13 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
             salesWithCreditPocket: new FormGroup({
               actors: new FormArray([])
             })
-          });
+          }, [ this.validateActorsArrays.bind(this)] );
+
+          this.settingsForm.get('salesWithMainPocket').get('actors').setValidators(Validators.min(1));
+          this.settingsForm.get('salesWithBonusPocket').get('actors').setValidators(Validators.min(1));
+          this.settingsForm.get('salesWithCreditPocket').get('actors').setValidators(Validators.min(1));
+
+
         }),
         // tap(() => this.formInitialized = true)
       );
@@ -122,29 +126,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
 
   createItem(type?: string, businessUnitFrom?: string, businessUnitId?: string, percentage?: number): FormGroup {
 
-    switch (type){
-      case 'fareCollectors':
-        return this.formBuilder.group({
-          businessUnitFrom: new FormControl( businessUnitFrom, [Validators.required]),
-          businessUnitId: new FormControl(businessUnitId, [Validators.required]),
-          percentage: new FormControl(percentage, [
-              Validators.required,
-              Validators.min(0),
-              Validators.max(100)
-            ]
-          )
-        });
-      case 'parties':
-        return this.formBuilder.group({
-          businessUnitFrom: new FormControl(businessUnitFrom, [Validators.required]),
-          businessUnitId: new FormControl(businessUnitId, [Validators.required]),
-          percentage: new FormControl(percentage, [Validators.required, Validators.min(0), Validators.max(100)])
-        });
-        case 'surplusCollectors':
-          return this.formBuilder.group({
-            businessUnitFrom: new FormControl(businessUnitFrom, [Validators.required]),
-            businessUnitId: new FormControl(businessUnitId, [Validators.required])
-          });
+    switch (type){      
         case 'actor':
           return this.formBuilder.group({
             businessUnitFrom: new FormControl(businessUnitFrom),
@@ -190,12 +172,6 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * map form value to configuration to save
-   * fareCollectors: [...formValue.fareCollectors.map(e => ({ buId: e.businessUnitId, percentage: e.percentage, fromBu: e.businessUnitFrom }))],
-      parties: [...formValue.parties.map(e => ({ buId: e.businessUnitId, percentage: e.percentage, fromBu: e.businessUnitFrom }))],
-      surplusCollectors: [...formValue.surplusCollectors.map(e => ({ buId: e.businessUnitId, fromBu: e.businessUnitFrom }))],
-   */
   saveConfiguration() {
     const formValue = this.settingsForm.getRawValue();
     Rx.Observable.of({
@@ -216,20 +192,25 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
           fromBu: e.businessUnitFrom.id }))[0]
       },
       salesWithBonusPocket: {
-        actors: [...formValue.salesWithBonusPocket.actors.map(e => ({ buId: e.businessUnitId, percentage: e.percentage, fromBu: e.businessUnitFrom }))],
-        investmentCollector: [formValue.salesWithBonusPocket.investmentCollector].map(e => ({ buId: e.businessUnitId, fromBu: e.businessUnitFrom }))[0],
+        actors: [...formValue.salesWithBonusPocket.actors.map(e => ({ 
+          buId: e.businessUnitId.id,
+          percentage: e.percentage,
+          fromBu: e.businessUnitFrom.id }))],
+        investmentCollector: [formValue.salesWithBonusPocket.investmentCollector].map(e => ({           
+          buId: e.businessUnitId.id,
+          fromBu: e.businessUnitFrom.id }))[0],
       },
       salesWithCreditPocket: {
         actors: [...formValue.salesWithCreditPocket.actors.map(e => ({ 
-          buId: e.businessUnitId,
+          buId: e.businessUnitId.id,
           percentage: e.percentage,
-          fromBu: e.businessUnitFrom 
+          fromBu: e.businessUnitFrom.id 
         }))],
       }
     })
       .pipe(
-        tap(r => console.log('RESULT ==> ', r))
-        // mergeMap((settings: AcssChannelSettings) => this.acssChannelAfccReloadService.saveChannelSettings(settings))
+        tap(r => console.log('RESULT ==> ', r)),
+        mergeMap((settings: AcssChannelSettings) => this.acssChannelAfccReloadService.saveChannelSettings(settings))
       )
       .subscribe(
         ok => { },
@@ -321,6 +302,22 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     ).pipe(
       tap(() => { this.formInitialized = true; })
     );
+  }
+
+
+  validateActorsArrays(formGroup: FormGroup): { [s: string]: boolean } {
+    if (this.formInitialized) {
+      const salesWithMainPocketActors = this.settingsForm.get('salesWithMainPocket')['controls']['actors'] as FormArray;
+      const salesWithBonusPocket = this.settingsForm.get('salesWithMainPocket')['controls']['actors'] as FormArray;
+      const salesWithCreditPocket = this.settingsForm.get('salesWithMainPocket')['controls']['actors'] as FormArray;
+
+
+      return (salesWithBonusPocket.length == 0 || salesWithMainPocketActors.length == 0 || salesWithCreditPocket.length == 0)
+        ? { 'actorsRequired': true }
+        : null
+    }
+    return null;
+
   }
 
 }

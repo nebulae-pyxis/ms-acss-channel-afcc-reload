@@ -69,9 +69,10 @@ export class BusinessAutocompleteComponent implements OnInit, OnDestroy {
         mergeMap((filterText: string) => this.getBusinessFiltered$(filterText, 10))        
       )
 
-    this.getBusinessFiltered$(this.formGroup.get(this.controlName).value, 1)
+    Rx.Observable.of(this.formGroup.get(this.controlName).value)
     .pipe(
-      tap(() => console.log('businessFilter used', this.formGroup.get(this.controlName).value )),
+      filter(filter => filter !== null),
+      mergeMap(filter => this.getBusinessFiltered$(filter, 1)),
       filter(result => result && result.length == 1),
       map(result => result[0]),
       tap(result => this.formGroup.get(this.controlName).setValue({name: result.name, id:result.id }) )
@@ -95,11 +96,8 @@ export class BusinessAutocompleteComponent implements OnInit, OnDestroy {
 
   getBusinessFiltered$(filterText: string, limit: number): Observable<any[]> {
     return this.acssChannelAfccReloadService.getFilteredBuinessList$(filterText, limit).pipe(
-      // mergeMap(resp => this.graphQlAlarmsErrorHandler$(resp)),
       filter(resp => !resp.errors),
       map(result => result.data.AcssChannelAfccReloadGetBusinessByFilter),
-      // mergeMap(result => from(result.data.getBusinessByFilterText)),
-      // toArray(),
       takeUntil(this.ngUnsubscribe)
     );
   }
