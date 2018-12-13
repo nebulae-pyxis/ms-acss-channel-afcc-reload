@@ -63,11 +63,22 @@ export class BusinessAutocompleteComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.businessQueryFiltered$ = this.formGroup.get(this.controlName).valueChanges
       .pipe(
-        startWith(undefined),
+        // startWith(this.formGroup.get(this.controlName).value),
         debounceTime(500),
         distinctUntilChanged(),
         mergeMap((filterText: string) => this.getBusinessFiltered$(filterText, 10))        
       )
+
+    this.getBusinessFiltered$(this.formGroup.get(this.controlName).value, 1)
+    .pipe(
+      tap(() => console.log('businessFilter used', this.formGroup.get(this.controlName).value )),
+      filter(result => result && result.length == 1),
+      map(result => result[0]),
+      tap(result => this.formGroup.get(this.controlName).setValue({name: result.name, id:result.id }) )
+    )
+    .subscribe(() => {}, error => console.log(error), () => {})
+
+
   }
 
   ngOnDestroy() {

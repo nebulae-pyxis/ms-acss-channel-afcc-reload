@@ -57,23 +57,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
           map(params => params.conf ? params.conf : 1),
           mergeMap(confId  => this.acssChannelAfccReloadService.getChannelSettings$(confId)),
           filter(r => r !== null ),
-          mergeMap(() => this.initializeForm$()),
-          mapTo({
-            id: 1,
-            lastEdition: Date.now(),
-            salesWithMainPocket: {
-              actors: [{buId: 'Metro', fromBu: 'Pasarela', percentage: 98.5}, {buId: 'Nebula', fromBu: 'Pasarela', percentage: 0.21}],
-              surplusCollector: {buId: 'surplus', fromBu: 'Pasarela', percentage: null},
-              bonusCollector: {buId: 'bonus collector', fromBu: 'Pasarela', percentage: null},
-             },
-            salesWithBonusPocket: {
-              actors: [{buId: 'Metro', fromBu: 'Pasarela', percentage: 98.5}],
-              investmentCollector: { buId: 'investment collector', fromBu: 'bonus collector', percentage: null },
-            },
-            salesWithCreditPocket: {
-              actors: [{buId: 'Metro', fromBu: 'Pasarela', percentage: 98.5}],
-            }
-          }),
+          mergeMap((conf) => this.initializeForm$().pipe( mergeMap(() => Rx.Observable.of(conf) ) )),
           tap(conf => this.currentConf = conf ),
           // mergeMap(dataResult =>  this.loadSettingsOnForm$(dataResult))
           mergeMap(dataResult =>  this.loadSettingsOnForm$(dataResult))
@@ -165,7 +149,6 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
   }
 
   addActorFormGroup(type: string): void {
-    console.log(type);
     const items = this.settingsForm.get(type)['controls']['actors'] as FormArray;
     items.push(this.createItem('actor'));
   }
@@ -187,7 +170,6 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
    */
   saveConfiguration() {
     const formValue = this.settingsForm.getRawValue();
-    console.log(formValue);
     Rx.Observable.of({
       id: 1,
       lastEdition: Date.now(),
@@ -253,6 +235,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
    * @param conf AFCC channel configuration
    */
   loadSettingsOnForm$(conf: any) {
+    console.log(conf);
     return Rx.Observable.forkJoin(
       Rx.Observable.of(conf.salesWithMainPocket)
         .pipe(

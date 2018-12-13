@@ -29,7 +29,6 @@ export class AcssChannelAfccReloadComponent implements OnInit, OnDestroy {
   }
 
   onTabChange(event: any){
-    console.log(event);
     this.acssChannelAfccReloadService.selectedTab = event.index;
   }
 
