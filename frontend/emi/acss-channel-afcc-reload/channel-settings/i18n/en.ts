@@ -10,7 +10,8 @@ export const locale = {
       RELOADERS_TITTLE: 'Reloaders network',
       ACTORS_TITTLE: 'ACTORS',
       SURPLUS_COLLECTOR_TITTLE: 'Leftovers collector',
-      BONUS_COLLECTOR_TITTLE: 'Bonus Collector'
+      BONUS_COLLECTOR_TITTLE: 'Bonus Collector',
+      INVESTMENT_COLLECTOR_TITTLE: 'Investment Collector'
     },
     FORM: {
       BUSINESS_FROM: 'Cuenta Origen',

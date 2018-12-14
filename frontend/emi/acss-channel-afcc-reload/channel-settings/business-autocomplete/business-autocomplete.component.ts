@@ -65,18 +65,18 @@ export class BusinessAutocompleteComponent implements OnInit, OnDestroy {
         // startWith(this.formGroup.get(this.controlName).value),
         debounceTime(500),
         distinctUntilChanged(),
-        mergeMap((filterText: string) => this.getBusinessFiltered$(filterText, 10))        
-      )
+        mergeMap((filterText: string) => this.getBusinessFiltered$(filterText, 10))
+      );
 
     Rx.Observable.of(this.formGroup.get(this.controlName).value)
     .pipe(
-      filter(filter => filter !== null),
-      mergeMap(filter => this.getBusinessFiltered$(filter, 1)),
-      filter(result => result && result.length == 1),
+      filter(filterText => filterText !== null),
+      mergeMap(filterText => this.getBusinessFiltered$(filterText, 1)),
+      filter(result => result && result.length === 1),
       map(result => result[0]),
-      tap(result => this.formGroup.get(this.controlName).setValue({name: result.name, id:result.id }) )
+      tap(result => this.formGroup.get(this.controlName).setValue({name: result.name, id: result.id }) )
     )
-    .subscribe(() => {}, error => console.log(error), () => {})
+    .subscribe(() => {}, error => console.log(error), () => {});
 
 
   }

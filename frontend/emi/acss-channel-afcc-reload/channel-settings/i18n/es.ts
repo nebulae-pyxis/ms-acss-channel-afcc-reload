@@ -10,7 +10,8 @@ export const locale = {
       RELOADERS_TITTLE: 'Red de recargas',
       ACTORS_TITTLE: 'Agentes',
       SURPLUS_COLLECTOR_TITTLE: 'Remanente',
-      BONUS_COLLECTOR_TITTLE: 'Acumulador de Comisiones'
+      BONUS_COLLECTOR_TITTLE: 'Acumulador de Comisiones',
+      INVESTMENT_COLLECTOR_TITTLE: 'Acumulador de Inversiones'
     },
     FORM: {
       BUSINESS_FROM: 'Cuenta Origen',

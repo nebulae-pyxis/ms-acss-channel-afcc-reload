@@ -10,6 +10,8 @@ import {
   getCompleteReloadInfo,
   getBusinessFiltered
 } from './gql/AcssChannelAfccReload';
+import { of } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 
 export interface AcssChannelActorConf {
   buId: string;
@@ -39,14 +41,33 @@ export interface AcssChannelSettings{
 export class AcssChannelAfccReloadService {
 
   selectedTab = 0;
+  businessInCache: { id: string, name: string }[] = [];
 
 
   constructor(private gateway: GatewayService) {
   }
 
-  /**
-   * Hello World sample, please remove
-   */
+  // getBusinessInCache$(businessId: string){
+  //   console.log('getBusinessInCache$', businessId);
+  //   return of(businessId)
+  //   .pipe(
+  //     map(buId => this.businessInCache.find(e => e.id === buId) ),
+  //     mergeMap( businessFound => businessFound
+  //         ? of(businessFound)
+  //         : this.getFilteredBuinessList$(businessId, 1)
+  //         // this.getFilteredBuinessList$(businessId, 1)
+  //         //   .pipe(
+  //         //     map( (businessfetched: any) => {
+  //         //       this.businessInCache.push({id: businessfetched._id, name: businessfetched.name });
+  //         //       return businessfetched;
+  //         //     })
+  //         //   )
+  //       )
+  //   );
+
+
+  // }
+
   getChannelSettings$(id: number) {
     return this.gateway.apollo
       .query<any>({

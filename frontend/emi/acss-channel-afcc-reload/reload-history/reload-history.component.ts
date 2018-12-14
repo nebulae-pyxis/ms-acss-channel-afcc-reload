@@ -7,8 +7,8 @@ import { MatTableDataSource, MatSnackBar, MatPaginator, MatSort } from '@angular
 import { FuseTranslationLoaderService } from '../../../../core/services/translation-loader.service';
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
-import { mergeMap, tap, filter, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { fromEvent } from 'rxjs';
+import { mergeMap, tap, filter, map, debounceTime, distinctUntilChanged, mapTo } from 'rxjs/operators';
+import { fromEvent, of } from 'rxjs';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -22,7 +22,7 @@ export class ReloadHistoryComponent implements OnInit, OnDestroy {
   subscriptions = [];
 
   dataSource = new MatTableDataSource();
-  displayedColumns = ['buID', 'buName', 'machine', 'amount'];
+  displayedColumns = ['buID', 'buName', 'amount'];
 
   // Table values
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -35,6 +35,8 @@ export class ReloadHistoryComponent implements OnInit, OnDestroy {
   sortColumn = null;
   sortOrder = null;
   itemPerPage = '';
+
+  requestMade = 0;
 
   constructor(
     private acssChannelAfccReloadService: AcssChannelAfccReloadService,
@@ -130,7 +132,7 @@ export class ReloadHistoryComponent implements OnInit, OnDestroy {
     .pipe(
       mergeMap(resp => this.graphQlErrorHandler$(resp)),
       filter((resp: any) => !resp.errors || resp.errors.length === 0),
-      map(response => response.data.AcssChannelAfccReloadGetAfccReloads)
+      map(response => response.data.AcssChannelAfccReloadGetAfccReloads )
     )
     .subscribe(
       (reloads: any[]) => {
@@ -205,6 +207,16 @@ export class ReloadHistoryComponent implements OnInit, OnDestroy {
     //   });
     console.log('###############', messageKey, detailMessageKey);
   }
+
+  // getBusinessName$(businessId: string){
+  //   // return this.acssChannelAfccReloadService.getFilteredBuinessList$(businessId, 1)
+  //   // .pipe(
+  //   //   mapTo('test name')
+  //   // );
+  //   this.requestMade++;
+  //   console.log('############# =====> ', this.requestMade);
+  //   return Rx.Observable.of('lujyfkhgf');
+  // }
 
 
 }

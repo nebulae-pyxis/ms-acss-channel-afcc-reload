@@ -94,10 +94,10 @@
           <div fxLayout="column" fxLayoutAlign="center center">
             <div fxLayout="row" fxLayoutAlign="space-around center">
               <span>
-                {{ transaction.fromBuName ? transaction.fromBuName : '' + '(' + transaction.fromBu + ')' }}
+                {{ transaction.fromBuName ? transaction.fromBuName : '' + '( ID: ' + transaction.fromBu + ')' }}
               </span>
               <mat-icon>arrow_right_alt</mat-icon>
-              <span> {{ transaction.toBuName ? transaction.toBuName : '' + '(' + transaction.toBu + ')' }}</span>
+              <span> {{ transaction.toBuName ? transaction.toBuName : '' + '( ID: ' + transaction.toBu + ')' }}</span>
             </div>
             <div style="font-size: 24px">
               {{ transaction.amount | currency }}
