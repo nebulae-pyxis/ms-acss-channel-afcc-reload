@@ -2,7 +2,7 @@
 
   <mat-form-field fxFlex="100" >
     <input matInput [readonly]="!editable" [formControlName]="controlName"
-    placeholder="{{'FORM.BU_FROM' | translate}}" [matAutocomplete]="auto"   >
+    placeholder="{{ placeHolder }}" [matAutocomplete]="auto"   >
   </mat-form-field>
   <mat-autocomplete #auto="matAutocomplete"
     (optionSelected)='onSelectBusinessEvent($event.option.value)' [displayWith]="displayFn" >

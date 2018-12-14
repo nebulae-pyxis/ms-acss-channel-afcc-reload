@@ -8,14 +8,13 @@ export const locale = {
       TITLE: 'Channel Configurations',
       FARE_COLLECTOR_TITTLE: 'Farecollector',
       RELOADERS_TITTLE: 'Reloaders network',
-      PARTIES_TITTLE: 'Third parties',
+      ACTORS_TITTLE: 'ACTORS',
       SURPLUS_COLLECTOR_TITTLE: 'Leftovers collector',
       BONUS_COLLECTOR_TITTLE: 'Bonus Collector'
     },
     FORM: {
-      BUID_PLACEHOLDER: 'Business unit ID',
-      BU_NAME: 'Businnes unit Name',
-      BU_FROM: 'Business unit whow pays',
+      BUSINESS_FROM: 'Cuenta Origen',
+      BUSINESS_TO: 'Cuenta Destino',
       PERCENTAGE_BELONG: 'Percentage'
     },
     ERRORS: {

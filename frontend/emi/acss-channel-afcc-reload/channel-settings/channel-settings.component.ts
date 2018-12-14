@@ -37,6 +37,24 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
   currentConf: any;
   dialogRef: any;
 
+  cleanConfiguration = {
+    id: 1,
+    lastEdition: Date.now(),
+    salesWithMainPocket: {
+      actors: [{buId: null, fromBu: null, percentage: 0}],
+      surplusCollector: {buId: null, fromBu: null, percentage: null},
+      bonusCollector: {buId: null, fromBu: null, percentage: null},
+     },
+    salesWithBonusPocket: {
+      actors: [{buId: null, fromBu: null, percentage: 0}],
+      investmentCollector: { buId: null, fromBu: null, percentage: null },
+    },
+    salesWithCreditPocket: {
+      actors: [{buId: null, fromBu: null, percentage: 0}],
+      bonusCollector: { buId: null, fromBu: null, percentage: null }
+    }
+  };
+
   formInitialized = false;
 
   constructor(
@@ -60,23 +78,7 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
           tap(result => console.log('####################', result)),
           map(queryResult => queryResult 
             ? queryResult
-            : ({
-              id: 1,
-              lastEdition: Date.now(),
-              salesWithMainPocket: {
-                actors: [{buId: null, fromBu: null, percentage: 0}],
-                surplusCollector: {buId: null, fromBu: null, percentage: null},
-                bonusCollector: {buId: null, fromBu: null, percentage: null},
-               },
-              salesWithBonusPocket: {
-                actors: [{buId: null, fromBu: null, percentage: 0}],
-                investmentCollector: { buId: null, fromBu: null, percentage: null },
-              },
-              salesWithCreditPocket: {
-                actors: [{buId: null, fromBu: null, percentage: 0}],
-                bonusCollector: { buId: null, fromBu: null, percentage: null }
-              }
-            })
+            : this.cleanConfiguration
           ),
           tap(conf => this.currentConf = conf ),
           mergeMap(dataResult =>  this.loadSettingsOnForm$(dataResult)
@@ -250,69 +252,73 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
    * @param conf AFCC channel configuration
    */
   loadSettingsOnForm$(conf: any) {
-    return Rx.Observable.forkJoin(
-      Rx.Observable.of(conf.salesWithMainPocket)
-        .pipe(
-          mergeMap(mainConf => Rx.Observable.forkJoin(
-            Rx.Observable.of(mainConf.surplusCollector)
+    return Rx.Observable.of({})
+      .pipe(
+        mergeMap(() => this.initializeForm$()),
+        mergeMap(() => Rx.Observable.forkJoin(
+          Rx.Observable.of(conf.salesWithMainPocket)
             .pipe(
-              map((sc: Actor) => this.createItem('surplusCollector', sc.fromBu, sc.buId) ),
-              map( formControl =>  { this.settingsForm.controls['salesWithMainPocket']['controls']['surplusCollector'] = formControl; } )
+              mergeMap(mainConf => Rx.Observable.forkJoin(
+                Rx.Observable.of(mainConf.surplusCollector)
+                .pipe(
+                  map((sc: Actor) => this.createItem('surplusCollector', sc.fromBu, sc.buId) ),
+                  map( formControl =>  { this.settingsForm.controls['salesWithMainPocket']['controls']['surplusCollector'] = formControl; } )
+                ),
+                Rx.Observable.of(mainConf.bonusCollector)
+                .pipe(
+                  map((sc: Actor) => this.createItem('bonusCollector', sc.fromBu, sc.buId) ),
+                  map( formControl =>  { this.settingsForm.controls['salesWithMainPocket']['controls']['bonusCollector'] = formControl; } )
+                ),
+                Rx.Observable.from(mainConf.actors)
+                .pipe(
+                  map((actor: Actor) => this.createItem('actor', actor.fromBu, actor.buId, actor.percentage)),
+                  map( formControl =>  {
+                    ( this.settingsForm.controls['salesWithMainPocket']['controls']['actors'] as FormArray ).push(
+                    formControl
+                  ); } )
+                )
+              ))
             ),
-            Rx.Observable.of(mainConf.bonusCollector)
+          Rx.Observable.of(conf.salesWithBonusPocket)
             .pipe(
-              map((sc: Actor) => this.createItem('bonusCollector', sc.fromBu, sc.buId) ),
-              map( formControl =>  { this.settingsForm.controls['salesWithMainPocket']['controls']['bonusCollector'] = formControl; } )
+              mergeMap(configWithBonusPocket => Rx.Observable.forkJoin(
+                Rx.Observable.of(configWithBonusPocket.investmentCollector)
+                .pipe(
+                  map((sc: Actor) => this.createItem('investment', sc.fromBu, sc.buId) ),
+                  map( formControl =>  { this.settingsForm.controls['salesWithBonusPocket']['controls']['investmentCollector'] = formControl; } )
+                ),
+                Rx.Observable.from(configWithBonusPocket.actors)
+                .pipe(
+                  map((actor: Actor) => this.createItem('actor', actor.fromBu, actor.buId, actor.percentage)),
+                  map( formControl =>  {
+                    ( this.settingsForm.controls['salesWithBonusPocket']['controls']['actors'] as FormArray ).push(
+                    formControl
+                  ); } )
+                )
+              ))
             ),
-            Rx.Observable.from(mainConf.actors)
+          Rx.Observable.of(conf.salesWithCreditPocket)
             .pipe(
-              map((actor: Actor) => this.createItem('actor', actor.fromBu, actor.buId, actor.percentage)),
-              map( formControl =>  {
-                ( this.settingsForm.controls['salesWithMainPocket']['controls']['actors'] as FormArray ).push(
-                formControl
-              ); } )
+              mergeMap(configWithCreditPocket => Rx.Observable.forkJoin(
+                Rx.Observable.of(configWithCreditPocket.bonusCollector)
+                .pipe(
+                  map((sc: Actor) => this.createItem('bonusCollector', sc.fromBu, sc.buId) ),
+                  map( formControl =>  { this.settingsForm.controls['salesWithCreditPocket']['controls']['bonusCollector'] = formControl; } )
+                ),
+                Rx.Observable.from(configWithCreditPocket.actors)
+                .pipe(
+                  map((actor: Actor) => this.createItem('actor', actor.fromBu, actor.buId, actor.percentage)),
+                  map( formControl =>  {
+                    ( this.settingsForm.controls['salesWithCreditPocket']['controls']['actors'] as FormArray ).push(
+                    formControl
+                  ); } )
+                )
+              ))
             )
-          ))
-        ),
-      Rx.Observable.of(conf.salesWithBonusPocket)
-        .pipe(
-          mergeMap(configWithBonusPocket => Rx.Observable.forkJoin(
-            Rx.Observable.of(configWithBonusPocket.investmentCollector)
-            .pipe(
-              map((sc: Actor) => this.createItem('investment', sc.fromBu, sc.buId) ),
-              map( formControl =>  { this.settingsForm.controls['salesWithBonusPocket']['controls']['investmentCollector'] = formControl; } )
-            ),
-            Rx.Observable.from(configWithBonusPocket.actors)
-            .pipe(
-              map((actor: Actor) => this.createItem('actor', actor.fromBu, actor.buId, actor.percentage)),
-              map( formControl =>  {
-                ( this.settingsForm.controls['salesWithBonusPocket']['controls']['actors'] as FormArray ).push(
-                formControl
-              ); } )
-            )
-          ))
-        ),
-      Rx.Observable.of(conf.salesWithCreditPocket)
-        .pipe(
-          mergeMap(configWithCreditPocket => Rx.Observable.forkJoin(
-            Rx.Observable.of(configWithCreditPocket.bonusCollector)
-            .pipe(
-              map((sc: Actor) => this.createItem('bonusCollector', sc.fromBu, sc.buId) ),
-              map( formControl =>  { this.settingsForm.controls['salesWithCreditPocket']['controls']['bonusCollector'] = formControl; } )
-            ),
-            Rx.Observable.from(configWithCreditPocket.actors)
-            .pipe(
-              map((actor: Actor) => this.createItem('actor', actor.fromBu, actor.buId, actor.percentage)),
-              map( formControl =>  {
-                ( this.settingsForm.controls['salesWithCreditPocket']['controls']['actors'] as FormArray ).push(
-                formControl
-              ); } )
-            )
-          ))
         )
-    ).pipe(
-      tap(() => { this.formInitialized = true; })
-    );
+        ),
+        tap(() => { this.formInitialized = true; })
+      );
   }
 
 
@@ -329,6 +335,11 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
     }
     return null;
 
+  }
+
+  clearConfiguration(){
+    return this.loadSettingsOnForm$(this.cleanConfiguration)
+    .subscribe(o =>{}, e => console.log(), () => console.log('COMPLETED') )
   }
 
 }

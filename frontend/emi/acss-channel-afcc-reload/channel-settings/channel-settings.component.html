@@ -32,12 +32,14 @@
                 <!-- business pays the money -->
                 <business-autocomplete class="center-text pr-12 pl-12" fxFlex="50" fxFlex.xs="100"
                   [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['bonusCollector']"
+                  [placeHolder]="'FORM.BUSINESS_FROM' | translate"
                   [controlName]="'businessUnitFrom'" [editable]="currentVersion">
                 </business-autocomplete>
                 <!-- business pays the money -->
                 <!-- business receives the money -->
                 <business-autocomplete class="center-text pr-12 pl-12" fxFlex="50" fxFlex.xs="100"
                   [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['bonusCollector']"
+                  [placeHolder]="'FORM.BUSINESS_TO' | translate"
                   [controlName]="'businessUnitId'" [editable]="currentVersion">
                 </business-autocomplete>
                 <!-- business receives the money -->
@@ -53,24 +55,26 @@
                   <mat-icon>info</mat-icon>
                 </button>
               </div>
-              
+
               <div fxFlex="100">
                 <div class="border" fxFlex="100" fxLayout="row wrap">
-                  <business-autocomplete class="center-text pr-12 pl-12" fxFlex="50" fxFlex.xs="100" 
+                  <business-autocomplete class="center-text pr-12 pl-12" fxFlex="50" fxFlex.xs="100"
                     [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['surplusCollector']"
+                    [placeHolder]="'FORM.BUSINESS_FROM' | translate"
                     [controlName]="'businessUnitFrom'" [editable]="currentVersion">
                   </business-autocomplete>
-                  <business-autocomplete class="center-text pr-12 pl-12" fxFlex="50" fxFlex.xs="100" 
+                  <business-autocomplete class="center-text pr-12 pl-12" fxFlex="50" fxFlex.xs="100"
                     [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['surplusCollector']"
+                    [placeHolder]="'FORM.BUSINESS_TO' | translate"
                     [controlName]="'businessUnitId'" [editable]="currentVersion">
                   </business-autocomplete>
                 </div>
-              </div>              
+              </div>
               <!-- SURPLUSCOLLECTOR -->
 
               <!-- ACTORS -->
               <div fxFlex="100" fxLayout="row" fxLayoutAlign="start center">
-                <span fxLayoutAlign="center center"> {{'SETTINGS.PARTIES_TITTLE' | translate}} </span>
+                <span fxLayoutAlign="center center"> {{'SETTINGS.ACTORS_TITTLE' | translate}} </span>
                 <button mat-icon-button (click)="viewDefinition('THIRD_PARTIES')">
                   <mat-icon>info</mat-icon>
                 </button>
@@ -83,14 +87,16 @@
 
                       <business-autocomplete class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100"
                         [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['actors']['controls'][i]"
+                        [placeHolder]="'FORM.BUSINESS_FROM' | translate"
                         [controlName]="'businessUnitFrom'" [editable]="currentVersion">
                       </business-autocomplete>
 
                       <business-autocomplete class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100"
                         [formGroup]="settingsForm.get('salesWithMainPocket')['controls']['actors']['controls'][i]"
+                        [placeHolder]="'FORM.BUSINESS_TO' | translate"
                         [controlName]="'businessUnitId'" [editable]="currentVersion">
                       </business-autocomplete>
-  
+
                       <mat-form-field class="center-text pr-12 pl-12" fxFlex="15" fxFlex.xs="100">
                         <input type="number" [readonly]="!currentVersion" matInput formControlName="percentage"
                         placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
@@ -99,8 +105,8 @@
                         (click)="deleteActorFormGroup('salesWithMainPocket', i)">
                         <mat-icon>delete</mat-icon>
                       </button>
-                    </div>  
-  
+                    </div>
+
                   </div>
                   <!-- <div *ngIf="settingsForm.errors && currentVersion">
                     <span style="color: red" *ngIf="settingsForm.errors['percentageExceeded']">
@@ -142,42 +148,46 @@
                   <!-- business pays the money -->
                   <business-autocomplete class="center-text pr-12 pl-12" fxFlex="50" fxFlex.xs="100"
                     [formGroup]="settingsForm.get('salesWithBonusPocket')['controls']['investmentCollector']"
+                    [placeHolder]="'FORM.BUSINESS_FROM' | translate"
                     [controlName]="'businessUnitFrom'" [editable]="currentVersion">
                   </business-autocomplete>
                   <!-- business pays the money -->
                   <!-- business receives the money -->
                   <business-autocomplete class="center-text pr-12 pl-12" fxFlex="50" fxFlex.xs="100"
                     [formGroup]="settingsForm.get('salesWithBonusPocket')['controls']['investmentCollector']"
+                    [placeHolder]="'FORM.BUSINESS_TO' | translate"
                     [controlName]="'businessUnitId'" [editable]="currentVersion">
                   </business-autocomplete>
                   <!-- business receives the money -->
                 </div>
               </div>
               <!-- INVESTMENT COLLECTOR -->
-  
+
                 <!-- ACTORS -->
                 <div fxFlex="100" fxLayout="row" fxLayoutAlign="start center">
-                  <span fxLayoutAlign="center center"> {{'SETTINGS.PARTIES_TITTLE' | translate}} </span>
+                  <span fxLayoutAlign="center center"> {{'SETTINGS.ACTORS_TITTLE' | translate}} </span>
                   <button mat-icon-button (click)="viewDefinition('THIRD_PARTIES')">
                     <mat-icon>info</mat-icon>
                   </button>
                 </div>
-  
+
                   <div [formGroup]="settingsForm.get('salesWithBonusPocket')" fxLayout="column" fxLayoutAlign="space-around stretch" fxFlex="100">
                     <div formArrayName="actors" *ngFor="let item of settingsForm.get('salesWithBonusPocket')['controls']['actors']['controls']; let i = index;"
                       fxLayout="column">
                       <div class="border" [formGroupName]="i" fxFlex="100" fxLayout="row wrap">
-  
+
                         <business-autocomplete class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100"
                           [formGroup]="settingsForm.get('salesWithBonusPocket')['controls']['actors']['controls'][i]"
+                          [placeHolder]="'FORM.BUSINESS_FROM' | translate"
                           [controlName]="'businessUnitFrom'" [editable]="currentVersion">
                         </business-autocomplete>
-  
+
                         <business-autocomplete class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100"
                           [formGroup]="settingsForm.get('salesWithBonusPocket')['controls']['actors']['controls'][i]"
+                          [placeHolder]="'FORM.BUSINESS_TO' | translate"
                           [controlName]="'businessUnitId'" [editable]="currentVersion">
                         </business-autocomplete>
-    
+
                         <mat-form-field class="center-text pr-12 pl-12" fxFlex="15" fxFlex.xs="100">
                           <input type="number" [readonly]="!currentVersion" matInput formControlName="percentage"
                           placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
@@ -186,8 +196,8 @@
                           (click)="deleteActorFormGroup('salesWithBonusPocket', i)">
                           <mat-icon>delete</mat-icon>
                         </button>
-                      </div>  
-    
+                      </div>
+
                     </div>
                     <!-- <div *ngIf="settingsForm.errors && currentVersion">
                       <span style="color: red" *ngIf="settingsForm.errors['percentageExceeded']">
@@ -216,7 +226,7 @@
           </mat-expansion-panel-header>
 
           <div *ngIf="formInitialized" class="widget-group" fxLayout="row wrap" fxFlex="100" fxLayoutAlign="start start">
-            
+
             <!-- BONUSCOLLECTOR -->
             <div fxFlex="100" fxLayout="row" fxLayoutAlign="start center">
                 <span fxLayoutAlign="center center"> {{'SETTINGS.BONUS_COLLECTOR_TITTLE' | translate}} </span>
@@ -229,43 +239,47 @@
                   <!-- business pays the money -->
                   <business-autocomplete class="center-text pr-12 pl-12" fxFlex="50" fxFlex.xs="100"
                     [formGroup]="settingsForm.get('salesWithCreditPocket')['controls']['bonusCollector']"
+                    [placeHolder]="'FORM.BUSINESS_FROM' | translate"
                     [controlName]="'businessUnitFrom'" [editable]="currentVersion">
                   </business-autocomplete>
                   <!-- business pays the money -->
                   <!-- business receives the money -->
                   <business-autocomplete class="center-text pr-12 pl-12" fxFlex="50" fxFlex.xs="100"
                     [formGroup]="settingsForm.get('salesWithCreditPocket')['controls']['bonusCollector']"
+                    [placeHolder]="'FORM.BUSINESS_FROM' | translate"
                     [controlName]="'businessUnitId'" [editable]="currentVersion">
                   </business-autocomplete>
                   <!-- business receives the money -->
                 </div>
               </div>
               <!-- BONUSCOLLECTOR -->
-            
+
             <!-- ACTORS -->
             <div fxFlex="100" fxLayout="row" fxLayoutAlign="start center">
-              <span fxLayoutAlign="center center"> {{'SETTINGS.PARTIES_TITTLE' | translate}} </span>
+              <span fxLayoutAlign="center center"> {{'SETTINGS.ACTORS_TITTLE' | translate}} </span>
               <button mat-icon-button (click)="viewDefinition('THIRD_PARTIES')">
                 <mat-icon>info</mat-icon>
               </button>
             </div>
-          
+
             <div [formGroup]="settingsForm.get('salesWithCreditPocket')" fxLayout="column" fxLayoutAlign="space-around stretch"
               fxFlex="100">
               <div formArrayName="actors" *ngFor="let item of settingsForm.get('salesWithCreditPocket')['controls']['actors']['controls']; let i = index;"
                 fxLayout="column">
                 <div class="border" [formGroupName]="i" fxFlex="100" fxLayout="row wrap">
-          
+
                   <business-autocomplete class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100"
                     [formGroup]="settingsForm.get('salesWithCreditPocket')['controls']['actors']['controls'][i]"
+                    [placeHolder]="'FORM.BUSINESS_FROM' | translate"
                     [controlName]="'businessUnitFrom'" [editable]="currentVersion">
                   </business-autocomplete>
-          
+
                   <business-autocomplete class="center-text pr-12 pl-12" fxFlex="40" fxFlex.xs="100"
                     [formGroup]="settingsForm.get('salesWithCreditPocket')['controls']['actors']['controls'][i]"
+                    [placeHolder]="'FORM.BUSINESS_TO' | translate"
                     [controlName]="'businessUnitId'" [editable]="currentVersion">
                   </business-autocomplete>
-          
+
                   <mat-form-field class="center-text pr-12 pl-12" fxFlex="15" fxFlex.xs="100">
                     <input type="number" [readonly]="!currentVersion" matInput formControlName="percentage"
                       placeholder="{{'FORM.PERCENTAGE_BELONG' | translate}}">
@@ -275,7 +289,7 @@
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
-          
+
               </div>
               <button style="margin-top: 10px" *ngIf="currentVersion" mat-mini-fab
                 (click)="addActorFormGroup('salesWithCreditPocket')">
@@ -297,7 +311,8 @@
       <!-- ACTION BUTTONS -->
       <div style="margin-top: 10px;" *ngIf="currentVersion" fxFlex="100" fxLayout="row" fxLayoutAlign="space-around center">
         <button mat-raised-button color="primary" [disabled]="!settingsForm.valid" (click)="saveConfiguration()">SAVE</button>
-        <button mat-raised-button color="primary" (click)="restoreSettings()">CANCEL</button>
+        <button mat-raised-button color="primary" (click)="clearConfiguration()">CLEAR ALL</button>
+        <button mat-raised-button color="primary" (click)="restoreSettings()">UNDO</button>
       </div>
       <!-- ACTION BUTTONS -->
 

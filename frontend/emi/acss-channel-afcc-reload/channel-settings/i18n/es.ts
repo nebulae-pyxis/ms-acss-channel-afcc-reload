@@ -1,21 +1,20 @@
 export const locale = {
   lang: 'es',
   data: {
-    SALES_WITH_MAIN: 'Ventas Realizadas con la bolsa de Saldo',
-    SALES_WITH_BONUS: 'Ventas realizadas con la bolsa de comisión',
-    SALES_WITH_CREDIT: 'ventas realizadas con la bolsa de crédito',
+    SALES_WITH_MAIN: 'Ventas Realizadas con Saldo',
+    SALES_WITH_BONUS: 'Ventas realizadas con comisión',
+    SALES_WITH_CREDIT: 'ventas realizadas con crédito',
     SETTINGS: {
       TITLE: 'Configuracion Del Canal',
       FARE_COLLECTOR_TITTLE: 'Fare collector',
       RELOADERS_TITTLE: 'Red de recargas',
-      PARTIES_TITTLE: 'Terceros',
-      SURPLUS_COLLECTOR_TITTLE: 'Recolector de residuos',
-      BONUS_COLLECTOR_TITTLE: 'Recollector de comisiones'
+      ACTORS_TITTLE: 'Agentes',
+      SURPLUS_COLLECTOR_TITTLE: 'Remanente',
+      BONUS_COLLECTOR_TITTLE: 'Acumulador de Comisiones'
     },
     FORM: {
-      BUID_PLACEHOLDER: 'ID de unidad de negocio',
-      BU_NAME: 'Nombre de la unidad de negocio',
-      BU_FROM: 'Unidad de negocio que paga',
+      BUSINESS_FROM: 'Cuenta Origen',
+      BUSINESS_TO: 'Cuenta Destino',
       PERCENTAGE_BELONG: 'Porcentaje'
     },
     ERRORS: {
