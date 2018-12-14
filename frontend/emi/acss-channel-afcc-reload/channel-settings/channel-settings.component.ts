@@ -334,9 +334,11 @@ export class ChannelSettingsComponent implements OnInit, OnDestroy {
         : null
     }
     return null;
-
   }
 
+  /**
+   * load the default settings
+   */
   clearConfiguration(){
     return this.loadSettingsOnForm$(this.cleanConfiguration)
     .subscribe(o =>{}, e => console.log(), () => console.log('COMPLETED') )

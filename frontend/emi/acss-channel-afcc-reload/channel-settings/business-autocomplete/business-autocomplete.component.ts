@@ -45,7 +45,6 @@ export class BusinessAutocompleteComponent implements OnInit, OnDestroy {
 
   subscriptions = [];
   currentConf: any;
-
   businessQueryFiltered$: Observable<any>;
 
   formInitialized = false;

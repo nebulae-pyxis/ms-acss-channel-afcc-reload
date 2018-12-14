@@ -172,7 +172,6 @@ class AfccReloadChannel{
     .catch(e => this.errorHandler$(e))
   }
 
-
   //#region  mappers for API responses
 
   buildSuccessResponse$(rawRespponse) {
