@@ -52,9 +52,7 @@ class UserEventConsumer {
       .mergeMap(() => this.getChannelSettings$(evt) )    
       // search the pos manager of the business unit who made the reload
       .mergeMap(conf => Helper.fillWithPosOwner$(conf, evt) )
-
-      .mergeMap(conf => Helper.generateTransactions$(conf, evt))
-           
+      .mergeMap(conf => Helper.generateTransactions$(conf, evt))           
       // insert all trsansaction to the MongoDB
       .do(txs => console.log("Transaction to insert ==> ", JSON.stringify(txs)))
       .mergeMap(transactionsArray => TransactionsDA.insertTransactions$(transactionsArray))
@@ -67,7 +65,7 @@ class UserEventConsumer {
       )
       .mergeMap(arrayTransactions => Rx.Observable.forkJoin(
         Rx.Observable.of(arrayTransactions),
-        Helper.getSignificantTransaction$(evt.data.transactions, evt)
+        Helper.getSummaryEvent$(evt.data.transactions, evt)
       ))
       // build Reload object with its transactions generated inserts the reload object
       .map( ([arrayTransactions, mainTransaction]) => ({

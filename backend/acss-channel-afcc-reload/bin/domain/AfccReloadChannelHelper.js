@@ -10,55 +10,132 @@ const BusinessDA = require('../data/businessUnitDA');
 class AfccReloadChannelHelper {
   constructor() {}
 
-  static generateTransactions$(conf, evt){
-    switch(evt.data.pocketAlias){
-      case MAIN_POCKET: return this.generateTransactionsForMainPocketCase$(conf, evt);
-      case BONUS_POCKET: return this.generateTransactionsForBonusPocketCase$(conf, evt);      
-      case CREDIT_POCKET: return this.generateTransactionsForBonusPocketCase$(conf, evt);
-      default: return Rx.Observable.throw("POCKET ALIAS NOT ALLOWED");
-    }
+  static generateTransactions$(channelConf, walletTransactionExecutedEvent) {
+
+    return Rx.Observable.of(walletTransactionExecutedEvent)
+      .mapTo(walletTransactionExecutedEvent.data.transactions)
+      .filter(txs => txs)
+      .map(transactions => transactions.filter(tx => tx.pocketAlias)[0].pocketAlias)
+      .mergeMap(pocketAlias => {
+        switch (pocketAlias) {
+          case MAIN_POCKET: return this.generateTransactionsForMainPocketCase$(channelConf, walletTransactionExecutedEvent);
+          case BONUS_POCKET: return this.generateTransactionsForBonusPocketCase$(channelConf, walletTransactionExecutedEvent);
+          case CREDIT_POCKET: return this.generateTransactionsForCreditPocketCase$(channelConf, walletTransactionExecutedEvent);
+          default: return Rx.Observable.throw("POCKET ALIAS NOT ALLOWED");
+        }
+      })
+      .map(transactions => transactions.filter(e => e.amount != 0) )
   }
 
-  static generateTransactionsForCreditPocketCase$(conf,evt){
-    return Rx.Observable.of([]);
-
+  static generateTransactionsForCreditPocketCase$(channelConf, walletTransactionExecutedEvent){
+    console.log("generateTransactionsForCreditPocketCase$", channelConf, walletTransactionExecutedEvent);    
+    return Rx.Observable.of(walletTransactionExecutedEvent.data.transactions)
+    .mergeMap(txs => this.getSummaryEvent$(txs, walletTransactionExecutedEvent))
+    .mergeMap(eventSumary  => Rx.Observable.forkJoin(
+      this.generateTransactionsForActors$(channelConf, "salesWithCreditPocket", eventSumary),
+      this.createTransactionsForBonus$(channelConf, "salesWithCreditPocket", eventSumary)
+    ))
+    .map(([ actorTransactions, bonusTransaction]) => [ ...actorTransactions, bonusTransaction ])
   }
 
-  static generateTransactionsForMainPocketCase$(conf, evt) {
-
-    return Rx.Observable.of(afccEvent.data.transactions)
-    .mergeMap(txs => this.getSignificantTransaction$(txs, afccEvent))
-    .mergeMap(afccEvent  => 
+  /**
+   * 
+   * @param {Object} channelConf 
+   * @param {Object} walletTransactionExecutedEvent 
+   */
+  static generateTransactionsForMainPocketCase$(channelConf, walletTransactionExecutedEvent) {
+    console.log("generateTransactionsForMainPocketCase$", channelConf, walletTransactionExecutedEvent);    
+    return Rx.Observable.of(walletTransactionExecutedEvent.data.transactions)
+    .mergeMap(txs => this.getSummaryEvent$(txs, walletTransactionExecutedEvent))
+    .mergeMap(eventSumary  => 
       Rx.Observable.forkJoin(
         // create transactions for actors
-        this.generateTransactionsForActors$(conf.salesWithMainPocket.actors, afccEvent),
+        this.generateTransactionsForActors$(channelConf, "salesWithMainPocket",  eventSumary),
         // create transaction for bonus collector
-        this.createTransactionsForBonus$(conf.salesWithMainPocket.bonusCollector, afccEvent),
+        this.createTransactionsForBonus$(channelConf, "salesWithMainPocket", eventSumary),
         // create transaction for pos manager
-        this.createTransactionForPosOwner$(configuration, afccEvent)
+        this.createTransactionForPosOwner$(channelConf, eventSumary),
+        // Event summary
+        Rx.Observable.of(eventSumary)
       )
     )
     .map(
       ([
-        fareCollectorTransation,
+        actorTransaction,
+        bonusTransaction,
         posOwnerTransation,
-        partiesTransactions
+        eventSumary
       ]) => ({
-        transactions: [ fareCollectorTransation, ...posOwnerTransation, ...partiesTransactions ],
-        conf: configuration
+        transactions: [ ...actorTransaction, bonusTransaction, ...posOwnerTransation  ],
+        eventSumary: eventSumary
       })
-    );
+    )
+    .mergeMap(({transactions, eventSumary}) => this.validateTransactionForSurplus$(
+      transactions, "salesWithMainPocket", "surplusCollector", channelConf, eventSumary) 
+    )
   }
 
-  static generateTransactionsForBonusPocketCase$(conf, evt){
-    return Rx.Observable.forkJoin(
-      this.createTransactionForFareCollector$(conf, evt),
-      this.createTransactionForSurplus$(conf, evt)
-    )
-      // .map(([fareCollectorTransation, surplusTransaction]) => ({
-      //   transactions: [fareCollectorTransation, surplusTransaction], conf: conf
-      // }))
+  /**
+   * @param {object} channelConf Channel configuration with diferents case MAIN, BONUS, CREDIT
+   * @param {string} pocketCase OPTIONS: salesWithMainPocket | salesWithBonusPocket | salesWithCreditPocket
+   * @param {object} evtSummary Object with transaction, significant transaction value and discounted value by the reloader
+   */
+  static generateTransactionsForActors$(channelConf, pocketCase, evtSummary) {
+    return Rx.Observable.of(channelConf)
+      .filter(channelConf => channelConf && channelConf[pocketCase].actors)
+      .mapTo(channelConf[pocketCase].actors)
+      .mergeMap(actorConfs => Rx.Observable.from(actorConfs)
+        .mergeMap(actorConf => Rx.Observable.forkJoin(
+          this.getValueFromPercentage$(actorConf.percentage, evtSummary.amount),
+          Rx.Observable.of(actorConf)
+        ))
+        .mergeMap( ([txAmount, actorConf]) => this.createTransactionObject$(
+          actorConf.fromBu,
+          actorConf.buId,
+          txAmount,
+          channelConf.lastEdition,
+          DEFAULT_TRANSACTION_TYPE,
+          evtSummary)
+        )
+      )
+      .toArray()
   }
+
+  /**
+   * @param {object} channelConf Channel configuration with diferents case MAIN, BONUS, CREDIT
+   * @param {string} pocketCase OPTIONS: salesWithMainPocket | salesWithBonusPocket | salesWithCreditPocket
+   * @param {object} evtSummary Object with transaction, significant transaction value and discounted value by the reloader
+   */
+  static createTransactionsForBonus$(channelConf, pocketCase, evtSummary) {
+    return Rx.Observable.of(channelConf)
+      .filter(conf => conf && conf[pocketCase].bonusCollector)
+      .mapTo(channelConf[pocketCase].bonusCollector)
+      .mergeMap(bonusCollectorConf => this.createTransactionObject$(
+        bonusCollectorConf.fromBu,
+        bonusCollectorConf.buId,
+        evtSummary.discounted,
+        channelConf.lastEdition,
+        DEFAULT_TRANSACTION_TYPE,
+        evtSummary)
+      )
+  }
+
+  static generateTransactionsForBonusPocketCase$(channelConf, walletTransactionExecutedEvent){
+    console.log("generateTransactionsForBonusPocketCase$", channelConf, walletTransactionExecutedEvent);
+    return Rx.Observable.of(walletTransactionExecutedEvent.data.transactions)
+    .mergeMap(txs => this.getSummaryEvent$(txs, walletTransactionExecutedEvent))
+    .mergeMap(summaryEvent  => Rx.Observable.forkJoin(
+      this.generateTransactionsForActors$(channelConf, "salesWithBonusPocket",  summaryEvent),
+      Rx.Observable.of(summaryEvent)
+    ))
+    .map( ([ transactions, summaryEvent  ]) => ({
+      transactions: transactions,
+      summaryEvent: summaryEvent }))
+    .mergeMap(({ transactions, summaryEvent }) => this.validateTransactionForSurplus$(
+      transactions, "salesWithBonusPocket", "investmentCollector", channelConf, summaryEvent) 
+    )
+  }
+
 
   static fillWithPosOwner$(conf, evt){
     return BusinessDA.searchPosOwner$(evt.data.businessId)
@@ -70,43 +147,13 @@ class AfccReloadChannelHelper {
   }
 
   /**
-   *
-   * @param {Object} configuration Business rules to create transactions
-   * @param {Object} AfccEvent AFCC event to process with the given configuration
-   * @returns {<Observable>} Observable with transaction array
+   * Parse the afccEvent and adds discounted, amount fields
+   * @param {Object[]} transactionArray 
+   * @param {Object} afccEvent 
+   * @returns {Object} summaryEvent {amount: number, _id:string, et: string, user: string, discounted: number}
+   * 
    */
-  static applyBusinessRules$(configuration, afccEvent) {    
-    return Rx.Observable.of(afccEvent.data.transactions)
-    .mergeMap(txs => this.getSignificantTransaction$(txs, afccEvent))
-    // .do(r => {
-    //   console.log("====== ApplyBusinessRules$ ======= ");
-    //   console.log("====== CONFIGURATION ==> ", JSON.stringify(configuration), );
-    //   console.log("====== AfccEvent ==> ", JSON.stringify(afccEvent));
-    // } )
-    .mergeMap(afccEvent  => 
-      Rx.Observable.forkJoin(
-        this.createTransactionsForActors$(configuration, afccEvent),
-        this.createTransactionForPosOwner$(configuration, afccEvent),
-        this.createTransactionForParties$(configuration, afccEvent)
-      )
-    )
-    .map(
-      ([
-        fareCollectorTransation,
-        posOwnerTransation,
-        partiesTransactions
-      ]) => ({
-        transactions: [ fareCollectorTransation, ...posOwnerTransation, ...partiesTransactions ],
-        conf: configuration
-      })
-    );
-  }
-
-  /**
-   * returns the more significant transaction
-   * @param {Array} transactionArray 
-   */
-  static getSignificantTransaction$(transactionArray, afccEvent){
+  static getSummaryEvent$(transactionArray, afccEvent){
     return Rx.Observable.of(transactionArray)
     // get the transaction with minumin value (transaction made with MAIN pocket)
     .map(transactions => transactions.sort((txa, txb) => txa.value - txb.value )[0] )
@@ -118,86 +165,94 @@ class AfccReloadChannelHelper {
       )
   }
 
-  static createTransactionForSurplus$(conf, afccEvent) {
-    return this.subtractWithPrecision$(100, conf.fareCollectors[0].percentage)
-      .mergeMap(surplusPercentage => this.getValueFromPercentage$(surplusPercentage, afccEvent.amount))
-      .mergeMap(value => this.createTransactionObject$(
-        conf.fareCollectors[0],
-        value,
-        conf,
-        DEFAULT_TRANSACTION_TYPE,
-        afccEvent
-      ))
+  // static createTransactionForSurplus$(conf, afccEvent) {
+  //   return this.subtractWithPrecision$(100, conf.fareCollectors[0].percentage)
+  //     .mergeMap(surplusPercentage => this.getValueFromPercentage$(surplusPercentage, afccEvent.amount))
+  //     .mergeMap(value => this.createTransactionObject$(
+  //       conf.fareCollectors[0],
+  //       value,
+  //       conf,
+  //       DEFAULT_TRANSACTION_TYPE,
+  //       afccEvent
+  //     ))
 
-  }
+  // }
 
-  /**
-   * Create all transaction for each fare collector actor
-   * @param { Object } conf Channel configuration
-   * @param { Object } afccEvent AFCC reload event
-   */
-  static createTransactionForFareCollector$(conf, afccEvent) {
-    return this.getValueFromPercentage$(conf.fareCollectors[0].percentage, afccEvent.amount)
-    .mergeMap(value => this.createTransactionObject$(
-      conf.fareCollectors[0],
-      value,
-      conf,
-      DEFAULT_TRANSACTION_TYPE,
-      afccEvent
-    ) )
-  }
-
-
+  // /**
+  //  * Create all transaction for each fare collector actor
+  //  * @param { Object } conf Channel configuration
+  //  * @param { Object } afccEvent AFCC reload event
+  //  */
+  // static createTransactionForFareCollector$(conf, afccEvent) {
+  //   return this.getValueFromPercentage$(conf.fareCollectors[0].percentage, afccEvent.amount)
+  //   .mergeMap(value => this.createTransactionObject$(
+  //     conf.fareCollectors[0],
+  //     value,
+  //     conf,
+  //     DEFAULT_TRANSACTION_TYPE,
+  //     afccEvent
+  //   ) )
+  // }
 
 
-  static createTransactionForPosOwner$(conf, afccEvent) {
-    return Rx.Observable.of(conf.posOwner)
+
+/**
+ * 
+ * @param {Object} channelConf channel configuration
+ * @param {object} parsedEvent Object with transaction, significant transaction value and discounted value by the reloader
+ */
+  static createTransactionForPosOwner$(channelConf, eventSumary) {
+    return Rx.Observable.of(channelConf.posOwner)
       .mergeMap(posOwner =>
         !posOwner
           ? Rx.Observable.of([])
-          : this.getValueFromPercentage$(posOwner.afccChannelPercentage, afccEvent.amount)
-            .mergeMap(value => this.createTransactionObject$(
-              { fromBu: conf.fareCollectors[0].fromBu, buId: posOwner._id },
+          : this.getValueFromPercentage$(posOwner.afccChannelPercentage, eventSumary.amount)
+            .map(value => ({ 
+              value: value,
+              payer: channelConf.salesWithMainPocket.surplusCollector.fromBu 
+            }))
+            .mergeMap( ({value, payer}) => this.createTransactionObject$(
+              payer,
+              posOwner._id,
               value,
-              conf,
+              channelConf.lastEdition,
               DEFAULT_TRANSACTION_TYPE,
-              afccEvent
-            )
-            )
+              eventSumary
+            ))
             .map( tx => ([tx]))
       )
   }
 
-  /**
-   * Create all transaction for each third part actor
-   * @param { Object } conf Channel configuration
-   * @param { Object } afccEvent AFCC reload event
-   */
-  static createTransactionForParties$(conf, afccEvent) {   
-    return Rx.Observable.of(conf.posOwner)
-    .map(posOwner => posOwner
-      ? (posOwner.afccChannelPercentage * 100) + ( conf.fareCollectors[0].percentage * 100 )
-      : conf.fareCollectors[0].percentage * 100
-    )
-    .mergeMap(percentageUsed => this.getValueFromPercentage$(percentageUsed/100, afccEvent.amount ))    
-    .mergeMap( moneyUsed => this.subtractWithPrecision$(afccEvent.amount, ( ((moneyUsed*100)  + (afccEvent.discounted*100) )/100  ) ) )
-    .mergeMap(amountForThirdPArties => 
-      Rx.Observable.from(conf.parties)
-      .mergeMap(thirdParty => Rx.Observable.forkJoin(
-        Rx.Observable.of(thirdParty),
-        this.getValueFromPercentage$(thirdParty.percentage, amountForThirdPArties)
-      ))
-      .mergeMap( ([thirdParty, amount]) => this.createTransactionObject$(
-              thirdParty,
-              amount,
-              conf,
-              DEFAULT_TRANSACTION_TYPE,
-              afccEvent
-            )
-          )
-      )
-      .toArray();
-  }
+  // /**
+  //  * Create all transaction for each third part actor
+  //  * @param { Object } conf Channel configuration
+  //  * @param { Object } afccEvent AFCC reload event
+  //  */
+  // static createTransactionForParties$(conf, afccEvent) {   
+  //   return Rx.Observable.of(conf.posOwner)
+  //   .map(posOwner => posOwner
+  //     ? (posOwner.afccChannelPercentage * 100) + ( conf.fareCollectors[0].percentage * 100 )
+  //     : conf.fareCollectors[0].percentage * 100
+  //   )
+  //   .mergeMap(percentageUsed => this.getValueFromPercentage$(percentageUsed/100, afccEvent.amount ))    
+  //   .mergeMap( moneyUsed => this.subtractWithPrecision$(afccEvent.amount, ( ((moneyUsed*100)  + (afccEvent.discounted*100) )/100  ) ) )
+  //   .mergeMap(amountForThirdPArties => 
+  //     Rx.Observable.from(conf.parties)
+  //     .mergeMap(thirdParty => Rx.Observable.forkJoin(
+  //       Rx.Observable.of(thirdParty),
+  //       this.getValueFromPercentage$(thirdParty.percentage, amountForThirdPArties)
+  //     ))
+  //     .mergeMap( ([thirdParty, amount]) => this.createTransactionObject$(
+  //             thirdParty,
+  //             amount,
+  //             conf,
+  //             DEFAULT_TRANSACTION_TYPE,
+  //             afccEvent
+  //           )
+  //         )
+  //     )
+  //     .toArray();
+  // }
 
   static validateAfccEvent$(conf, afccEvent) {
     return Rx.Observable.of({})
@@ -219,37 +274,40 @@ class AfccReloadChannelHelper {
   /**
    * Verifies if the sumary of all transactions money match with the AFCC mount
    * @param {any[]} transactionArray Array with all transaction as result of an AFCC reload event
+   * @param { string } pocketCase  | salesWithMainPocket | salesWithBonusPocket | salesWithCreditPocket
+   * @param {Objet} collectorActor collector config
    * @param {any} conf Channel configuration
-   * @param {any} evt AFCC reload event
+   * @param {any} eventSumary Event summary with amoun, discounted 
    */
-  static validateTransactionForSurplus$(transactionArray, conf, afccEvent) {
+  static validateTransactionForSurplus$(transactionArray, pocketCase, collectorActor, conf, eventSumary) {
     return Rx.Observable.of(transactionArray.reduce((acumulated, tr) => acumulated + (tr.amount * 1000), 0))
       .map(amountProcessed => Math.floor(amountProcessed) / 1000)
-      .mergeMap(amountProcessed => Rx.Observable.forkJoin(
-        Rx.Observable.of(amountProcessed),
-        this.getSignificantTransaction$(afccEvent.data.transactions, afccEvent)
-      )) 
-      .mergeMap(([amountProcessed, significantTransaction]) => 
-        (amountProcessed + significantTransaction.discounted) == significantTransaction.amount 
-          ? Rx.Observable.of(transactionArray)
-          : Rx.Observable.of(amountProcessed  + significantTransaction.discounted )
-            .map(amount => Math.round((significantTransaction.amount - amount) * 100) / 100)
-            .mergeMap(amount =>
+      // .mergeMap(amountProcessed => Rx.Observable.forkJoin(
+      //   Rx.Observable.of(amountProcessed),
+      //   Rx.Observable.of(eventSumary)
+      // )) 
+      .mergeMap(amountProcessed => (amountProcessed == eventSumary.amount)
+        ? Rx.Observable.of(transactionArray)
+        : amountProcessed > eventSumary.amount
+          ? Rx.Observable.throw("Amount Exced")
+          : Rx.Observable.of(Math.round((eventSumary.amount - amountProcessed) * 100) / 100)
+            .mergeMap(amountForSurplus =>
               this.createTransactionObject$(
-                conf.surplusCollectors[0],
-                amount,
-                conf,
+                conf[pocketCase][collectorActor].fromBu,
+                conf[pocketCase][collectorActor].buId,
+                amountForSurplus,
+                conf.lastEdition,
                 DEFAULT_TRANSACTION_TYPE,
-                significantTransaction
+                eventSumary
               )
             )
             .map(finalTransaction => [...transactionArray, finalTransaction])
       )
-      // .do(allTransactions => {
-      //   allTransactions.forEach(t => { console.log("Transaction_amount: ", t.amount); });
-      //   const total = allTransactions.reduce( (acc, tr) => acc + (tr.amount * 1000), 0 ) / 1000;
-      //   console.log(total);
-      // });
+    // .do(allTransactions => {
+    //   allTransactions.forEach(t => { console.log("Transaction_amount: ", t.amount); });
+    //   const total = allTransactions.reduce( (acc, tr) => acc + (tr.amount * 1000), 0 ) / 1000;
+    //   console.log(total);
+    // });
   }
 
   /**
@@ -272,28 +330,29 @@ class AfccReloadChannelHelper {
 
   /**
    *
-   * @param {string} actorConf
-   * @param {Float} amount
-   * @param {any} conf
-   * @param {string} type
-   * @param {any} afccEvent
+   * @param {string} from business unit id who pays
+   * @param {string} to business unit id who receive the cash
+   * @param {Float} amount transaction amount
+   * @param {any} confLastEdition configuration last edition (version id configuration)
+   * @param {string} type transaction type
+   * @param {any} event Associated event nedded to get _id, et, user field
    */
-  static createTransactionObject$(actorConf, amount, conf, type, afccEvent) {
+  static createTransactionObject$(from, to, amount, confLastEdition, type, event) {
     return Rx.Observable.of({
-      fromBu: actorConf.fromBu,
-      toBu: actorConf.buId,
+      fromBu: from,
+      toBu: to,
       amount: amount,
       channel: {
         id: CHANNEL_ID,
         v: process.env.npm_package_version,
-        c: conf.lastEdition
+        c: confLastEdition
       },
       timestamp: Date.now(),
       type: type,
       evt: {
-        id: afccEvent._id, 
-        type: afccEvent.et, 
-        user: afccEvent.user 
+        id: event._id, 
+        type: event.et, 
+        user: event.user 
       }
     }).mergeMap(transaction => this.truncateAmount$(transaction)
     );
@@ -318,46 +377,64 @@ class AfccReloadChannelHelper {
   //     .mergeMap(() => Rx.Observable.of(conf))
   // }
 
-  /**
- * Verify if the percentage Configuration for the parties is correct
- * @param {number[]} parties Array numbers
- * @param {boolean} surplus surplus money available to parties ?
- * @returns { Observable<any> }
- */
-  static VerifyPartiesPercentages$(parties) {
-    return Rx.Observable.of(parties)
-      .map(parties => parties.reduce((acc, item) => acc + item, 0))
-      .mergeMap(totalPercentageInParties => (totalPercentageInParties == 100)
-        ? Rx.Observable.of(true)
-        : Rx.Observable.throw(
-          new CustomError(
-            "name",
-            "verifyBusinessRules",
-            "Error with percentages in the parties percentages"
-          ) )
-      )
-  }
+//   /**
+//  * Verify if the percentage Configuration for the parties is correct
+//  * @param {number[]} parties Array numbers
+//  * @param {boolean} surplus surplus money available to parties ?
+//  * @returns { Observable<any> }
+//  */
+//   static VerifyPartiesPercentages$(parties) {
+//     return Rx.Observable.of(parties)
+//       .map(parties => parties.reduce((acc, item) => acc + item, 0))
+//       .mergeMap(totalPercentageInParties => (totalPercentageInParties == 100)
+//         ? Rx.Observable.of(true)
+//         : Rx.Observable.throw(
+//           new CustomError(
+//             "name",
+//             "verifyBusinessRules",
+//             "Error with percentages in the parties percentages"
+//           ) )
+//       )
+//   }
   
-  static addWithPrecision$(addends, zeroFactor = 2){
-    return Rx.Observable.of(addends)
-    .map(addends => addends.reduce((acc, addend) =>  (acc + addend * Math.pow(10, zeroFactor+1)) , 0))
-    .map(addResult => addResult /  Math.pow(10, zeroFactor + 1))
-    .mergeMap(result => Rx.Observable.of(result))
-  }
-  
+  //#region Math functions
 
-  static subtractWithPrecision$(operatorA, operatorB, zeroFactor = 2){
+  /**
+   * 
+   * @param {number[]} addends 
+   * @param {number} zeroFactor 
+   */
+  static addWithPrecision$(addends, zeroFactor = 2) {
+    return Rx.Observable.of(addends)
+      .map(addends => addends.reduce((acc, addend) => (acc + addend * Math.pow(10, zeroFactor + 1)), 0))
+      .map(addResult => addResult / Math.pow(10, zeroFactor + 1))
+      .mergeMap(result => Rx.Observable.of(result))
+  }
+
+/**
+ * 
+ * @param {number} operatorA 
+ * @param {number} operatorB 
+ * @param {number} zeroFactor 
+ */
+  static subtractWithPrecision$(operatorA, operatorB, zeroFactor = 2) {
     return Rx.Observable.of({
       a: Math.round(operatorA * Math.pow(10, zeroFactor + 1)),
       b: Math.round(operatorB * Math.pow(10, zeroFactor + 1))
     })
-    .map(operators => (operators.a - operators.b ) / Math.pow(10, zeroFactor+1) )
-  } 
-
-  static getValueFromPercentage$(percentage, total){
-    return Rx.Observable.of ((total * percentage * 100 )  / 10000 );
+      .map(operators => (operators.a - operators.b) / Math.pow(10, zeroFactor + 1))
   }
 
+  /**
+   * 
+   * @param {number} percentage 
+   * @param {number} total 
+   */
+  static getValueFromPercentage$(percentage, total) {
+    return Rx.Observable.of((total * percentage * 100) / 10000);
+  }
+
+//#endregion
 
 }
 
