@@ -13,7 +13,7 @@ spec:
         app: acar
     spec:      
       containers:
-      - image: nebulaepyxis/acss-channel-afcc-reload.backend.acss-channel-afcc-reload:0.1.17
+      - image: nebulaepyxis/acss-channel-afcc-reload.backend.acss-channel-afcc-reload:0.1.18
         name: acss-channel-afcc-reload
         volumeMounts:
         - name: google-application-credentials
@@ -47,7 +47,7 @@ spec:
           value: acss
         # PRODUCTS AND CONCEPTS TYPES
         - name: CHANNEL_TRANSACTION_TYPES_CONCEPTS
-          value: '{"SALE": ["RECARGA_CIVICA"], "MOVEMENT": ["WITHDRAWAL", "DEPOSIT"]}'
+          value: '{"SALE": ["RECARGA_CIVICA"]}'
         # JWT CONGIF        
         - name: JWT_PUBLIC_KEY
           value: -----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6mv0ByMprlVOd2tzyw/+BxOylLOTG5+oLFgaCiQu3RSIoVyDXtK9d2+kSmP2qsDE+wqVFEdpw2HrUXB8vhjUpu0CluzIw4m5v6l6ExHqyQHBWTCrX4Aynb3eQIWDm1B5Z592XYBLC+ZMDCDkUeiy7R4rGZnG7BPieAGP7KpO23Yc3YVe16Xkwewp3KOgMwch3uyjLVLu386qAeRfEd6yoMYjt+n5dJ5Lv9ZE+vod+BXOrlbmar3GLnE+x+c07YQfAk1jG2WRucN2wqmBKvygRz/Z50jMEclUjddH2wiXbBp9g83MDSQna93tOxlnhRmCTkzsRZqSRVb7HzjASIbfFQIDAQAB\n-----END PUBLIC KEY-----
