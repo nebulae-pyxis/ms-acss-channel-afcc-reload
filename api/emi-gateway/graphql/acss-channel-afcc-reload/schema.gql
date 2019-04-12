@@ -1,17 +1,17 @@
 "Actor types"
-enum AcssChannelAfccReloadActorType{
+enum AcssChannelAfccReloadActorType {
   FARECOLLECTOR
   PARTIES
 }
 
-type AcssChannelAfccReloadEventAfccData{
+type AcssChannelAfccReloadEventAfccData {
   "Payment method before reload"
   before: String
   "Payment method after reload"
   after: String
 }
 
-type AcssChannelAfccReloadEventAfccBalance{
+type AcssChannelAfccReloadEventAfccBalance {
    "Payment method balance before reload"
    before: Int
    "Payment method balance after reload"
@@ -19,7 +19,7 @@ type AcssChannelAfccReloadEventAfccBalance{
 }
 
 "AFCC data object"
-type AcssChannelAfccReloadEventAfcc{
+type AcssChannelAfccReloadEventAfcc {
   "Object to represent the before and after states"
   data: AcssChannelAfccReloadEventAfccData
   "Univervesal card Id"
@@ -30,7 +30,7 @@ type AcssChannelAfccReloadEventAfcc{
   balance: AcssChannelAfccReloadEventAfccBalance 
 }
 
-type AcssChannelAfccReloadSource{
+type AcssChannelAfccReloadSource {
   "Maquine where reload was made"
   machine: String
   "Machine IP where the transaction was made"
@@ -72,7 +72,7 @@ type AcssChannelAfccReloadEventFromEventStore {
   timestamp: BigInt
 }
 
-type AcssChannelAfccReloadError{
+type AcssChannelAfccReloadError {
   name: String
   message: String
   afccEvent: AcssChannelAfccReloadEventFromEventStore
@@ -80,7 +80,7 @@ type AcssChannelAfccReloadError{
   timestamp: BigInt
 }
 
-type AcssChannelAfccReloadChannel{
+type AcssChannelAfccReloadChannel {
   "Channel processor id"
   id: String
   "Channel softwate version"
@@ -89,7 +89,7 @@ type AcssChannelAfccReloadChannel{
   c: String
 }
 
-type AcssChannelAfccReloadEvt{
+type AcssChannelAfccReloadEvt {
   "Source event id"
   id: String
   "source event type"
@@ -99,7 +99,7 @@ type AcssChannelAfccReloadEvt{
 }
 
 "Represent transaction that are created by the microservice after process an AFCC reload event"
-type AcssChannelAfccReloadTransaction{
+type AcssChannelAfccReloadTransaction {
   "transanction id"
   id: String
   "Transaction timestamp"
@@ -119,7 +119,7 @@ type AcssChannelAfccReloadTransaction{
 }
 
 
-type AcssChannelAfccReloadActor{
+type AcssChannelAfccReloadActor {
   "Actor's business unit Id"
   buId: String
   "Consignee business unit id"
@@ -130,24 +130,24 @@ type AcssChannelAfccReloadActor{
   percentage: Float
 }
 
-type AcssChannelAfccReloadConfigurationWithMainPocket{
+type AcssChannelAfccReloadConfigurationWithMainPocket {
   actors: [AcssChannelAfccReloadActor]
   surplusCollector: AcssChannelAfccReloadActor
   bonusCollector: AcssChannelAfccReloadActor
 }
 
-type AcssChannelAfccReloadConfigurationWithBonusPocket{
+type AcssChannelAfccReloadConfigurationWithBonusPocket {
   actors: [AcssChannelAfccReloadActor]
   investmentCollector: AcssChannelAfccReloadActor
 }
 
-type AcssChannelAfccReloadConfigurationWithCreditPocket{
+type AcssChannelAfccReloadConfigurationWithCreditPocket {
   actors: [AcssChannelAfccReloadActor]
   bonusCollector: AcssChannelAfccReloadActor
 }
 
 "Object that represent the rules to create transactions from AFCC event"
-type AcssChannelAfccReloadConfigurationObject{
+type AcssChannelAfccReloadConfigurationObject {
   "configuration id"
   id: BigInt
   "Last edition for this configuation"
@@ -159,7 +159,7 @@ type AcssChannelAfccReloadConfigurationObject{
   salesWithCreditPocket: AcssChannelAfccReloadConfigurationWithCreditPocket
 }
 
-input AcssChannelAfccReloadActorInput{
+input AcssChannelAfccReloadActorInput {
   "Actor's business unit Id"
   buId: String
    "Consignee business unit id"
@@ -170,25 +170,25 @@ input AcssChannelAfccReloadActorInput{
   percentage: Float
 }
 
-input AcssChannelAfccReloadConfigurationWithMainPocketInput{
+input AcssChannelAfccReloadConfigurationWithMainPocketInput {
   actors: [AcssChannelAfccReloadActorInput]
   surplusCollector: AcssChannelAfccReloadActorInput
   bonusCollector: AcssChannelAfccReloadActorInput
 }
 
-input AcssChannelAfccReloadConfigurationWithBonusPocketInput{
+input AcssChannelAfccReloadConfigurationWithBonusPocketInput {
   actors: [AcssChannelAfccReloadActorInput]
   investmentCollector: AcssChannelAfccReloadActorInput
 }
 
-input AcssChannelAfccReloadConfigurationWithCreditPocketInput{
+input AcssChannelAfccReloadConfigurationWithCreditPocketInput {
   actors: [AcssChannelAfccReloadActorInput]
   bonusCollector: AcssChannelAfccReloadActorInput
 }
 
 
 "Object that represent the rules to create transactions from AFCC event"
-input AcssChannelAfccReloadConfigurationInput{
+input AcssChannelAfccReloadConfigurationInput {
   "configuration id"
   id: BigInt 
   "Last time when configuration where modified"
@@ -201,7 +201,7 @@ input AcssChannelAfccReloadConfigurationInput{
   salesWithCreditPocket: AcssChannelAfccReloadConfigurationWithCreditPocketInput
 }
 
-type AcssChannelAfccReloadCommandResponse{
+type AcssChannelAfccReloadCommandResponse {
   "Response code"
   code: Int
   "Response message"

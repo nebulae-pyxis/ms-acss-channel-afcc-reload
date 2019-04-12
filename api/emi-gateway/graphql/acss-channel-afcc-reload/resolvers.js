@@ -1,52 +1,36 @@
 const withFilter = require("graphql-subscriptions").withFilter;
 const PubSub = require("graphql-subscriptions").PubSub;
 const pubsub = new PubSub();
-const Rx = require("rxjs");
 const broker = require("../../broker/BrokerFactory")();
 const { CustomError } = require("../../tools/customError");
 const RoleValidator  = require("../../tools/RoleValidator");
+const {handleError$} = require('../../tools/GraphqlResponseTools');
+
+const { of } = require('rxjs');
+const { map, mergeMap, catchError } = require('rxjs/operators');
+
 const contextName = "Acss-Channel-Afcc-Reload";
 //Every single error code
 // please use the prefix assigned to this microservice
 const INTERNAL_SERVER_ERROR_CODE = 15001;
-const BUSINESS_PERMISSION_DENIED_ERROR_CODE = 15002;
+const PERMISSION_DENIED_ERROR_CODE = 15002;
 
 
 function getResponseFromBackEnd$(response) {
-    return Rx.Observable.of(response)
-        .map(resp => {
+    return of(response)
+    .pipe(
+        map(resp => {
             if (resp.result.code != 200) {
                 const err = new Error();
                 err.name = 'Error';
                 err.message = resp.result.error;
-                // this[Symbol()] = resp.result.error;
                 Error.captureStackTrace(err, 'Error');
                 throw err;
             }
             return resp.data;
-        });
+        })
+    );
 }
-
-/**
- * Handles errors
- * @param {*} err
- * @param {*} operationName
- */
-function errorHandler$(err, methodName) {
-    return Rx.Observable.of(err).map(err => {
-      const exception = { data: null, result: {} };
-      const isCustomError = err instanceof CustomError;
-      if (!isCustomError) {
-        err = new CustomError(err.name, methodName, INTERNAL_SERVER_ERROR_CODE, err.message);
-      }
-      exception.result = {
-        code: err.code,
-        error: { ...err.getContent() }
-      };
-      return exception;
-    });
-  }
-
 
 module.exports = {
   //// QUERY ///////
@@ -56,147 +40,146 @@ module.exports = {
           console.log("AcssChannelAfccReloadGetConfiguration", args);
           return RoleValidator.checkPermissions$(
               context.authToken.realm_access.roles,
-              contextName,
+              'ms-'+'acss-channel-afcc-reload',
               "AcssChannelAfccReloadGetConfiguration",
-              BUSINESS_PERMISSION_DENIED_ERROR_CODE,
+              PERMISSION_DENIED_ERROR_CODE,
               "Permission denied",
               ["PLATFORM-ADMIN"]
-          )
-              .mergeMap(() =>
+          ).pipe(
+            mergeMap(() =>
                   broker.forwardAndGetReply$(
                       "AfccChannel",
                       "emigateway.graphql.query.getConfiguration",
                       { root, args, jwt: context.encodedToken },
                       2000
                   )
-              )
-              .catch(err => errorHandler$(err, "AcssChannelAfccReloadGetConfiguration"))
-              .mergeMap(response => getResponseFromBackEnd$(response))
-              .toPromise();
+            ),
+            catchError(err => handleError$(err, "AcssChannelAfccReloadGetConfiguration")),
+            mergeMap(response => getResponseFromBackEnd$(response))
+          ).toPromise();
       },
       AcssChannelAfccReloadGetAfccReload(root, args, context) {
-          return RoleValidator.checkPermissions$(
-              context.authToken.realm_access.roles,
-              contextName,
-              "AcssChannelAfccReloadGetAfccReload",
-              BUSINESS_PERMISSION_DENIED_ERROR_CODE,
-              "Permission denied",
-              ["PLATFORM-ADMIN"]
-          )
-              .mergeMap(() => broker
-                  .forwardAndGetReply$(
-                      "AfccChannel",
-                      "emigateway.graphql.query.getAfccReload",
-                      { root, args, jwt: context.encodedToken },
-                      2000
-                  ))
-              .catch(err => errorHandler$(err, "AcssChannelAfccReloadGetAfccReload"))
-          .do(r => console.log("#######################################################################################", r))
-              
-              .mergeMap(response => getResponseFromBackEnd$(response))
-              .toPromise();
+        return RoleValidator.checkPermissions$(
+            context.authToken.realm_access.roles,
+            contextName,
+            "AcssChannelAfccReloadGetAfccReload",
+            PERMISSION_DENIED_ERROR_CODE,
+            "Permission denied",
+            ["PLATFORM-ADMIN"]
+        ).pipe(
+            mergeMap(() =>
+                broker.forwardAndGetReply$(
+                    "AfccChannel",
+                    "emigateway.graphql.query.getAfccReload",
+                    { root, args, jwt: context.encodedToken },
+                    2000
+                )
+            ),
+            catchError(err => handleError$(err, "AcssChannelAfccReloadGetConfiguration")),
+            mergeMap(response => getResponseFromBackEnd$(response))
+        ).toPromise();
       },
       AcssChannelAfccReloadGetAfccReloads(root, args, context) {
           return RoleValidator.checkPermissions$(
               context.authToken.realm_access.roles,
               contextName,
               "AcssChannelAfccReloadGetAfccReloads",
-              BUSINESS_PERMISSION_DENIED_ERROR_CODE,
+              PERMISSION_DENIED_ERROR_CODE,
               "Permission denied",
               ["PLATFORM-ADMIN"]
-          )
-              .mergeMap(() =>
+          ).pipe(
+            mergeMap(() =>
                   broker.forwardAndGetReply$(
                       "AfccChannel",
                       "emigateway.graphql.query.getAfccReloads",
                       { root, args, jwt: context.encodedToken },
                       2000
-                  ))
-              .catch(err => errorHandler$(err, "AcssChannelAfccReloadGetAfccReloads"))
-              .mergeMap(response => getResponseFromBackEnd$(response))
-              .toPromise();
+            )),
+            catchError(err => handleError$(err, "AcssChannelAfccReloadGetAfccReloads")),
+            mergeMap(response => getResponseFromBackEnd$(response)),
+          ).toPromise();              
       },
-      AcssChannelAfccReloadGetAfccReloadErrors(root, args, context) {
+    AcssChannelAfccReloadGetAfccReloadErrors(root, args, context) {
         return RoleValidator.checkPermissions$(
             context.authToken.realm_access.roles,
             contextName,
             "AcssChannelAfccReloadGetAfccReloadErrors",
-            BUSINESS_PERMISSION_DENIED_ERROR_CODE,
+            PERMISSION_DENIED_ERROR_CODE,
             "Permission denied",
             ["PLATFORM-ADMIN"]
-        )
-            .mergeMap(() =>
-                broker.forwardAndGetReply$(
-                    "AfccChannel",
-                    "emigateway.graphql.query.getAfccReloadErrors",
-                    { root, args, jwt: context.encodedToken },
-                    2000
-                ))
-            .catch(err => errorHandler$(err, "AcssChannelAfccReloadGetAfccReloadErrors"))
+        ).pipe(
+            mergeMap(() =>
+            broker.forwardAndGetReply$(
+                "AfccChannel",
+                "emigateway.graphql.query.getAfccReloadErrors",
+                { root, args, jwt: context.encodedToken },
+                2000
+            ))
+            .catchError(err => handleError$(err, "AcssChannelAfccReloadGetAfccReloadErrors"))
             .mergeMap(response => getResponseFromBackEnd$(response))
-            .toPromise();
+        ).toPromise();
     },
-      AcssChannelAfccReloadGetTransactions(root, args, context) {
+    AcssChannelAfccReloadGetTransactions(root, args, context) {
           return RoleValidator.checkPermissions$(
               context.authToken.realm_access.roles,
               contextName,
               "AcssChannelAfccReloadGetTransactions",
-              BUSINESS_PERMISSION_DENIED_ERROR_CODE,
+              PERMISSION_DENIED_ERROR_CODE,
               "Permission denied",
               ["PLATFORM-ADMIN"]
-          )
-              .mergeMap(() =>
-                  broker.forwardAndGetReply$(
-                      "AfccChannel",
-                      "emigateway.graphql.query.getTransactions",
-                      { root, args, jwt: context.encodedToken },
-                      2000
-                  ))
-              .catch(err => errorHandler$(err, "AcssChannelAfccReloadGetTransactions"))
-              .mergeMap(response => getResponseFromBackEnd$(response))
-              .toPromise();
-      },
+          ).pipe(
+            mergeMap(() =>
+            broker.forwardAndGetReply$(
+                "AfccChannel",
+                "emigateway.graphql.query.getTransactions",
+                { root, args, jwt: context.encodedToken },
+                2000
+            )),
+            catchError(err => handleError$(err, "AcssChannelAfccReloadGetTransactions")),
+            mergeMap(response => getResponseFromBackEnd$(response))
+          ).toPromise();
+    },
     AcssChannelAfccReloadGetReloadsCount(root, args, context) {
         return RoleValidator.checkPermissions$(
             context.authToken.realm_access.roles,
             contextName,
             "AcssChannelAfccReloadGetReloadsCount",
-            BUSINESS_PERMISSION_DENIED_ERROR_CODE,
+            PERMISSION_DENIED_ERROR_CODE,
             "Permission denied",
             ["PLATFORM-ADMIN"]
         )
-        .mergeMap(() => broker.forwardAndGetReply$(
-            "AfccChannel",
-            "emigateway.graphql.query.getReloadsCount",
-            { root, args, jwt: context.encodedToken },
-            2000
-          ))
-        .catch(err => errorHandler$(err, "AcssChannelAfccReloadGetReloadsCount"))          
-        .mergeMap(response => getResponseFromBackEnd$(response))
-        .toPromise();
+        .pipe(
+            mergeMap(() => broker.forwardAndGetReply$(
+                "AfccChannel",
+                "emigateway.graphql.query.getReloadsCount",
+                { root, args, jwt: context.encodedToken },
+                2000
+            )),
+            catchError(err => handleError$(err, "AcssChannelAfccReloadGetReloadsCount")),        
+            mergeMap(response => getResponseFromBackEnd$(response))
+        ).toPromise();
     },
     AcssChannelAfccReloadGetBusinessByFilter(root, args, context){
-        console.log("AcssChannelAfccReloadGetBusinessByFilter");
         return RoleValidator.checkPermissions$(
             context.authToken.realm_access.roles,
             contextName,
             "AcssChannelAfccReloadGetBusinessByFilter",
-            BUSINESS_PERMISSION_DENIED_ERROR_CODE,
+            PERMISSION_DENIED_ERROR_CODE,
             "Permission denied",
             ["PLATFORM-ADMIN"]
         )
-        .mergeMap((r) => {
-            console.log("after check permisions ==> ", r );
-            return broker.forwardAndGetReply$(
-                "Business",
-                "emigateway.graphql.query.getAcssChannelBusinessByFilter",
-                { root, args, jwt: context.encodedToken },
-                2000
-              )
-        })
-        .catch(err => errorHandler$(err, "AcssChannelAfccReloadGetBusinessByFilter"))          
-        .mergeMap(response => getResponseFromBackEnd$(response))
-        .toPromise();
+        .pipe(
+            mergeMap((r) => {
+                return broker.forwardAndGetReply$(
+                    "Business",
+                    "emigateway.graphql.query.getAcssChannelBusinessByFilter",
+                    { root, args, jwt: context.encodedToken },
+                    2000
+                  )
+            }),
+            catchError(err => handleError$(err, "AcssChannelAfccReloadGetBusinessByFilter")),    
+            mergeMap(response => getResponseFromBackEnd$(response))
+        ).toPromise();
     }
   },
   //// MUTATIONS ///////
@@ -206,19 +189,20 @@ module.exports = {
             context.authToken.realm_access.roles,
             contextName,
             "AcssChannelAfccReloadCreateConfiguration",
-            BUSINESS_PERMISSION_DENIED_ERROR_CODE,
+            PERMISSION_DENIED_ERROR_CODE,
             "Permission denied",
             ["PLATFORM-ADMIN"]
         )
-        .mergeMap(() => broker.forwardAndGetReply$(
-            "AfccChannel",
-            "emigateway.graphql.query.createConfiguration",
-            { root, args, jwt: context.encodedToken },
-            2000
-          ))
-        .catch(err => errorHandler$(err, "AcssChannelAfccReloadCreateConfiguration")) 
-        .mergeMap(response => getResponseFromBackEnd$(response))
-        .toPromise();
+        .pipe(
+            mergeMap(() => broker.forwardAndGetReply$(
+                "AfccChannel",
+                "emigateway.graphql.query.createConfiguration",
+                { root, args, jwt: context.encodedToken },
+                2000
+            )),
+            catchError(err => handleError$(err, "AcssChannelAfccReloadCreateConfiguration")),
+            mergeMap(response => getResponseFromBackEnd$(response))
+        ).toPromise();
     }
   },
   //// SUBSCRIPTIONS ///////
